@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings | Digital Footprint Tracker</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/notifications.css">
+    <script src="../js/notifications.js"></script>
+    <style>
+        :root {
+            --primary-color: #ff4d94;
+            --primary-color-rgb: 255, 77, 148;
+            --secondary-color: #9d4edd;
+            --secondary-color-rgb: 157, 78, 221;
+            --dark-color: #2d3436;
+            --dark-color-rgb: 45, 52, 54;
+            --gray-color: #6c757d;
+            --gray-color-rgb: 108, 117, 125;
+            --white-color: #fdfdff;
+            --danger-color: #ff6b6b;
+            --danger-color-rgb: 255, 107, 107;
+            --box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+
+            /* Legacy mapping for existing styles */
+            --primary: var(--primary-color);
+            --primary-light: #ff85b3;
+            --text-main: var(--dark-color);
+            --text-muted: var(--gray-color);
+            --border: rgba(var(--secondary-color-rgb), 0.1);
+            --input-bg: #ffffff;
+        }
+
+        body {
+            background: var(--bg-light) fixed;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 12% 16%, rgba(157, 78, 221, 0.22), transparent 30%),
+                radial-gradient(circle at 88% 82%, rgba(255, 159, 67, 0.24), transparent 32%),
+                linear-gradient(135deg, #ffffff 0%, #f3e8ff 48%, #ffedd5 100%);
+            background-attachment: fixed;
+        }
+
+        .dashboard-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--white-color);
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            transition: all 0.3s ease;
+            border-right: 1px solid rgba(var(--secondary-color-rgb), 0.1);
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(var(--secondary-color-rgb), 0.1);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            text-decoration: none;
+        }
+
+        .sidebar-logo i {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+
+        .sidebar-profile-column {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(var(--secondary-color-rgb), 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 10px;
+        }
+
+        .sidebar-user-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.8rem 1.5rem;
+            color: var(--gray-color);
+            text-decoration: none;
+            transition: all 0.3s;
+            margin: 0.2rem 0;
+            position: relative;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(var(--primary-color-rgb), 0.1);
+            color: var(--primary-color);
+        }
+
+        .sidebar-nav a.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--primary-color);
+        }
+
+        .sidebar-nav a.logout-link {
+            margin: 1rem 1rem 0;
+            border: 1px solid rgba(var(--danger-color-rgb), 0.2);
+            border-radius: 18px;
+            background: rgba(var(--danger-color-rgb), 0.05);
+            color: var(--danger-color);
+        }
+
+        .sidebar-nav a.logout-link:hover {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .top-bar {
+            background: rgba(255, 250, 241, 0.92);
+            backdrop-filter: blur(12px);
+            padding: 1rem 1.5rem;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(var(--secondary-color-rgb), 0.12);
+            box-shadow: 0 18px 40px rgba(var(--dark-color-rgb), 0.08);
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark-color);
+            cursor: pointer;
+            padding: 5px;
+            margin-right: 15px;
+            transition: var(--transition);
+        }
+
+        .hamburger:hover {
+            color: var(--primary-color);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(2px);
+            z-index: 95;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .settings-container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 2rem;
+        }
+
+        .settings-nav-sidebar {
+            background: rgba(255, 250, 241, 0.94);
+            backdrop-filter: blur(8px);
+            border-radius: 24px;
+            padding: 1.5rem;
+            border: 1px solid rgba(var(--primary-color-rgb), 0.15);
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+
+        .inner-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .inner-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.8rem 1rem;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #6b5b4e;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .inner-nav-item:hover,
+        .inner-nav-item.active {
+            background: rgba(var(--primary-color-rgb), 0.12);
+            color: var(--primary-color);
+        }
+
+        .inner-nav-item.active {
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .settings-content {
+            background: rgba(255, 250, 241, 0.94);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(var(--primary-color-rgb), 0.15);
+            border-radius: 24px;
+            padding: 40px;
+        }
+
+        /* NEW: Password Strength Indicator Styles */
+        .password-strength-indicator {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .strength-bar-track {
+            width: 100%;
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .strength-bar-fill {
+            height: 100%;
+            width: 0%;
+            background-color: #ccc;
+            /* Default color */
+            border-radius: 4px;
+            transition: width 0.3s ease-in-out, background-color 0.3s ease-in-out;
+        }
+
+        /* Strength level colors - using existing variables from :root */
+        .strength-weak .strength-bar-fill {
+            background-color: var(--danger-color);
+        }
+
+        /* Red */
+        .strength-medium .strength-bar-fill {
+            background-color: var(--warning-color);
+        }
+
+        /* Yellow */
+        .strength-strong .strength-bar-fill {
+            background-color: var(--success-color);
+        }
+
+        /* Green */
+
+        .settings-header {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .settings-header h2 {
+            font-size: 2rem;
+            margin: 0 0 8px 0;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .settings-section {
+            margin-bottom: 48px;
+        }
+
+        .settings-section h3 {
+            font-size: 1.25rem;
+            color: var(--primary);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .option-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            transition: background 0.2s;
+        }
+
+        .option-card:hover {
+            background: #f1f5f9;
+        }
+
+        .option-info h4 {
+            margin: 0 0 4px 0;
+            font-size: 1rem;
+        }
+
+        .option-info p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #334155;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--primary);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(24px);
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 99, 255, 0.4);
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Add section hiding logic */
+        .settings-section {
+            display: none;
+        }
+
+        .settings-section.active {
+            display: block;
+        }
+
+        @media (max-width: 992px) {
+            .settings-container {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-sidebar {
+                position: static;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .hamburger {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>DigitalFootprintTracker</span>
+                </a>
+            </div>
+            <div class="sidebar-profile-column">
+                <div class="sidebar-user-avatar" id="sidebarUserAvatar">?</div>
+                <div>
+                    <div style="display:flex; align-items:center; gap:6px; justify-content:center;">
+                        <div id="sidebarUserName" style="color:var(--dark-color); font-weight:700;">User Name</div>
+                        <span id="sidebarUserBadge"></span>
+                    </div>
+                    <div id="sidebarUserEmail" style="color:var(--gray-color); font-size:0.75rem;">user@example.com
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="scan.html"><i class="fas fa-search"></i> New Scan</a>
+                <a href="report.html"><i class="fas fa-chart-line"></i> Reports</a>
+                <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                <a href="settings.html" class="active"><i class="fas fa-cog"></i> Settings</a>
+                <a href="javascript:void(0)" onclick="logout()" class="logout-link"><i class="fas fa-sign-out-alt"></i>
+                    Log Out</a>
+            </nav>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <div style="display: flex; align-items: center;">
+                    <button class="hamburger" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
+                    <h2 class="page-title"><i class="fas fa-cog"></i> Settings</h2>
+                </div>
+                <div class="top-bar-actions">
+                    <div class="notification-wrapper">
+                        <div class="notification-bell" id="notificationBell" onclick="toggleNotifications()">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge" id="notificationBadge">1</span>
+                        </div>
+                        <div class="notification-dropdown" id="notificationDropdown">
+                            <div class="notification-header">
+                                <h3>Notifications</h3>
+                                <span onclick="clearNotifications()">Clear All</span>
+                            </div>
+                            <div class="notification-list" id="notificationList">
+                                <div class="notification-item unread">
+                                    <div class="notification-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="notification-content">
+                                        <p>A security alert has been sent to your email: <strong
+                                                id="notifEmail">user@example.com</strong></p>
+                                        <span>Just now</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-avatar" id="userAvatar" onclick="window.location.href='profile.html'"
+                        style="cursor: pointer;">?</div>
+                </div>
+            </div>
+
+            <div class="settings-container">
+                <aside class="settings-nav-sidebar">
+                    <nav class="inner-nav">
+                        <a href="javascript:void(0)" class="inner-nav-item active"
+                            onclick="switchSetting('profile', event)"><i class="fas fa-user"></i> My Profile</a>
+                        <a href="javascript:void(0)" class="inner-nav-item" onclick="switchSetting('privacy', event)"><i
+                                class="fas fa-shield-check"></i> Privacy Controls</a>
+                        <a href="javascript:void(0)" class="inner-nav-item"
+                            onclick="switchSetting('security', event)"><i class="fas fa-lock"></i> Security</a>
+                        <a href="javascript:void(0)" class="inner-nav-item" onclick="switchSetting('data', event)"><i
+                                class="fas fa-database"></i> Data Management</a>
+                    </nav>
+                </aside>
+
+                <div class="settings-content">
+                    <div class="settings-header">
+                        <h2>Profile Settings</h2>
+                        <p style="color: var(--text-muted);">Manage your personal information and privacy visibility.
+                        </p>
+                    </div>
+
+                    <!-- My Profile Section -->
+                    <div id="profileSection" class="settings-section active">
+                        <h3><i class="fas fa-info-circle"></i> General Information</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="displayName">Display Name</label>
+                                <input type="text" id="displayName" value="User Name">
+                            </div>
+                            <div class="form-group">
+                                <label for="emailAddress">Email Address</label>
+                                <input type="email" id="emailAddress" value="user@example.com">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="mobileNumber">Mobile Number (For SMS Alerts)</label>
+                            <input type="tel" id="mobileNumber" placeholder="+91 00000 00000">
+                        </div>
+
+                        <h3><i class="fas fa-share-nodes"></i> Monitoring Handles</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
+                            Enter the usernames you want our engine to track continuously across platforms.
+                        </p>
+                        <div class="form-grid"> <!-- Added form-grid for consistency -->
+                            <div class="form-group">
+                                <label for="twitterHandle"><i class="fab fa-twitter"></i> Twitter/X Handle</label>
+                                <input type="text" id="twitterHandle" placeholder="@username">
+                            </div>
+                            <div class="form-group">
+                                <label for="instagramHandle"><i class="fab fa-instagram"></i> Instagram Username</label>
+                                <input type="text" id="instagramHandle" placeholder="username">
+                            </div>
+                            <div class="form-group">
+                                <label for="linkedinUrl"><i class="fab fa-linkedin"></i> LinkedIn URL</label>
+                                <input type="text" id="linkedinUrl" placeholder="linkedin.com/in/user">
+                            </div>
+                            <div class="form-group">
+                                <label for="facebookId"><i class="fab fa-facebook"></i> Facebook ID</label>
+                                <input type="text" id="facebookId" placeholder="fb.com/username">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Privacy Controls Section -->
+                    <div id="privacySection" class="settings-section">
+                        <h3><i class="fas fa-sliders"></i> Privacy & Tracking</h3>
+                        <div class="option-card">
+                            <div class="option-info">
+                                <h4>Automated Weekly Deep-Scans</h4>
+                                <p>We'll scan the web every 7 days and update your dashboard.</p>
+                            </div>
+                            <label class="switch"> <!-- Changed onchange to saveAllSettings -->
+                                <input type="checkbox" id="autoDeepScans">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="option-card">
+                            <div class="option-info">
+                                <h4>Real-time Breach Alerts</h4>
+                                <p>Get notified immediately if your email appears in new data leaks.</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="breachAlerts" onchange="saveSettings()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="option-card">
+                            <div class="option-info">
+                                <h4>Public Visibility Score</h4>
+                                <p>Allow search engines to index your general privacy rating.</p>
+                            </div>
+                            <label class="switch"> <!-- Changed onchange to saveAllSettings -->
+                                <input type="checkbox" id="publicVisibility">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="option-card">
+                            <div class="option-info">
+                                <h4 for="scanSensitivity">Scan Sensitivity</h4>
+                                <p>Higher sensitivity detects low-confidence profile matches.</p>
+                            </div>
+                            <select id="scanSensitivity"
+                                style="width: auto; padding: 8px 12px; border-radius: 8px; background: #1e293b; color: white; border: 1px solid var(--border);">
+                                <option>Standard</option>
+                                <option>High (Strict)</option>
+                                <option>Light</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Security Section -->
+                    <div id="securitySection" class="settings-section">
+                        <h3><i class="fas fa-shield-halved"></i> Security & Access</h3>
+                        <div class="option-card">
+                            <div class="option-info">
+                                <h4>Two-Factor Authentication</h4>
+                                <p>Secure your account with a secondary verification code.</p>
+                            </div>
+                            <label class="switch"> <!-- Changed onchange to saveAllSettings -->
+                                <input type="checkbox" id="twoFactorAuth">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <!-- New Change Password Section -->
+                        <div class="settings-section-group"
+                            style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                            <h3><i class="fas fa-key"></i> Change Password</h3>
+                            <div class="form-group">
+                                <label for="currentPassword">Current Password</label>
+                                <input type="password" id="currentPassword" placeholder="Enter your current password">
+                                <small id="currentPasswordHint"
+                                    style="color: #ff6b6b; font-size: 0.8rem; display: block; margin-top: 5px;"></small>
+                            </div>
+                            <div class="form-group">
+                                <label for="newPassword">New Password</label>
+                                <input type="password" id="newPassword" placeholder="Enter new password">
+                                <small id="newPasswordHint"
+                                    style="color: #ff6b6b; font-size: 0.8rem; display: block; margin-top: 5px;"></small>
+                                <!-- NEW: Password Strength Indicator HTML -->
+                                <div class="password-strength-indicator">
+                                    <div class="strength-bar-track">
+                                        <div class="strength-bar-fill" id="passwordStrengthFill"></div>
+                                    </div>
+                                    <p id="passwordStrengthText"
+                                        style="font-size: 0.8rem; color: var(--gray-color); margin-top: 5px;">Strength:
+                                        Not entered</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmNewPassword">Confirm New Password</label>
+                                <input type="password" id="confirmNewPassword" placeholder="Confirm new password">
+                                <small id="confirmNewPasswordHint"
+                                    style="color: #ff6b6b; font-size: 0.8rem; display: block; margin-top: 5px;"></small>
+                            </div>
+                            <button class="btn-save" onclick="changePassword()">Change Password</button>
+                            <label class="switch" style="display: none;"> <!-- Hidden toggle for consistency -->
+                                <input type="checkbox" id="dummyToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Data Management Section -->
+                    <div id="dataManagementSection" class="settings-section">
+                        <h3><i class="fas fa-database"></i> Data Management</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">You can export your
+                            scan
+                            history or purge all data from our simulation engine.</p>
+                        <div style="display: flex; gap: 12px;">
+                            <button class="btn-save" onclick="exportAllData()"
+                                style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--dark-color);">Export
+                                Data</button>
+                            <button class="btn-login" onclick="clearAllData()"
+                                style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171;">Purge
+                                Scans</button>
+                        </div>
+                    </div>
+
+                    <div
+                        style="display: flex; justify-content: flex-end; margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--border);">
+                        <button class="btn-save" onclick="saveAllSettings()">Update Settings</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer" style="background: transparent; border-top: 1px solid var(--border);">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 Digital Footprint Tracker. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="toast"
+        style="position: fixed; bottom: 20px; right: 20px; background-color: #333; color: white; padding: 10px 20px; border-radius: 5px; display: none; z-index: 1000;">
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUserUI();
+            loadSettings();
+        });
+
+        function updateUserUI() {
+            const userStr = localStorage.getItem('user');
+            if (!userStr) return;
+            const userData = JSON.parse(userStr);
+            const name = userData.fullName || userData.name || 'User';
+            const email = userData.email || 'user@example.com';
+            const initial = name.charAt(0).toUpperCase();
+
+            // Update sidebar
+            if (document.getElementById('sidebarUserName')) document.getElementById('sidebarUserName').innerText = name;
+            if (document.getElementById('sidebarUserEmail')) document.getElementById('sidebarUserEmail').innerText = email;
+
+            const avatarHtml = userData.avatar ? `<img src="${userData.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">` : initial;
+            if (document.getElementById('sidebarUserAvatar')) document.getElementById('sidebarUserAvatar').innerHTML = avatarHtml;
+            if (document.getElementById('userAvatar')) document.getElementById('userAvatar').innerHTML = avatarHtml;
+        }
+
+        function switchSetting(section, event) {
+            // Update nav items
+            document.querySelectorAll('.inner-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // Update sections
+            document.querySelectorAll('.settings-section').forEach(sec => {
+                sec.classList.remove('active');
+            });
+            const target = document.getElementById(`${section}Section`);
+            if (target) target.classList.add('active');
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            toast.style.backgroundColor = type === 'success' ? '#4CAF50' : (type === 'error' ? '#f44336' : '#333');
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // NEW: Function to update password strength indicator
+        function updatePasswordStrengthIndicator() {
+            const newPasswordInput = document.getElementById('newPassword');
+            const passwordStrengthFill = document.getElementById('passwordStrengthFill');
+            const passwordStrengthText = document.getElementById('passwordStrengthText');
+            const password = newPasswordInput.value;
+
+            let score = 0;
+            let feedback = '';
+            let colorClass = '';
+
+            // Criteria:
+            // 1. Length (at least 8 characters)
+            // 2. Uppercase letters
+            // 3. Lowercase letters
+            // 4. Numbers
+            // 5. Special characters
+
+            if (password.length > 0) {
+                // Length check
+                if (password.length >= 8) {
+                    score += 1;
+                }
+
+                // Character type checks
+                if (/[A-Z]/.test(password)) {
+                    score += 1;
+                }
+                if (/[a-z]/.test(password)) {
+                    score += 1;
+                }
+                if (/[0-9]/.test(password)) {
+                    score += 1;
+                }
+                if (/[^A-Za-z0-9]/.test(password)) { // Special characters
+                    score += 1;
+                }
+
+                // Determine strength level
+                if (score <= 2) { feedback = 'Weak'; colorClass = 'strength-weak'; }
+                else if (score <= 4) { feedback = 'Medium'; colorClass = 'strength-medium'; }
+                else { feedback = 'Strong'; colorClass = 'strength-strong'; }
+            } else {
+                feedback = 'Not entered';
+                colorClass = '';
+            }
+
+            passwordStrengthFill.style.width = `${(score / 5) * 100}%`; // Max score is 5
+            passwordStrengthText.textContent = `Strength: ${feedback}`;
+            passwordStrengthFill.parentElement.className = `strength-bar-track ${colorClass}`; // Update parent class for color
+        }
+
+        function saveAllSettings() {
+            const settings = {
+                // General Information
+                displayName: document.getElementById('displayName').value,
+                emailAddress: document.getElementById('emailAddress').value,
+                mobileNumber: document.getElementById('mobileNumber').value,
+
+                // Monitoring Handles
+                twitterHandle: document.getElementById('twitterHandle').value,
+                instagramHandle: document.getElementById('instagramHandle').value,
+                linkedinUrl: document.getElementById('linkedinUrl').value,
+                facebookId: document.getElementById('facebookId').value,
+
+                // Privacy & Tracking
+                autoDeepScans: document.getElementById('autoDeepScans').checked,
+                breachAlerts: document.getElementById('breachAlerts').checked,
+                publicVisibility: document.getElementById('publicVisibility').checked,
+                scanSensitivity: document.getElementById('scanSensitivity').value,
+
+                // Security & Access
+                twoFactorAuth: document.getElementById('twoFactorAuth').checked
+            };
+
+            try {
+                localStorage.setItem('userSettings', JSON.stringify(settings));
+                showToast('All settings saved successfully!', 'success');
+            } catch (e) {
+                console.error('Error saving settings to localStorage:', e);
+                showToast('Failed to save settings.', 'error');
+            }
+        }
+
+        function loadSettings() {
+            try {
+                const savedSettings = localStorage.getItem('userSettings');
+                if (savedSettings) {
+                    const settings = JSON.parse(savedSettings);
+
+                    // General Information
+                    document.getElementById('displayName').value = settings.displayName || '';
+                    document.getElementById('emailAddress').value = settings.emailAddress || '';
+                    document.getElementById('mobileNumber').value = settings.mobileNumber || '';
+
+                    // Monitoring Handles
+                    document.getElementById('twitterHandle').value = settings.twitterHandle || '';
+                    document.getElementById('instagramHandle').value = settings.instagramHandle || '';
+                    document.getElementById('linkedinUrl').value = settings.linkedinUrl || '';
+                    document.getElementById('facebookId').value = settings.facebookId || '';
+
+                    // Privacy & Tracking
+                    document.getElementById('autoDeepScans').checked = settings.autoDeepScans !== undefined ? settings.autoDeepScans : true;
+                    document.getElementById('breachAlerts').checked = settings.breachAlerts !== undefined ? settings.breachAlerts : true;
+                    document.getElementById('publicVisibility').checked = settings.publicVisibility !== undefined ? settings.publicVisibility : false;
+                    document.getElementById('scanSensitivity').value = settings.scanSensitivity || 'Standard';
+
+                    // Security & Access
+                    document.getElementById('twoFactorAuth').checked = settings.twoFactorAuth !== undefined ? settings.twoFactorAuth : true;
+
+                    showToast('Settings loaded.', 'info');
+                }
+            } catch (e) {
+                console.error('Error loading settings from localStorage:', e);
+                showToast('Failed to load settings.', 'error');
+            }
+        }
+
+        function changePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+            const currentPasswordHint = document.getElementById('currentPasswordHint');
+            const newPasswordHint = document.getElementById('newPasswordHint');
+            const confirmNewPasswordHint = document.getElementById('confirmNewPasswordHint');
+
+            // Clear previous hints
+            currentPasswordHint.textContent = '';
+            newPasswordHint.textContent = '';
+            confirmNewPasswordHint.textContent = '';
+
+            let isValid = true;
+
+            // Basic validation (for a real app, current password would be verified server-side)
+            if (!currentPassword) {
+                currentPasswordHint.textContent = 'Current password cannot be empty.';
+                isValid = false;
+            }
+            if (!newPassword) {
+                newPasswordHint.textContent = 'New password cannot be empty.';
+                isValid = false;
+            } else if (newPassword.length < 8) { // Stronger password policy
+                newPasswordHint.textContent = 'New password must be at least 8 characters long.';
+                isValid = false;
+                // NEW: Added password complexity check
+            } else if (!/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/[0-9]/.test(newPassword) || !/[^A-Za-z0-9]/.test(newPassword)) {
+                newPasswordHint.textContent = 'Password must include uppercase, lowercase, number, and special character.';
+                isValid = false;
+            }
+
+            if (!confirmNewPassword) {
+                confirmNewPasswordHint.textContent = 'Please confirm your new password.';
+                isValid = false;
+            } else if (newPassword !== confirmNewPassword) {
+                confirmNewPasswordHint.textContent = 'New password and confirmation do not match.';
+                isValid = false;
+            }
+
+            if (!isValid) {
+                showToast('Please fix the errors in the password fields.', 'error');
+                return;
+            }
+
+            // Simulate password change
+            // In a real application, you would send these to a backend API
+            console.log('Attempting to change password...');
+            // For a frontend-only demo, we'll just simulate success.
+            // In a real app, you'd make an API call here.
+            // Example: fetch('/api/change-password', { method: 'POST', body: JSON.stringify({ currentPassword, newPassword }) })
+            // .then(response => response.json())
+            // .then(data => { if (data.success) { showToast('Password changed successfully!', 'success'); } else { showToast(data.message, 'error'); } })
+            // .catch(error => showToast('An error occurred.', 'error'));
+
+            showToast('Password changed successfully!', 'success');
+
+            // Clear fields after successful change
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmNewPassword').value = '';
+        }
+
+        function exportAllData() {
+            try {
+                const userData = JSON.parse(localStorage.getItem('user') || '{}');
+                const userSettings = JSON.parse(localStorage.getItem('userSettings') || '{}');
+                const scans = JSON.parse(localStorage.getItem('scans') || '[]');
+                const socialHandles = JSON.parse(localStorage.getItem('socialHandles') || '{}');
+
+                const exportData = {
+                    timestamp: new Date().toISOString(),
+                    user: userData,
+                    settings: userSettings,
+                    scans: scans,
+                    socialHandles: socialHandles
+                };
+
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `digital_footprint_data_${new Date().toISOString().slice(0, 10)}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                showToast('Data exported successfully!', 'success');
+            } catch (e) {
+                console.error('Error exporting data:', e);
+                showToast('Failed to export data.', 'error');
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ WARNING: This will delete ALL your scan data, user settings, and social handles. This cannot be undone. Continue?')) {
+                localStorage.removeItem('scans');
+                localStorage.removeItem('socialHandles');
+                localStorage.removeItem('userSettings'); // Clear user settings
+                // Optionally clear user data if it's considered part of "all data"
+                // localStorage.removeItem('user');
+                showToast('All data cleared!', 'error');
+                setTimeout(() => location.reload(), 1500);
+            }
+        }
+
+        function logout() {
+            if (confirm('Logout?')) {
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+    <script>
+        // NEW: Add event listener for password strength indicator on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('newPassword')?.addEventListener('input', updatePasswordStrengthIndicator);
+        });
+    </script>
+</body>
+
+</html>

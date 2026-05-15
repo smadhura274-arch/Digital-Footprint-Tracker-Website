@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Scan | Digital Footprint Tracker</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/notifications.css">
+    <script src="../js/notifications.js"></script>
+    <style>
+        .scan-wrapper {
+            display: flex;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #fff0f6 0%, #ff85b3 100%);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #f9fefb;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .sidebar-logo i {
+            color: #6c63ff;
+        }
+
+        .sidebar-profile-column {
+            padding: 1.8rem 1.5rem;
+            border-bottom: 1px solid rgba(157, 78, 221, 0.12);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 14px;
+            background: linear-gradient(180deg, rgba(255, 77, 148, 0.04) 0%, transparent 100%);
+        }
+
+        .sidebar-user-avatar {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #ff4d94, #9d4edd);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.6rem;
+            box-shadow: 0 10px 25px rgba(255, 77, 148, 0.25);
+            border: 4px solid white;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .sidebar-user-avatar:hover {
+            transform: scale(1.05) rotate(3deg);
+            box-shadow: 0 12px 30px rgba(255, 77, 148, 0.35);
+        }
+
+        .sidebar-user-info h3 {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #2d3436;
+            margin: 0 0 4px 0;
+            letter-spacing: -0.01em;
+        }
+
+        .sidebar-user-info p {
+            font-size: 0.78rem;
+            color: #6c757d;
+            font-weight: 600;
+            margin: 0;
+            opacity: 0.8;
+        }
+
+        .info-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid transparent;
+        }
+
+        .badge-premium {
+            background: rgba(255, 77, 148, 0.15);
+            color: #ff4d94;
+            border-color: rgba(255, 77, 148, 0.3);
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.8rem 1.5rem;
+            color: #6c757d;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(108, 99, 255, 0.1);
+            color: #6c63ff;
+            border-left: 3px solid #6c63ff;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .top-bar {
+            background: #f9fefb;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .scan-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .scan-card {
+            background: #fdfdfd;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .scan-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #2d3436;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #6c63ff;
+        }
+
+        .platform-input {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .platform-icon {
+            width: 40px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .platform-icon .fab.fa-facebook-f {
+            color: #1877f2;
+        }
+
+        .platform-icon .fab.fa-twitter {
+            color: #1da1f2;
+        }
+
+        .platform-icon .fab.fa-instagram {
+            color: #e4405f;
+        }
+
+        .platform-icon .fab.fa-linkedin-in {
+            color: #0077b5;
+        }
+
+        .platform-icon .fab.fa-youtube {
+            color: #ff0000;
+        }
+
+        .platform-input input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .scan-button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #6c63ff, #9d4edd);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .scan-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(108, 99, 255, 0.4);
+        }
+
+        .scan-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .results-card {
+            background: #fdfdfd;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .result-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e9ecef;
+            border-top-color: #6c63ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .recommendations {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #e8f4fd;
+            border-radius: 10px;
+        }
+
+        .recommendations h4 {
+            margin-bottom: 0.5rem;
+            color: #0066cc;
+        }
+
+        .recommendations ul {
+            margin-left: 1.5rem;
+            color: #0066cc;
+        }
+
+        @media (max-width: 768px) {
+            .scan-container {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="scan-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>DF Tracker</span>
+                </div>
+            </div>
+            <div class="sidebar-profile-column" onclick="window.location.href='profile.html'" style="cursor: pointer;">
+                <div id="sidebarUserAvatar" class="sidebar-user-avatar">?</div>
+                <div class="sidebar-user-info">
+                    <div style="display:flex; align-items:center; gap:6px; justify-content:center; margin-bottom: 2px;">
+                        <h3 id="sidebarUserName">User Name</h3>
+                        <span id="sidebarUserBadge"></span>
+                    </div>
+                    <p id="sidebarUserEmail">user@example.com</p>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="scan.html" class="active"><i class="fas fa-search"></i> New Scan</a>
+                <a href="report.html"><i class="fas fa-chart-line"></i> Reports</a>
+                <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                <a href="javascript:void(0)" onclick="Auth.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-bar"
+                style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 1rem 1.5rem; border-radius: 15px; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                <h2 style="margin:0; font-size: 1.5rem;"><i class="fas fa-search"></i> Digital Footprint Scan</h2>
+                <div class="top-bar-actions">
+                    <div class="notification-wrapper">
+                        <div class="notification-bell" id="notificationBell" onclick="toggleNotifications()">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge" id="notificationBadge">1</span>
+                        </div>
+                        <div class="notification-dropdown" id="notificationDropdown">
+                            <div class="notification-header">
+                                <h3>Notifications</h3>
+                                <span onclick="clearNotifications()">Clear All</span>
+                            </div>
+                            <div class="notification-list" id="notificationList">
+                                <div class="notification-item unread">
+                                    <div class="notification-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="notification-content">
+                                        <p>A security alert has been sent to your email: <strong
+                                                id="notifEmail">user@example.com</strong></p>
+                                        <span>Just now</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-avatar" id="userAvatar"
+                        style="width:40px;height:40px;background:linear-gradient(135deg,#6c63ff,#9d4edd);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;cursor:pointer;"
+                        onclick="window.location.href='profile.html'">
+                        M</div>
+                </div>
+            </div>
+
+            <div class="scan-container">
+                <div class="scan-card">
+                    <div class="scan-title">
+                        <i class="fas fa-shield-alt" style="color:#6c63ff;"></i>
+                        <span>Enter Your Social Media Handles</span>
+                    </div>
+                    <p style="color: #6c757d; margin-bottom: 1.5rem;">Enter your usernames to scan for potential privacy
+                        risks and data exposure.</p>
+
+                    <div class="platform-input">
+                        <div class="platform-icon"><i class="fab fa-facebook-f"></i></div>
+                        <input type="text" id="facebookHandle" placeholder="Facebook Username" value="">
+                    </div>
+                    <div class="platform-input">
+                        <div class="platform-icon"><i class="fab fa-twitter"></i></div>
+                        <input type="text" id="twitterHandle" placeholder="Twitter Handle" value="">
+                    </div>
+                    <div class="platform-input">
+                        <div class="platform-icon"><i class="fab fa-instagram"></i></div>
+                        <input type="text" id="instagramHandle" placeholder="Instagram Username" value="">
+                    </div>
+                    <div class="platform-input">
+                        <div class="platform-icon"><i class="fab fa-linkedin-in"></i></div>
+                        <input type="text" id="linkedinHandle" placeholder="LinkedIn Username" value="">
+                    </div>
+                    <div class="platform-input">
+                        <div class="platform-icon"><i class="fab fa-youtube"></i></div>
+                        <input type="text" id="youtubeHandle" placeholder="YouTube Channel" value="">
+                    </div>
+
+                    <button class="scan-button" id="scanBtn" onclick="startScan()">
+                        <i class="fas fa-search"></i> Start Digital Footprint Scan
+                    </button>
+                </div>
+
+                <div class="results-card" id="resultsCard">
+                    <div class="scan-title">
+                        <i class="fas fa-chart-bar" style="color:#6c63ff;"></i>
+                        <span>Scan Results</span>
+                    </div>
+                    <div id="scanResults">
+                        <p style="text-align: center; color: #6c757d; padding: 2rem;">
+                            <i class="fas fa-info-circle"></i><br>
+                            Enter your social media handles and click "Start Scan" to see results.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                const userData = JSON.parse(userStr);
+                const name = userData.fullName || userData.name || 'User';
+                const email = userData.email || 'user@example.com';
+                const initial = name.charAt(0).toUpperCase();
+
+                document.getElementById('sidebarUserName').innerText = name;
+                document.getElementById('sidebarUserEmail').innerText = email;
+                document.getElementById('sidebarUserAvatar').innerText = initial;
+                document.getElementById('userAvatar').innerText = initial;
+                if (document.getElementById('notifEmail')) document.getElementById('notifEmail').innerText = email;
+
+                if (userData.isPremium) {
+                    const badge = '<span class="info-badge badge-premium"><i class="fas fa-crown"></i> PRO</span>';
+                    document.getElementById('sidebarUserBadge').innerHTML = badge;
+                }
+
+                if (userData.avatar) {
+                    const avatarHtml = `<img src="${userData.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+                    document.getElementById('sidebarUserAvatar').innerHTML = avatarHtml;
+                    document.getElementById('userAvatar').innerHTML = avatarHtml;
+                }
+            }
+        });
+
+        async function startScan() {
+            const facebook = document.getElementById('facebookHandle').value;
+            const twitter = document.getElementById('twitterHandle').value;
+            const instagram = document.getElementById('instagramHandle').value;
+            const linkedin = document.getElementById('linkedinHandle').value;
+            const youtube = document.getElementById('youtubeHandle').value;
+
+            // Save social handles
+            const socialHandles = { facebook, twitter, instagram, linkedin, youtube };
+            localStorage.setItem('socialHandles', JSON.stringify(socialHandles));
+
+            // Show loading
+            const resultsDiv = document.getElementById('scanResults');
+            resultsDiv.innerHTML = `
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Scanning your digital footprint...</p>
+                    <p style="font-size: 0.9rem; color: #6c757d;">Checking social media platforms and search engines</p>
+                </div>
+            `;
+
+            document.getElementById('scanBtn').disabled = true;
+
+            // Simulate scan delay
+            await new Promise(resolve => setTimeout(resolve, 3000));
+
+            // Generate scan results
+            const findings = [];
+            let riskCount = 0;
+
+            if (facebook) {
+                findings.push({ platform: 'Facebook', status: 'Profile Found', risk: 'Medium', details: `Profile "${facebook}" is public and visible to everyone` });
+                riskCount += 15;
+            }
+            if (twitter) {
+                findings.push({ platform: 'Twitter', status: 'Profile Found', risk: 'Low', details: `Tweets are visible to public` });
+                riskCount += 10;
+            }
+            if (instagram) {
+                findings.push({ platform: 'Instagram', status: 'Profile Found', risk: 'High', details: `Personal photos and location data visible` });
+                riskCount += 25;
+            }
+            if (linkedin) {
+                findings.push({ platform: 'LinkedIn', status: 'Profile Found', risk: 'Low', details: `Professional information visible` });
+                riskCount += 10;
+            }
+            if (youtube) {
+                findings.push({ platform: 'YouTube', status: 'Channel Found', risk: 'Medium', details: `Subscribers and content preferences visible` });
+                riskCount += 15;
+            }
+
+            // Add Google search results
+            findings.push({ platform: 'Google Search', status: 'Search Results Found', risk: 'Medium', details: `Found ${Math.floor(Math.random() * 20) + 5} search results containing your name` });
+            riskCount += 20;
+
+            const privacyScore = Math.max(0, 100 - riskCount);
+            const riskLevel = riskCount > 60 ? 'high' : (riskCount > 30 ? 'medium' : 'low');
+
+            // Save scan to localStorage
+            const scans = JSON.parse(localStorage.getItem('scans') || '[]');
+            scans.unshift({
+                date: new Date().toLocaleDateString(),
+                findings: findings.length,
+                riskLevel: riskLevel,
+                privacyScore: privacyScore,
+                riskCount: riskCount,
+                details: findings
+            });
+            localStorage.setItem('scans', JSON.stringify(scans));
+
+            // Display results
+            resultsDiv.innerHTML = `
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <div class="score-circle">
+                        <canvas id="scoreCanvas" width="120" height="120"></canvas>
+                    </div>
+                    <h3>Privacy Score: ${privacyScore}/100</h3>
+                    <p style="color: ${riskLevel === 'high' ? '#ff6b6b' : (riskLevel === 'medium' ? '#ffd93d' : '#00c9a7')}">
+                        ${riskLevel === 'high' ? '⚠️ High Risk - Immediate action recommended' : (riskLevel === 'medium' ? '⚡ Medium Risk - Some improvements needed' : '✅ Low Risk - Good privacy practices')}
+                    </p>
+                </div>
+                
+                <h4>Scan Findings (${findings.length} platforms checked):</h4>
+                ${findings.map(f => `
+                    <div class="result-item">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <i class="fab fa-${f.platform.toLowerCase() === 'google search' ? 'google' : (f.platform.toLowerCase() === 'facebook' ? 'facebook-f' : (f.platform.toLowerCase() === 'linkedin' ? 'linkedin-in' : f.platform.toLowerCase()))}" 
+                               style="font-size: 1.2rem; width: 24px; text-align: center; color: ${f.platform.toLowerCase() === 'youtube' ? '#ff0000' : '#6c63ff'}"></i>
+                            <div>
+                                <strong>${f.platform}</strong><br>
+                                <small style="color: #6c757d;">${f.details}</small>
+                            </div>
+                        </div>
+                        <span class="risk-badge risk-${f.risk.toLowerCase()}">${f.risk}</span>
+                    </div>
+                `).join('')}
+                
+                <div class="recommendations">
+                    <h4><i class="fas fa-lightbulb"></i> Privacy Recommendations:</h4>
+                    <ul>
+                        ${riskCount > 30 ? '<li>Review your privacy settings on all social media platforms</li>' : ''}
+                        <li>Remove personal information like phone number and address from public profiles</li>
+                        <li>Use stronger passwords and enable two-factor authentication</li>
+                        <li>Regularly review and delete old posts that contain personal information</li>
+                        <li>Consider making your profiles private</li>
+                    </ul>
+                </div>
+                
+                <button class="scan-button" style="margin-top: 1rem;" onclick="location.href='dashboard.html'">
+                    <i class="fas fa-chart-line"></i> View Full Report
+                </button>
+            `;
+
+            // Draw score circle
+            const canvas = document.getElementById('scoreCanvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                const score = privacyScore;
+                const startAngle = -0.5 * Math.PI;
+                const endAngle = startAngle + (score / 100) * 2 * Math.PI;
+                ctx.beginPath();
+                ctx.arc(60, 60, 50, startAngle, endAngle);
+                ctx.strokeStyle = riskLevel === 'high' ? '#ff6b6b' : (riskLevel === 'medium' ? '#ffd93d' : '#00c9a7');
+                ctx.lineWidth = 10;
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(60, 60, 50, 0, 2 * Math.PI);
+                ctx.strokeStyle = '#e9ecef';
+                ctx.stroke();
+                ctx.fillStyle = '#2d3436';
+                ctx.font = 'bold 20px Inter';
+                ctx.fillText(score, 45, 70);
+            }
+
+            document.getElementById('scanBtn').disabled = false;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports | Digital Footprint Tracker</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/notifications.css">
+    <script src="../js/notifications.js"></script>
+    <style>
+        .reports-wrapper {
+            display: flex;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #fff0f6 0%, #ff85b3 100%);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #fffcf8;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.8rem 1.5rem;
+            color: #6c757d;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(108, 99, 255, 0.1);
+            color: #6c63ff;
+            border-left: 3px solid #6c63ff;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .top-bar {
+            background: #fffcf8;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .report-header {
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            color: var(--dark-color);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border: 1px solid #e9ecef;
+        }
+
+        .report-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .report-stat-card {
+            background: #fffcf8;
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .report-stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #6c63ff;
+        }
+
+        .report-section {
+            background: #fffcf8;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .report-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .recommendation-list {
+            list-style: none;
+        }
+
+        .recommendation-list li {
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .recommendation-list li i {
+            color: #6c63ff;
+        }
+
+        .btn-export {
+            background: transparent;
+            border: 2px solid #6c63ff;
+            color: #6c63ff;
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-export:hover {
+            background: #6c63ff;
+            color: white;
+        }
+
+        .btn-generate {
+            background: linear-gradient(135deg, #6c63ff, #9d4edd);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .report-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reports-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>DF Tracker</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="scan.html"><i class="fas fa-search"></i> New Scan</a>
+                <a href="report.html" class="active"><i class="fas fa-chart-line"></i> Reports</a>
+                <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                <a href="javascript:void(0)" onclick="Auth.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-bar"
+                style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 1rem 1.5rem; border-radius: 15px; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                <h2 style="margin: 0; font-size: 1.5rem;"><i class="fas fa-chart-line"></i> Privacy Reports</h2>
+                <div class="top-bar-actions">
+                    <div class="notification-wrapper">
+                        <div class="notification-bell" id="notificationBell" onclick="toggleNotifications()">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge" id="notificationBadge">1</span>
+                        </div>
+                        <div class="notification-dropdown" id="notificationDropdown">
+                            <div class="notification-header">
+                                <h3>Notifications</h3>
+                                <span onclick="clearNotifications()">Clear All</span>
+                            </div>
+                            <div class="notification-list" id="notificationList">
+                                <div class="notification-item unread">
+                                    <div class="notification-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="notification-content">
+                                        <p>A security alert has been sent to your email: <strong
+                                                id="notifEmail">user@example.com</strong></p>
+                                        <span>Just now</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-avatar" id="userAvatar"
+                        style="width:40px;height:40px;background:linear-gradient(135deg,#6c63ff,#9d4edd);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;cursor:pointer;"
+                        onclick="window.location.href='profile.html'">
+                        M</div>
+                </div>
+            </div>
+
+            <div class="report-header">
+                <h1><i class="fas fa-file-alt"></i> Digital Footprint Analysis Report</h1>
+                <p>Comprehensive analysis of your online presence and privacy status</p>
+                <p><strong>Report Generated:</strong> <span id="reportDate"></span></p>
+            </div>
+
+            <div style="text-align: right; margin-bottom: 1rem;">
+                <button class="btn-generate" onclick="generateNewReport()">
+                    <i class="fas fa-sync-alt"></i> Generate Latest Report
+                </button>
+                <button class="btn-export" onclick="exportReport()">
+                    <i class="fas fa-download"></i> Export PDF
+                </button>
+            </div>
+
+            <div class="report-stats">
+                <div class="report-stat-card">
+                    <div class="report-stat-value" id="totalScansStat">0</div>
+                    <div>Total Scans</div>
+                </div>
+                <div class="report-stat-card">
+                    <div class="report-stat-value" id="avgPrivacyScore">0</div>
+                    <div>Average Privacy Score</div>
+                </div>
+                <div class="report-stat-card">
+                    <div class="report-stat-value" id="totalFindings">0</div>
+                    <div>Total Findings</div>
+                </div>
+                <div class="report-stat-card">
+                    <div class="report-stat-value" id="riskLevel">-</div>
+                    <div>Overall Risk Level</div>
+                </div>
+            </div>
+
+            <div class="report-section">
+                <div class="report-title">
+                    <i class="fas fa-chart-line" style="color: #6c63ff;"></i>
+                    <span>Privacy Score Trend</span>
+                </div>
+                <canvas id="trendChartReport" height="150"></canvas>
+            </div>
+
+            <div class="report-section">
+                <div class="report-title">
+                    <i class="fas fa-triangle-exclamation" style="color: #6c63ff;"></i>
+                    Critical Vulnerabilities
+                </div>
+                <div id="vulnerabilityListReport" style="display: flex; flex-direction: column; gap: 10px;">
+                    <p style="text-align: center; padding: 1.5rem; color: #64748b;">Loading analysis...</p>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <div class="report-section" style="margin-bottom: 0;">
+                    <div class="report-title"><i class="fas fa-chart-pie" style="color: #6c63ff;"></i> Risk Breakdown
+                    </div>
+                    <canvas id="riskDistChartReport" height="250"></canvas>
+                </div>
+                <div class="report-section" style="margin-bottom: 0;">
+                    <div class="report-title"><i class="fas fa-network-wired" style="color: #6c63ff;"></i> Platform
+                        Exposure Analysis</div>
+                    <div id="platformAnalysis"
+                        style="display: flex; flex-direction: column; gap: 12px; margin-top: 1rem;"></div>
+                </div>
+            </div>
+
+            <div class="report-section">
+                <div class="report-title">
+                    <i class="fas fa-shield-alt" style="color: #6c63ff;"></i>
+                    <span>Executive Summary</span>
+                </div>
+                <div id="executiveSummary"></div>
+            </div>
+
+            <div class="report-section">
+                <div class="report-title">
+                    <i class="fas fa-gavel" style="color: #6c63ff;"></i>
+                    <span>Privacy Recommendations</span>
+                </div>
+                <ul class="recommendation-list" id="recommendationsList"></ul>
+            </div>
+
+            <div class="report-section">
+                <div class="report-title">
+                    <i class="fas fa-history" style="color: #6c63ff;"></i>
+                    <span>Scan History</span>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;" id="historyTable">
+                        <thead>
+                            <tr style="background: #f8f9fa;">
+                                <th style="padding: 0.8rem; text-align: left;">Date</th>
+                                <th style="padding: 0.8rem; text-align: left;">Findings</th>
+                                <th style="padding: 0.8rem; text-align: left;">Privacy Score</th>
+                                <th style="padding: 0.8rem; text-align: left;">Risk Level</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function getPlatformIcon(platform) {
+            const iconMap = {
+                facebook: 'facebook-f',
+                twitter: 'twitter',
+                instagram: 'instagram',
+                linkedin: 'linkedin-in',
+                youtube: 'youtube',
+                'google search': 'google',
+                'global breach database': 'biohazard'
+            };
+            return iconMap[(platform || '').toLowerCase()] || 'globe';
+        }
+
+        function loadReportData() {
+            const scans = JSON.parse(localStorage.getItem('scans') || '[]');
+            const reportDate = new Date().toLocaleString();
+            document.getElementById('reportDate').innerText = reportDate;
+
+            // Calculate stats
+            const totalScans = scans.length;
+            const latest = scans[0];
+
+            // Vulnerability List
+            const vulnList = document.getElementById('vulnerabilityListReport');
+            if (!latest) {
+                vulnList.innerHTML = `
+                    <div style="text-align: center; padding: 2.5rem; background: rgba(108, 99, 255, 0.05); border-radius: 20px; border: 1px dashed #6c63ff;">
+                        <i class="fas fa-user-shield" style="font-size: 3rem; color: #6c63ff; margin-bottom: 1rem;"></i>
+                        <p style="font-weight: 700; color: #2d3436; font-size: 1.2rem;">Welcome to DF Tracker!</p>
+                        <p style="font-size: 0.9rem; color: #64748b; max-width: 450px; margin: 0.5rem auto;">We haven't analyzed your digital footprint yet. Run your first scan to uncover platform-specific privacy vulnerabilities and hidden data leaks.</p>
+                        <button class="btn-generate" onclick="location.href='scan.html'" style="margin-top: 1rem; margin-bottom: 0;">Start Your First Scan</button>
+                    </div>
+                `;
+            } else if (latest.details) {
+                vulnList.innerHTML = latest.details.map(d => `
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 1.2rem; background: white; border-radius: 12px; border: 1px solid #eef2f7; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="width: 42px; height: 42px; background: rgba(108, 99, 255, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #6c63ff;">
+                                <i class="fab fa-${getPlatformIcon(d.platform)}"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 600; font-size: 0.95rem;">${d.platform} Exposure</div>
+                                <div style="font-size: 0.8rem; color: #64748b;">${d.details}</div>
+                            </div>
+                        </div>
+                        <span class="risk-badge" style="background: ${d.risk.toLowerCase() === 'high' ? '#f8d7da' : (d.risk.toLowerCase() === 'medium' ? '#fff3cd' : '#d4edda')}; color: ${d.risk.toLowerCase() === 'high' ? '#721c24' : (d.risk.toLowerCase() === 'medium' ? '#856404' : '#155724')}; padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.02em;">${d.risk.toUpperCase()}</span>
+                    </div>
+                `).join('');
+            } else {
+                vulnList.innerHTML = '<p style="text-align: center; color: #64748b; padding: 1.5rem;">No detailed vulnerability data found for the latest scan.</p>';
+            }
+
+            let totalScore = 0;
+            let totalFindings = 0;
+            let highRiskCount = 0;
+            let mediumRiskCount = 0;
+            let lowRiskCount = 0;
+            const platformCounts = {};
+
+            scans.forEach(scan => {
+                totalScore += scan.privacyScore || 85;
+                totalFindings += scan.findings || 0;
+                if (scan.riskLevel === 'high') highRiskCount++;
+                else if (scan.riskLevel === 'medium') mediumRiskCount++;
+                else lowRiskCount++;
+
+                const platforms = Array.isArray(scan.platforms) ? scan.platforms : [];
+                platforms.forEach(p => platformCounts[p] = (platformCounts[p] || 0) + 1);
+            });
+
+            const avgScore = totalScans > 0 ? Math.round(totalScore / totalScans) : 85;
+            const overallRisk = highRiskCount > totalScans / 2 ? 'High' : (highRiskCount > 0 ? 'Medium' : 'Low');
+
+            document.getElementById('totalScansStat').innerText = totalScans;
+            document.getElementById('avgPrivacyScore').innerText = avgScore;
+            document.getElementById('totalFindings').innerText = totalFindings;
+            document.getElementById('riskLevel').innerHTML = `<span style="color: ${overallRisk === 'High' ? '#ff6b6b' : (overallRisk === 'Medium' ? '#ffd93d' : '#00c9a7')}">${overallRisk}</span>`;
+
+            // Executive Summary
+            const summary = `
+                <p>Based on ${totalScans} digital footprint scan${totalScans !== 1 ? 's' : ''}, your overall privacy score is <strong>${avgScore}/100</strong>.</p>
+                <p>We have identified <strong>${totalFindings}</strong> digital traces across various platforms. ${avgScore >= 80 ? 'Your privacy practices are good, but continued monitoring is recommended.' : (avgScore >= 60 ? 'There are some privacy concerns that need attention.' : 'Immediate action is required to protect your online privacy.')}</p>
+                <p>${avgScore >= 80 ? '🟢' : (avgScore >= 60 ? '🟡' : '🔴')} Overall Risk Assessment: <strong>${overallRisk}</strong> Risk Level</p>
+            `;
+            document.getElementById('executiveSummary').innerHTML = summary;
+
+            // Platform Analysis
+            const platformList = Object.entries(platformCounts).sort((a, b) => b[1] - a[1]);
+            document.getElementById('platformAnalysis').innerHTML = platformList.map(([name, count]) => `
+                <div style="display:flex; align-items:center; gap:15px; background:rgba(108,99,255,0.05); padding:12px; border-radius:12px;">
+                    <div style="width:40px; height:40px; background:white; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#6c63ff; font-weight:bold; box-shadow:0 2px 5px rgba(0,0,0,0.05)"><i class="fab fa-${name.toLowerCase().includes('google') ? 'google' : name.toLowerCase()}"></i></div>
+                    <div style="flex:1"><strong>${name}</strong><div style="font-size:0.8rem; color:#64748b">Appeared in ${count} scan${count > 1 ? 's' : ''}</div></div>
+                    <div style="font-weight:800; color:#6c63ff">${Math.round((count / totalScans) * 100)}%</div>
+                </div>
+            `).join('') || '<p>No platform data available.</p>';
+
+            // Recommendations
+            const recommendations = [
+                { icon: '🔒', text: 'Review and update privacy settings on all social media accounts' },
+                { icon: '🔑', text: 'Use unique, strong passwords for each platform and enable 2FA' },
+                { icon: '🗑️', text: 'Delete old accounts and posts that contain personal information' },
+                { icon: '📧', text: 'Be cautious about sharing personal information online' },
+                { icon: '📊', text: 'Schedule regular digital footprint scans (recommended monthly)' },
+            ];
+
+            if (avgScore < 70) {
+                recommendations.unshift({ icon: '⚠️', text: 'URGENT: Remove personal contact information from public profiles' });
+            }
+
+            document.getElementById('recommendationsList').innerHTML = recommendations.map(rec => `
+                <li><i class="fas fa-${rec.icon === '🔒' ? 'lock' : (rec.icon === '🔑' ? 'key' : (rec.icon === '🗑️' ? 'trash' : (rec.icon === '📧' ? 'envelope' : 'chart-line')))}"></i> ${rec.text}</li>
+            `).join('');
+
+            // History Table
+            const tbody = document.getElementById('historyTableBody');
+            if (scans.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem;">No scans found. Run your first scan!</td></tr>';
+            } else {
+                tbody.innerHTML = scans.map(scan => `
+                    <tr>
+                        <td style="padding: 0.8rem; border-bottom: 1px solid #e9ecef;">${scan.date}</td>
+                        <td style="padding: 0.8rem; border-bottom: 1px solid #e9ecef;">${scan.findings} traces</td>
+                        <td style="padding: 0.8rem; border-bottom: 1px solid #e9ecef;">${scan.privacyScore}</td>
+                        <td style="padding: 0.8rem; border-bottom: 1px solid #e9ecef;">
+                            <span style="background: ${scan.riskLevel === 'high' ? '#f8d7da' : (scan.riskLevel === 'medium' ? '#fff3cd' : '#d4edda')}; color: ${scan.riskLevel === 'high' ? '#721c24' : (scan.riskLevel === 'medium' ? '#856404' : '#155724')}; padding: 0.25rem 0.5rem; border-radius: 50px;">${scan.riskLevel.toUpperCase()}</span>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            // Trend Chart
+            const scores = scans.map(s => s.privacyScore || 85);
+            while (scores.length < 3) scores.unshift(85);
+
+            // Risk Distribution Chart
+            new Chart(document.getElementById('riskDistChartReport'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Low Risk', 'Medium Risk', 'High Risk'],
+                    datasets: [{
+                        data: [lowRiskCount, mediumRiskCount, highRiskCount],
+                        backgroundColor: ['#00c9a7', '#ffd93d', '#ff6b6b'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+
+            new Chart(document.getElementById('trendChartReport'), {
+                type: 'line',
+                data: {
+                    labels: scans.map((_, i) => `Scan ${i + 1}`),
+                    datasets: [{
+                        label: 'Privacy Score',
+                        data: scores,
+                        borderColor: '#6c63ff',
+                        backgroundColor: 'rgba(108,99,255,0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        async function generateNewReport() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('/api/dashboard/report/generate', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+
+                if (data.success) {
+                    // Refresh scan history for local UI calculation and table rendering
+                    const historyRes = await fetch('/api/scan/history', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const historyData = await historyRes.json();
+                    if (historyData.success) {
+                        localStorage.setItem('scans', JSON.stringify(historyData.scans));
+                    }
+                    loadReportData();
+                    alert('Report successfully updated with your latest scan data!');
+                }
+            } catch (err) {
+                console.error('Failed to regenerate report:', err);
+                alert('Failed to update report. Please check your connection.');
+            }
+        }
+
+        function exportReport() {
+            alert('Report export feature would generate a PDF. In production, this would use jsPDF or similar library.');
+        }
+
+        loadReportData();
+    </script>
+</body>
+
+</html>

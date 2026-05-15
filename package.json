@@ -1,0 +1,16 @@
+{
+  "name": "digital-footprint-tracker-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Digital Footprint Tracker website with frontend and backend.",
+  "scripts": {
+    "dev": "npm --prefix backend run dev",
+    "start": "npm --prefix backend start",
+    "install:backend": "npm --prefix backend install",
+    "test-db": "npm --prefix backend run test-db"
+  },
+  "dependencies": {
+    "mongodb": "^7.2.0",
+    "mongoose": "^9.6.1"
+  }
+}

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | Digital Footprint Tracker</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .profile-wrapper {
+            display: flex;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #fff0f6 0%, #ff85b3 100%);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #faf9ff;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2d3436;
+        }
+
+        .sidebar-logo i {
+            color: #6c63ff;
+            font-size: 1.5rem;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.8rem 1.5rem;
+            color: #6c757d;
+            text-decoration: none;
+            transition: all 0.3s;
+            margin: 0.2rem 0;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(108, 99, 255, 0.1);
+            color: #6c63ff;
+            border-left: 3px solid #6c63ff;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .profile-cover {
+            height: 200px;
+            background: url('https://images.unsplash.com/photo-1519681577536-e58210387140?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') center center / cover no-repeat;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            margin: -2.5rem -2.5rem 0;
+            /* Adjust to fit within card */
+            position: relative;
+        }
+
+        .profile-cover::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent);
+        }
+
+        .profile-card {
+            background: #fff;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #eef2f7;
+            position: relative;
+            margin-top: -100px;
+            /* Pull avatar over cover */
+            padding-top: 0;
+            z-index: 1;
+        }
+
+        .profile-avatar-container {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6c63ff, #9d4edd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            color: white;
+            font-weight: 700;
+            border: 5px solid white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .profile-avatar-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-upload-btn {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: #6c63ff;
+            color: white;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s ease;
+        }
+
+        .avatar-upload-btn:hover {
+            background: #5a50e6;
+        }
+
+        .avatar-upload-btn input {
+            display: none;
+        }
+
+        .profile-header h2 {
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+        }
+
+        .profile-header p {
+            font-size: 0.95rem;
+        }
+
+        .profile-section-group {
+            margin-bottom: 2.5rem;
+            border: 1px solid #eef2f7;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .profile-section-header {
+            background: #f8f9fa;
+            padding: 1.2rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #eef2f7;
+        }
+
+        .profile-section-body {
+            padding: 1.5rem;
+        }
+
+        .form-group-inline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group-inline label {
+            margin-bottom: 0;
+            flex-grow: 1;
+        }
+
+        .form-group-inline input[type="checkbox"] {
+            width: auto;
+            margin-left: 1rem;
+            transform: scale(1.2);
+            accent-color: #6c63ff;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            background-color: white;
+            appearance: none;
+            /* Remove default arrow */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.7rem center;
+            background-size: 1.2em;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #6c63ff, #9d4edd);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="profile-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>DF Tracker</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="scan.html"><i class="fas fa-search"></i> New Scan</a>
+                <a href="report.html"><i class="fas fa-chart-line"></i> Reports</a>
+                <a href="profile.html" class="active"><i class="fas fa-user"></i> Profile</a>
+                <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                <a href="javascript:void(0)" onclick="Auth.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="profile-cover"></div>
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar-container" id="profileAvatarContainer">
+                        <img id="profileAvatarImg" src="" alt="User Avatar" style="display: none;">
+                        <span id="profileAvatarInitial">U</span>
+                        <label for="avatarUpload" class="avatar-upload-btn" title="Change Profile Picture">
+                            <i class="fas fa-camera"></i>
+                            <input type="file" id="avatarUpload" accept="image/*">
+                        </label>
+                    </div>
+                    <div>
+                        <h2 id="displayUserName">Loading...</h2>
+                        <p style="color: #64748b;">Manage your identity and notification preferences</p>
+                    </div>
+                </div>
+
+                <form id="profileForm" class="profile-form">
+                    <div class="profile-section-group">
+                        <div class="profile-section-header">
+                            <i class="fas fa-user-circle"></i> Personal Information
+                        </div>
+                        <div class="profile-section-body">
+                            <div class="form-group">
+                                <label for="fullName">Full Name</label>
+                                <input type="text" id="fullName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" disabled
+                                    title="Identity emails cannot be changed directly">
+                            </div>
+                            <div class="form-group">
+                                <label for="bio">Short Bio</label>
+                                <input type="text" id="bio" placeholder="Digital privacy enthusiast" maxlength="200">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-section-group">
+                        <div class="profile-section-header">
+                            <i class="fas fa-bell"></i> Notification Preferences
+                        </div>
+                        <div class="profile-section-body">
+                            <div class="form-group-inline">
+                                <label for="emailNotifications">Email Notifications</label>
+                                <input type="checkbox" id="emailNotifications">
+                            </div>
+                            <div class="form-group-inline">
+                                <label for="autoScanEnabled">Enable Auto Scan</label>
+                                <input type="checkbox" id="autoScanEnabled">
+                            </div>
+                            <div class="form-group">
+                                <label for="scanFrequency">Scan Frequency</label>
+                                <select id="scanFrequency">
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-section-group">
+                        <div class="profile-section-header">
+                            <i class="fas fa-shield-alt"></i> Security Settings
+                        </div>
+                        <div class="profile-section-body"
+                            style="display: flex; justify-content: space-between; gap: 1rem;">
+                            <button type="button" class="btn-save" style="background: #3b82f6;">
+                                <i class="fas fa-key"></i> Change Password
+                            </button>
+                            <button type="button" class="btn-danger">
+                                <i class="fas fa-trash-alt"></i> Delete Account
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-save" style="width: 100%; margin-top: 1.5rem;">
+                        <i class="fas fa-save"></i> Update Profile
+                    </button>
+                </form>
+            </div>
+        </main>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize user data with defaults if not present
+            let userData = JSON.parse(localStorage.getItem('user')) || {
+                name: "Madhura",
+                email: "madhura@example.com",
+                bio: "",
+                avatar: null, // Base64 string or URL
+                preferences: {
+                    emailNotifications: true,
+                    autoScanEnabled: false,
+                    scanFrequency: "weekly"
+                }
+            };
+
+            // Ensure preferences object exists and has default values
+            if (!userData.preferences) {
+                userData.preferences = {
+                    emailNotifications: true,
+                    autoScanEnabled: false,
+                    scanFrequency: "weekly"
+                };
+            }
+
+            const updateUI = (user) => {
+                document.getElementById('fullName').value = user.name;
+                document.getElementById('email').value = user.email;
+                document.getElementById('bio').value = user.bio;
+                document.getElementById('displayUserName').innerText = user.name;
+
+                const profileAvatarImg = document.getElementById('profileAvatarImg');
+                const profileAvatarInitial = document.getElementById('profileAvatarInitial');
+
+                if (user.avatar) {
+                    profileAvatarImg.src = user.avatar;
+                    profileAvatarImg.style.display = 'block';
+                    profileAvatarInitial.style.display = 'none';
+                } else {
+                    profileAvatarImg.style.display = 'none';
+                    profileAvatarInitial.style.display = 'block';
+                    profileAvatarInitial.innerText = user.name.charAt(0).toUpperCase();
+                }
+
+                // Load preferences
+                document.getElementById('emailNotifications').checked = user.preferences.emailNotifications;
+                document.getElementById('autoScanEnabled').checked = user.preferences.autoScanEnabled;
+                document.getElementById('scanFrequency').value = user.preferences.scanFrequency;
+            };
+
+            updateUI(userData);
+
+            document.getElementById('profileForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newName = document.getElementById('fullName').value;
+                const newBio = document.getElementById('bio').value;
+                const newEmailNotifications = document.getElementById('emailNotifications').checked;
+                const newAutoScanEnabled = document.getElementById('autoScanEnabled').checked;
+                const newScanFrequency = document.getElementById('scanFrequency').value;
+
+                // Persist changes
+                userData.name = newName;
+                userData.bio = newBio;
+                userData.preferences.emailNotifications = newEmailNotifications;
+                userData.preferences.autoScanEnabled = newAutoScanEnabled;
+                userData.preferences.scanFrequency = newScanFrequency;
+                localStorage.setItem('user', JSON.stringify(userData));
+                updateUI(userData);
+
+                alert('Your profile has been updated successfully!');
+            });
+
+            // Handle avatar upload
+            document.getElementById('avatarUpload').addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        userData.avatar = e.target.result; // Store as Base64
+                        localStorage.setItem('user', JSON.stringify(userData));
+                        updateUI(userData);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

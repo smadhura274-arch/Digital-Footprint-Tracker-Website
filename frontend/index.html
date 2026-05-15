@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Digital Footprint Tracker - Monitor, analyze, and manage your online presence">
+    <meta name="keywords" content="digital footprint, privacy tracker, online presence, cybersecurity">
+    <meta name="author" content="Madhura S & Shwetha S K">
+    <title>Digital Footprint Tracker | Protect Your Online Privacy</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+    <style>
+        /* Inline critical styles to ensure About section looks cohesive */
+        .about {
+            background: #f8fafc;
+            padding: 80px 0;
+            position: relative;
+        }
+
+        .about-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .about-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #ffffff;
+        }
+
+        .project-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 30px 20px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(108, 99, 255, 0.1);
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(108, 99, 255, 0.15);
+        }
+
+        .info-card i {
+            font-size: 2.8rem;
+            color: #6c63ff;
+            margin-bottom: 1rem;
+        }
+
+        .info-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            color: #1e293b;
+        }
+
+        .info-card p {
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .project-info {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== IMPROVED PRIVACY SCORE SECTION - BETTER WORD VISIBILITY ===== */
+        .privacy-score-section {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            padding: 80px 0;
+            position: relative;
+        }
+
+        .privacy-score-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 50px;
+        }
+
+        .privacy-score-content {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .privacy-score-content .section-badge {
+            background: rgba(108, 99, 255, 0.25);
+            color: #c4b5fd;
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(108, 99, 255, 0.3);
+        }
+
+        .privacy-score-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+            line-height: 1.2;
+            font-weight: 700;
+        }
+
+        .privacy-score-content p {
+            font-size: 1.05rem;
+            color: #d1d5ff;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* IMPROVED SCORE FEATURES - BETTER VISIBILITY */
+        .score-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 2rem;
+        }
+
+        .score-feature {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 14px 20px;
+            border-radius: 16px;
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .score-feature:hover {
+            background: rgba(108, 99, 255, 0.35);
+            transform: translateX(6px);
+            border-color: rgba(108, 99, 255, 0.6);
+        }
+
+        .score-feature i {
+            font-size: 1.3rem;
+            color: #a78bfa;
+            background: rgba(108, 99, 255, 0.25);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+
+        .score-feature i.fa-facebook-f {
+            color: #1877F2;
+            background: rgba(24, 119, 242, 0.1);
+        }
+
+        .score-feature i.fa-google {
+            color: #4285F4;
+            background: rgba(66, 133, 244, 0.1);
+        }
+
+        .score-feature i.fa-database {
+            color: #00c9a7;
+            background: rgba(0, 201, 167, 0.1);
+        }
+
+        .score-feature i.fa-id-card {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        .score-feature span {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #f0f0ff;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6c63ff, #8b5cf6);
+            border: none;
+            padding: 14px 32px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(108, 99, 255, 0.5);
+        }
+
+        .privacy-score-meter {
+            flex: 0.8;
+            min-width: 280px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .meter-container {
+            position: relative;
+            width: min(300px, calc(100vw - 40px));
+            height: min(300px, calc(100vw - 40px));
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 0 30px rgba(108, 99, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .meter-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            pointer-events: none;
+        }
+
+        .meter-value {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff, #c4b5fd);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 0.95;
+        }
+
+        .meter-subtext {
+            font-size: 0.76rem;
+            color: rgba(221, 214, 254, 0.78);
+            font-weight: 600;
+            line-height: 1;
+            text-transform: uppercase;
+        }
+
+        .meter-label {
+            font-size: 1.1rem;
+            letter-spacing: 1.4px;
+            color: #ddd6fe;
+            font-weight: 700;
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+
+        canvas#privacyScoreCanvas {
+            width: 88%;
+            height: 88%;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .privacy-score-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .score-feature {
+                justify-content: flex-start;
+                text-align: left;
+            }
+
+            .privacy-score-content h2 {
+                font-size: 2rem;
+            }
+
+            .score-features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ==================== NAVIGATION BAR ==================== -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Digital<span class="logo-highlight">Footprint</span>Tracker</span>
+                </a>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <ul class="nav-links">
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="nav-auth">
+                <a href="pages/login.html" class="btn-login" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="pages/signup.html" class="btn-signup" id="signupBtn"><i class="fas fa-user-plus"></i> Sign
+                    Up</a>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==================== HERO SECTION ==================== -->
+    <section class="hero" id="home">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-shield-virus"></i>
+                    <span>Your Privacy Matters</span>
+                </div>
+                <h1 class="hero-title">
+                    Track, Monitor & Secure
+                    <span class="gradient-text">Your Digital Footprint</span>
+                </h1>
+                <p class="hero-description">
+                    Every click, search, and interaction leaves a trace. Take control of your online presence
+                    with our comprehensive digital footprint tracking solution. Identify privacy risks,
+                    protect your identity, and maintain your digital reputation.
+                </p>
+                <div class="hero-signal-strip">
+                    <span><i class="fas fa-user-secret"></i> No password sharing</span>
+                    <span><i class="fas fa-clock"></i> Fast scan summaries</span>
+                    <span><i class="fas fa-shield-heart"></i> Privacy-first design</span>
+                </div>
+                <div class="hero-detail-grid">
+                    <article class="hero-detail-card">
+                        <div class="hero-detail-head">
+                            <i class="fas fa-globe"></i>
+                            <strong>What we monitor</strong>
+                        </div>
+                        <span>Search results, public social profiles, exposed contact details, breach-style identity
+                            signals, and searchable mentions tied to your name or email.</span>
+                    </article>
+                    <article class="hero-detail-card">
+                        <div class="hero-detail-head">
+                            <i class="fas fa-list-check"></i>
+                            <strong>What you get</strong>
+                        </div>
+                        <span>A clear privacy score, risk breakdown, visibility trends, and practical next steps to
+                            reduce exposure without technical guesswork.</span>
+                    </article>
+                    <article class="hero-detail-card">
+                        <div class="hero-detail-head">
+                            <i class="fas fa-lock"></i>
+                            <strong>Why it is safer</strong>
+                        </div>
+                        <span>No private account access, no social passwords, and no hidden scraping claims. The product
+                            stays focused on public visibility and user control.</span>
+                    </article>
+                </div>
+                <div class="hero-trust-note">
+                    <div class="hero-trust-item">
+                        <strong>Built for everyday users</strong>
+                        <span>Simple enough for first-time privacy checks, detailed enough for regular
+                            monitoring.</span>
+                    </div>
+                    <div class="hero-trust-item">
+                        <strong>Focused on actionable output</strong>
+                        <span>Less noise, more concrete steps to clean up your public digital footprint.</span>
+                    </div>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="50000">0</div>
+                        <div class="stat-label">Active Users</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="1000000">0</div>
+                        <div class="stat-label">Scans Completed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="98">0</div>
+                        <div class="stat-label">Privacy Score</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FEATURES SECTION ==================== -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-badge">Key Features</div>
+                <h2 class="section-title">Why Choose Digital Footprint Tracker?</h2>
+                <p class="section-subtitle">Comprehensive tools to monitor, analyze, and protect your online presence
+                </p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h3>Centralized Dashboard</h3>
+                    <p>Monitor all your digital footprint data from social media, search engines, and websites in one
+                        unified
+                        dashboard.</p>
+                    <a href="#" class="feature-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-virus"></i>
+                    </div>
+                    <h3>Privacy Risk Detection</h3>
+                    <p>Identify potential privacy vulnerabilities and receive actionable recommendations to secure your
+                        data.</p>
+                    <a href="#" class="feature-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>Automated Scans</h3>
+                    <p>Schedule regular automated scans to track changes in your digital footprint over time.</p>
+                    <a href="#" class="feature-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Real-time Analytics</h3>
+                    <p>Get detailed insights and visual reports about your online presence and exposure levels.</p>
+                    <a href="#" class="feature-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3>Email Alerts</h3>
+                    <p>Receive instant notifications when new personal information is detected online.</p>
+                    <a href="#" class="feature-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>Privacy Reports</h3>
+                    <p>Generate comprehensive privacy reports to understand your digital footprint better.</p>
+                    <a href="#" class="feature-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== HOW IT WORKS SECTION ==================== -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-badge">Simple Process</div>
+                <h2 class="section-title">How Digital Footprint Tracker Works</h2>
+                <p class="section-subtitle">Three simple steps to take control of your online privacy</p>
+            </div>
+            <div class="steps-container">
+                <div class="step-item">
+                    <div class="step-number">01</div>
+                    <div class="step-content">
+                        <div class="step-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <h3>Create Account</h3>
+                        <p>Sign up for a free account and connect your social media profiles and email addresses.</p>
+                    </div>
+                </div>
+                <div class="step-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">02</div>
+                    <div class="step-content">
+                        <div class="step-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <h3>Run Initial Scan</h3>
+                        <p>Our system scans the web for your personal information across multiple platforms.</p>
+                    </div>
+                </div>
+                <div class="step-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">03</div>
+                    <div class="step-content">
+                        <div class="step-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3>Get Insights</h3>
+                        <p>Review your privacy report and take action to improve your digital security.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== PRIVACY SCORE SECTION - IMPROVED VISIBILITY ==================== -->
+    <section class="privacy-score-section">
+        <div class="container">
+            <div class="privacy-score-container">
+                <div class="privacy-score-content">
+                    <div class="section-badge">
+                        <i class="fas fa-chart-line" style="margin-right: 6px;"></i> Privacy Metrics
+                    </div>
+                    <h2>Your Digital <span style="color: #a78bfa;">Privacy Score</span></h2>
+                    <p>Get a comprehensive assessment of your online privacy health with our advanced scoring system.
+                        Instantly
+                        understand your exposure level and take control.</p>
+                    <div class="score-features">
+                        <div class="score-feature">
+                            <i class="fab fa-facebook-f"></i>
+                            <span>Social Media Exposure Analysis</span>
+                        </div>
+                        <div class="score-feature">
+                            <i class="fab fa-google"></i>
+                            <span>Search Engine Result Tracking</span>
+                        </div>
+                        <div class="score-feature">
+                            <i class="fas fa-database"></i>
+                            <span>Data Breach Detection</span>
+                        </div>
+                        <div class="score-feature">
+                            <i class="fas fa-id-card"></i>
+                            <span>Personal Information Exposure</span>
+                        </div>
+                    </div>
+                    <a href="pages/login.html" class="btn-primary">
+                        <i class="fas fa-chart-simple"></i> Check Your Score Now
+                    </a>
+                </div>
+                <div class="privacy-score-meter">
+                    <div class="meter-container" aria-label="Privacy score 85 out of 100">
+                        <canvas id="privacyScoreCanvas" width="264" height="264" aria-hidden="true"></canvas>
+                        <div class="meter-text">
+                            <div class="meter-value">85</div>
+                            <div class="meter-subtext">Out of 100</div>
+                            <div class="meter-label">PRIVACY SCORE</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== TESTIMONIALS SECTION ==================== -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-badge">Testimonials</div>
+                <h2 class="section-title">What Our Users Say</h2>
+                <p class="section-subtitle">Trusted by thousands of users worldwide</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">
+                        <i class="fas fa-quote-left"></i>
+                    </div>
+                    <p class="testimonial-text">"This tool helped me discover old accounts I forgot about and exposed
+                        personal
+                        information I didn't know was public. Highly recommended!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <div class="avatar-placeholder" style="background: #6c63ff;">S</div>
+                        </div>
+                        <div class="author-info">
+                            <h4>Sarah Johnson</h4>
+                            <p>Marketing Professional</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">
+                        <i class="fas fa-quote-left"></i>
+                    </div>
+                    <p class="testimonial-text">"As a job seeker, maintaining a clean digital footprint is crucial. This
+                        tracker
+                        gives me peace of mind."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <div class="avatar-placeholder" style="background: #9d4edd;">M</div>
+                        </div>
+                        <div class="author-info">
+                            <h4>Michael Chen</h4>
+                            <p>Software Engineer</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">
+                        <i class="fas fa-quote-left"></i>
+                    </div>
+                    <p class="testimonial-text">"The automated alerts feature saved me from potential identity theft.
+                        Thank you
+                        for this amazing tool!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <div class="avatar-placeholder" style="background: #ff6b6b;">A</div>
+                        </div>
+                        <div class="author-info">
+                            <h4>Amanda Rodriguez</h4>
+                            <p>Student</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FAQ SECTION ==================== -->
+    <section class="faq">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-badge">FAQ</div>
+                <h2 class="section-title">Frequently Asked Questions</h2>
+                <p class="section-subtitle">Everything you need to know about digital footprint tracking</p>
+            </div>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>What is a digital footprint?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>A digital footprint is the trail of data you leave behind when using the internet. This
+                            includes social
+                            media posts, comments, searches, website visits, and any other online activity.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Is my data secure with Digital Footprint Tracker?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Absolutely! We use industry-standard encryption and never store your personal passwords. Your
+                            privacy is
+                            our top priority.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>How often should I scan my digital footprint?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We recommend scanning at least once a month, but you can schedule automated scans weekly or
+                            daily for
+                            continuous monitoring.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Can I remove information found by the tracker?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>While we can't remove data from third-party sites, we provide detailed instructions and tools
+                            to help you
+                            request removal or update your privacy settings.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>What platforms do you scan?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We scan Facebook, Twitter, Instagram, LinkedIn, Google Search Results, and public databases
+                            for your
+                            personal information.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Is there a free plan available?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! We offer a free plan with basic scanning features. Premium plans offer advanced
+                            analytics and
+                            automated monitoring.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== CTA SECTION ==================== -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-container">
+                <h2>Stay Informed on Data Privacy</h2>
+                <p>Subscribe to our newsletter for weekly tips on securing your online accounts and minimizing your
+                    digital
+                    footprint.</p>
+                <div class="newsletter-box">
+                    <form class="newsletter-form" id="newsletterForm">
+                        <input type="email" placeholder="Enter your email address" required class="newsletter-input">
+                        <button type="submit" class="btn-primary">Subscribe Now <i
+                                class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+                <p class="cta-note">Join 50,000+ privacy-conscious users worldwide</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== ABOUT SECTION ==================== -->
+    <section class="about" id="about">
+        <div class="container">
+            <div class="about-container">
+                <div class="about-content">
+                    <div class="section-badge">About Digital Footprint Tracker</div>
+                    <h2>Your Trusted Privacy Partner</h2>
+                    <p style="font-size: 1.1rem; color: #334155; max-width: 800px; margin-bottom: 2rem;">We're on a
+                        mission to
+                        empower individuals with <strong style="color: #020617;">complete visibility</strong> and
+                        control over their online presence. Our
+                        advanced monitoring
+                        engine helps you discover, analyze, and reduce your <strong style="color: #020617;">digital
+                            footprint</strong>.</p>
+                    <div class="project-info">
+                        <div class="info-card">
+                            <i class="fas fa-chart-network"></i>
+                            <h4>Real-time Monitoring</h4>
+                            <p>Continuous 24/7 scanning of your digital footprint across social platforms, search
+                                engines, and public
+                                records.</p>
+                        </div>
+                        <div class="info-card">
+                            <i class="fas fa-lock"></i>
+                            <h4>Privacy First Approach</h4>
+                            <p>Zero data storage policy — all scans happen locally in your browser. Your privacy is not
+                                just a
+                                feature, it's our foundation.</p>
+                        </div>
+                        <div class="info-card">
+                            <i class="fas fa-bullhorn"></i>
+                            <h4>Privacy Education</h4>
+                            <p>We don’t just track; we teach. Access guides, webinars, and best practices to maintain
+                                long-term
+                                digital hygiene.</p>
+                        </div>
+                        <div class="info-card">
+                            <i class="fas fa-globe-asia"></i>
+                            <h4>Global Footprint Analysis</h4>
+                            <p>Multi-region scanning to detect how your data appears across different countries and data
+                                protection
+                                jurisdictions.</p>
+                        </div>
+                        <div class="info-card">
+                            <i class="fas fa-hand-peace"></i>
+                            <h4>Ethical & Transparent</h4>
+                            <p>We never ask for passwords or access private APIs. 100% transparent about how our
+                                simulated scans work.
+                            </p>
+                        </div>
+                        <div class="info-card">
+                            <i class="fas fa-rocket"></i>
+                            <h4>Continuous Innovation</h4>
+                            <p>Launched in 2023, we update our detection algorithms weekly to stay ahead of emerging
+                                privacy risks.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== CONTACT SECTION ==================== -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-badge">Contact Us</div>
+                <h2 class="section-title">Get In Touch</h2>
+                <p class="section-subtitle">Have questions? We're here to help</p>
+            </div>
+            <div class="contact-container">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>Visit Us</h4>
+                            <p>123, Tech Plaza, MG Road, Bengaluru, Karnataka 560001</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Call Us</h4>
+                            <p>+91 9876543210<br>+91 8884070995</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email Us</h4>
+                            <p>support@digitalfootprinttracker.com<br></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-globe"></i>
+                        <div>
+                            <h4>Website</h4>
+                            <p>www.digitalfootprinttracker.com</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <form id="contactForm">
+                        <input type="text" placeholder="Your Name" required>
+                        <input type="email" placeholder="Your Email" required>
+                        <input type="text" placeholder="Subject">
+                        <textarea rows="5" placeholder="Your Message" required></textarea>
+                        <button type="submit" class="btn-primary">Send Message <i
+                                class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-about">
+                    <div class="footer-logo">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>DigitalFootprintTracker</span>
+                    </div>
+                    <p>Protecting your online privacy one scan at a time. Monitor, analyze, and secure your digital
+                        footprint with
+                        our advanced tracking system.</p>
+                    <div class="footer-social">
+                        <a href="https://facebook.com" target="_blank" title="Facebook"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="https://twitter.com" target="_blank" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="https://linkedin.com" target="_blank" title="LinkedIn"><i
+                                class="fab fa-linkedin-in"></i></a>
+                        <a href="https://instagram.com" target="_blank" title="Instagram"><i
+                                class="fab fa-instagram"></i></a>
+                        <a href="https://youtube.com" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="javascript:void(0)" onclick="openModal('privacyModal')">Privacy Policy</a></li>
+                        <li><a href="javascript:void(0)" onclick="openModal('termsModal')">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Digital Footprint Tracker. All rights reserved. Your privacy, our priority.</p>
+                <p class="college-info">Made with 🛡️ for a safer digital world</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== MODALS ==================== -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('privacyModal')">&times;</span>
+            <h2>Privacy Policy</h2>
+            <div class="modal-body">
+                <p>Last updated: June 2025. Your privacy is our priority. Our Digital Footprint Tracker operates with
+                    the
+                    following principles:</p>
+                <ul>
+                    <li><strong>Local Storage:</strong> Your scan results and social handles are stored only in your
+                        browser's
+                        local storage. We do not transmit this data to our servers.</li>
+                    <li><strong>Information Collection:</strong> We do not collect personal identifying information
+                        (PII) unless
+                        you voluntarily provide it through our newsletter or contact form.</li>
+                    <li><strong>Third-Party Services:</strong> Our scans simulate public data retrieval. We do not
+                        interact with
+                        private APIs or bypass security measures.</li>
+                    <li><strong>No Passwords:</strong> We never ask for or store your social media passwords.</li>
+                    <li><strong>Public Data Only:</strong> Our scans only simulate the retrieval of publicly available
+                        information.</li>
+                    <li><strong>Data Protection:</strong> We do not sell or share your information with third parties.
+                    </li>
+                </ul>
+                <p>By using our service, you consent to our Privacy Policy.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('termsModal')">&times;</span>
+            <h2>Terms of Service</h2>
+            <div class="modal-body">
+                <p>Welcome to Digital Footprint Tracker. By accessing this website, you agree to the following terms and
+                    conditions:</p>
+                <ul>
+                    <li><strong>Usage:</strong> This tool is for personal use and educational purposes only. Commercial
+                        use
+                        without prior authorization is prohibited.</li>
+                    <li><strong>Responsibility:</strong> You are responsible for the usernames you scan. Unauthorized
+                        scanning of
+                        others' profiles may violate platform terms.</li>
+                    <li><strong>Service Limits:</strong> We reserve the right to limit the number of scans or access to
+                        features
+                        to maintain service stability.</li>
+                    <li><strong>Accuracy:</strong> While we strive for accuracy, scan results are simulations based on
+                        public
+                        visibility and may not be 100% complete.</li>
+                    <li><strong>Liability:</strong> We are not liable for any actions taken based on the results
+                        provided by this
+                        tracker.</li>
+                </ul>
+                <p>Your continued use of the service constitutes your acceptance of these terms.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== BACK TO TOP BUTTON ==================== -->
+    <button id="backToTop" class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="js/app.js"></script>
+    <script>
+        // Basic helper functions for modals (in case external js missing)
+        window.openModal = function (modalId) {
+            var modal = document.getElementById(modalId);
+            if (modal) modal.style.display = "flex";
+        }
+        window.closeModal = function (modalId) {
+            var modal = document.getElementById(modalId);
+            if (modal) modal.style.display = "none";
+        }
+        window.onclick = function (event) {
+            if (event.target.classList && event.target.classList.contains('modal')) {
+                event.target.style.display = "none";
+            }
+        }
+        // Enhanced canvas draw for privacy score with better visibility
+        document.addEventListener("DOMContentLoaded", function () {
+            var canvas = document.getElementById('privacyScoreCanvas');
+            if (canvas && canvas.getContext) {
+                var ctx = canvas.getContext('2d');
+                var score = 85;
+                var startAngle = -0.5 * Math.PI;
+                var endAngle = startAngle + (score / 100) * 2 * Math.PI;
+
+                var size = canvas.width;
+                var center = size / 2;
+                var radius = 104;
+                var lineWidth = 18;
+
+                // Clear canvas
+                ctx.clearRect(0, 0, size, size);
+
+                // Background ring (darker for contrast)
+                ctx.beginPath();
+                ctx.arc(center, center, radius, 0, 2 * Math.PI);
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.18)";
+                ctx.lineWidth = lineWidth;
+                ctx.lineCap = "round";
+                ctx.stroke();
+
+                // Score progress ring with gradient
+                var gradient = ctx.createLinearGradient(48, 48, 216, 216);
+                gradient.addColorStop(0, "#a78bfa");
+                gradient.addColorStop(1, "#6c63ff");
+                ctx.beginPath();
+                ctx.arc(center, center, radius, startAngle, endAngle);
+                ctx.strokeStyle = gradient;
+                ctx.lineCap = "round";
+                ctx.stroke();
+
+                // Endpoint marker
+                var markerX = center + Math.cos(endAngle) * radius;
+                var markerY = center + Math.sin(endAngle) * radius;
+                ctx.beginPath();
+                ctx.arc(markerX, markerY, 6, 0, 2 * Math.PI);
+                ctx.strokeStyle = "#ffffff";
+                ctx.fillStyle = "#ffffff";
+                ctx.lineWidth = 3;
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            // Counter animation for stats
+            var statNumbers = document.querySelectorAll('.stat-number');
+            if (statNumbers.length && !window.animationTriggered) {
+                window.animationTriggered = true;
+                statNumbers.forEach(el => {
+                    let target = parseInt(el.getAttribute('data-count') || '0');
+                    let current = 0;
+                    let increment = target / 50;
+                    let interval = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            el.innerText = target.toLocaleString();
+                            clearInterval(interval);
+                        } else {
+                            el.innerText = Math.floor(current).toLocaleString();
+                        }
+                    }, 30);
+                });
+            }
+
+            // Back to top button
+            var backBtn = document.getElementById('backToTop');
+            window.addEventListener('scroll', function () {
+                if (window.scrollY > 300) {
+                    backBtn.style.display = 'flex';
+                } else {
+                    backBtn.style.display = 'none';
+                }
+            });
+            backBtn.addEventListener('click', function () {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // Add Escape key listener to redirect to login page
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    window.location.href = 'pages/login.html';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

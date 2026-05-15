@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | Digital Footprint Tracker</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/i18n.js"></script>
+    <script src="../js/theme.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #ff4d94;
+            --primary-color-rgb: 255, 77, 148;
+            --secondary-color: #9d4edd;
+            --secondary-color-rgb: 157, 78, 221;
+            --dark-color: #2d3436;
+            --dark-color-rgb: 45, 52, 54;
+            --gray-color: #6c757d;
+            --gray-color-rgb: 108, 117, 125;
+            --white-color: #fdfdff;
+            --danger-color: #ff6b6b;
+            --danger-color-rgb: 255, 107, 107;
+            /* Map legacy horse theme vars to the new palette for content consistency */
+            --stallion-ink: var(--dark-color);
+            --saddle: var(--secondary-color);
+            --mane-gold: var(--primary-color);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background:
+                radial-gradient(circle at 12% 16%, rgba(157, 78, 221, 0.22), transparent 30%),
+                radial-gradient(circle at 88% 82%, rgba(255, 159, 67, 0.24), transparent 32%),
+                linear-gradient(135deg, #ffffff 0%, #f3e8ff 48%, #ffedd5 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--dark-color);
+        }
+
+        .dashboard-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--white-color);
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            transition: all 0.3s ease;
+            border-right: 1px solid rgba(var(--secondary-color-rgb), 0.1);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--mane-gold);
+            border-radius: 5px;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(var(--secondary-color-rgb), 0.1);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        .sidebar-logo i {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.8rem 1.5rem;
+            color: var(--gray-color);
+            text-decoration: none;
+            transition: all 0.3s;
+            margin: 0.2rem 0;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(var(--primary-color-rgb), 0.1);
+            color: var(--primary-color);
+        }
+
+        .sidebar-nav a.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--primary-color);
+        }
+
+        .sidebar-nav a.logout-link {
+            margin: 1rem 1rem 0;
+            border: 1px solid rgba(var(--danger-color-rgb), 0.2);
+            border-radius: 18px;
+            background: rgba(var(--danger-color-rgb), 0.05);
+            color: var(--danger-color);
+        }
+
+        .sidebar-nav a.logout-link:hover {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .top-bar {
+            background: rgba(255, 250, 241, 0.92);
+            backdrop-filter: blur(12px);
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(var(--secondary-color-rgb), 0.12);
+            box-shadow: 0 18px 40px rgba(var(--dark-color-rgb), 0.08);
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--saddle), var(--mane-gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .settings-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+
+        .settings-sidebar {
+            background: rgba(255, 250, 241, 0.95);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+            border: 1px solid rgba(123, 75, 42, 0.08);
+        }
+
+        .settings-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .settings-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #6c757d;
+        }
+
+        .settings-nav-item:hover {
+            background: rgba(197, 138, 62, 0.12);
+            color: var(--saddle);
+        }
+
+        .settings-nav-item.active {
+            background: rgba(197, 138, 62, 0.18);
+            color: var(--saddle);
+            border-left: 3px solid var(--mane-gold);
+        }
+
+        .settings-content {
+            background: rgba(255, 250, 241, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(123, 75, 42, 0.08);
+        }
+
+        .settings-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .settings-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .setting-info h4 {
+            margin-bottom: 0.25rem;
+        }
+
+        .setting-info p {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked+.toggle-slider {
+            background-color: #6c63ff;
+        }
+
+        input:checked+.toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .frequency-select {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        .danger-zone {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #fff5f5;
+            border-radius: 16px;
+            border: 1px solid #ffe0e0;
+        }
+
+        .danger-zone h4 {
+            color: #ff6b6b;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .settings-container {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-sidebar {
+                position: static;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>DigitalFootprintTracker</span>
+                </div>
+            </div>
+            <div class="sidebar-profile-column"
+                style="padding:1.5rem; border-bottom:1px solid rgba(var(--secondary-color-rgb),0.1); display:flex; flex-direction:column; align-items:center; text-align:center; gap:10px;">
+                <div id="sidebarUserAvatar"
+                    style="width:60px; height:60px; background:linear-gradient(135deg, var(--primary-color), var(--secondary-color)); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:1.5rem;">
+                    ?</div>
+                <div>
+                    <div style="display:flex; align-items:center; gap:6px; justify-content:center;">
+                        <div id="sidebarUserName" style="color:var(--dark-color); font-weight:700;">User Name
+                        </div>
+                        <span id="sidebarUserBadge"></span>
+                    </div>
+                    <div id="sidebarUserEmail" style="color:var(--gray-color); font-size:0.75rem;">user@example.com
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span data-i18n="nav_dashboard">Dashboard</span>
+                </a>
+                <a href="scan.html">
+                    <i class="fas fa-search"></i>
+                    <span data-i18n="nav_scan">New Scan</span>
+                </a>
+                <a href="reports.html">
+                    <i class="fas fa-chart-line"></i>
+                    <span data-i18n="nav_reports">Reports</span>
+                </a>
+                <a href="profile.html">
+                    <i class="fas fa-user"></i>
+                    <span data-i18n="nav_profile">Profile</span>
+                </a>
+                <a href="settings.html" class="active">
+                    <i class="fas fa-cog"></i>
+                    <span data-i18n="nav_settings">Settings</span>
+                </a>
+                <a href="#">
+                    <i class="fas fa-bell"></i>
+                    <span data-i18n="nav_notifications">Notifications</span>
+                </a>
+                <a href="javascript:void(0)" onclick="logout()" class="logout-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span data-i18n="nav_logout">Log Out</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <h2 class="page-title">
+                    <i class="fas fa-sliders-h"></i> Settings
+                </h2>
+                <div class="user-avatar" id="userAvatar">M</div>
+            </div>
+
+            <div class="settings-container">
+                <div class="settings-sidebar">
+                    <div class="settings-nav">
+                        <div class="settings-nav-item active" onclick="switchSetting('general')">
+                            <i class="fas fa-globe"></i> <span data-i18n="general_settings">General Settings</span>
+                        </div>
+                        <div class="settings-nav-item" onclick="switchSetting('privacy')">
+                            <i class="fas fa-shield-alt"></i> <span data-i18n="privacy_security">Privacy &amp;
+                                Security</span>
+                        </div>
+                        <div class="settings-nav-item" onclick="switchSetting('notifications')">
+                            <i class="fas fa-bell"></i> <span data-i18n="notifications_tab">Notifications</span>
+                        </div>
+                        <div class="settings-nav-item" onclick="switchSetting('scanning')">
+                            <i class="fas fa-search"></i> <span data-i18n="scanning_preferences">Scanning
+                                Preferences</span>
+                        </div>
+                        <div class="settings-nav-item" onclick="switchSetting('integrations')">
+                            <i class="fas fa-plug"></i> <span data-i18n="integrations">Integrations</span>
+                        </div>
+                        <div class="settings-nav-item" onclick="switchSetting('danger')">
+                            <i class="fas fa-exclamation-triangle"></i> <span data-i18n="danger_zone">Danger Zone</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-content">
+                    <!-- General Settings -->
+                    <div id="generalSection" class="settings-section active">
+                        <h3 class="section-title" data-i18n="general_settings">General Settings</h3>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 data-i18n="language">Language</h4>
+                                <p data-i18n="choose_language">Choose your preferred language</p>
+                            </div>
+                            <select id="languageSelect" class="frequency-select"
+                                onchange="saveSetting('language', this.value); applyTranslations();">
+                                <option value="en">English</option>
+                                <option value="hi">Hindi</option>
+                                <option value="kn">Kannada</option>
+                                <option value="ta">Tamil</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4 data-i18n="theme">Theme</h4>
+                                <p data-i18n="choose_theme">Choose your preferred theme</p>
+                            </div>
+                            <select id="themeSelect" class="frequency-select"
+                                onchange="saveSetting('theme', this.value); applyTheme(this.value);">
+                                <option value="light">Light</option>
+                                <option value="dark">Dark</option>
+                                <option value="system">System Default</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Time Zone</h4>
+                                <p>Select your time zone</p>
+                            </div>
+                            <select id="timezoneSelect" class="frequency-select"
+                                onchange="saveSetting('timezone', this.value)">
+                                <option value="IST">IST (UTC+5:30)</option>
+                                <option value="EST">EST (UTC-5)</option>
+                                <option value="PST">PST (UTC-8)</option>
+                                <option value="GMT">GMT (UTC+0)</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Date Format</h4>
+                                <p>Choose how dates are displayed</p>
+                            </div>
+                            <select id="dateFormatSelect" class="frequency-select"
+                                onchange="saveSetting('dateFormat', this.value)">
+                                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Privacy & Security -->
+                    <div id="privacySection" class="settings-section">
+                        <h3 class="section-title">Privacy & Security</h3>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Data Collection</h4>
+                                <p>Allow anonymous usage data collection to improve the service</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="dataCollection" checked
+                                    onchange="saveToggle('dataCollection', this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Show Profile in Search Results</h4>
+                                <p>Allow your profile to appear in public search results</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="publicProfile"
+                                    onchange="saveToggle('publicProfile', this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Email Encryption</h4>
+                                <p>Enable end-to-end encryption for email communications</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="emailEncryption" checked
+                                    onchange="saveToggle('emailEncryption', this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Session Timeout</h4>
+                                <p>Automatically logout after period of inactivity</p>
+                            </div>
+                            <select id="sessionTimeout" class="frequency-select"
+                                onchange="saveSetting('sessionTimeout', this.value)">
+                                <option value="30">30 minutes</option>
+                                <option value="60">1 hour</option>
+                                <option value="120">2 hours</option>
+                                <option value="240">4 hours</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div id="notificationsSection" class="settings-section">
+                        <h3 class="section-title">Notification Preferences</h3>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Email Notifications</h4>
+                                <p>Receive email updates about your scans and privacy alerts</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="emailNotifications" checked
+                                    onchange="saveToggle('emailNotifications', this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Push Notifications</h4>
+                                <p>Get real-time browser notifications</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="pushNotifications"
+                                    onchange="saveToggle('pushNotifications', this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Scan Completion Alerts</h4>
+                                <p>Notify when a scan is completed</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="scanAlerts" checked
+                                    onchange="saveToggle('scanAlerts', this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Weekly Privacy Report</h4>
+                                <p>Receive a summary of your digital footprint weekly</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="weeklyReport" checked
+                                    onchange="saveToggle('weeklyReport', this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Scanning Preferences -->
+                    <div id="scanningSection" class="settings-section">
+                        <h3 class="section-title">Scanning Preferences</h3>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Auto-Scan Frequency</h4>
+                                <p>Automatically scan your digital footprint</p>
+                            </div>
+                            <select id="autoScanFrequency" class="frequency-select"
+                                onchange="saveSetting('autoScanFrequency', this.value)">
+                                <option value="never">Never</option>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Scan Depth</h4>
+                                <p>How deep to scan for digital traces</p>
+                            </div>
+                            <select id="scanDepth" class="frequency-select"
+                                onchange="saveSetting('scanDepth', this.value)">
+                                <option value="basic">Basic (Faster)</option>
+                                <option value="standard">Standard (Recommended)</option>
+                                <option value="deep">Deep (Thorough)</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Platforms to Scan</h4>
+                                <p>Select which platforms to include in scans</p>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <label><input type="checkbox" class="platformCheck" value="facebook" checked>
+                                    Facebook</label>
+                                <label><input type="checkbox" class="platformCheck" value="twitter" checked>
+                                    Twitter</label>
+                                <label><input type="checkbox" class="platformCheck" value="instagram" checked>
+                                    Instagram</label>
+                                <label><input type="checkbox" class="platformCheck" value="linkedin" checked>
+                                    LinkedIn</label>
+                                <label><input type="checkbox" class="platformCheck" value="google" checked>
+                                    Google</label>
+                            </div>
+                        </div>
+                        <button class="btn-save" style="margin-top: 1rem;" onclick="saveScanningPreferences()">Save
+                            Preferences</button>
+                    </div>
+
+                    <!-- Integrations -->
+                    <div id="integrationsSection" class="settings-section">
+                        <h3 class="section-title">API & Integrations</h3>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>API Access</h4>
+                                <p>Enable API access for third-party integrations</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="apiAccess" onchange="saveToggle('apiAccess', this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>API Key</h4>
+                                <p>Your personal API key for external access</p>
+                            </div>
+                            <div>
+                                <code id="apiKey"
+                                    style="background: #f8f9fa; padding: 0.3rem 0.6rem; border-radius: 5px;">••••••••••••••••</code>
+                                <button class="btn-secondary" style="margin-left: 0.5rem;"
+                                    onclick="regenerateApiKey()">Regenerate</button>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Webhook URL</h4>
+                                <p>Receive scan results via webhook</p>
+                            </div>
+                            <input type="url" id="webhookUrl" placeholder="https://your-server.com/webhook"
+                                style="width: 250px; padding: 0.5rem; border: 1px solid #e9ecef; border-radius: 8px;">
+                        </div>
+                    </div>
+
+                    <!-- Danger Zone -->
+                    <div id="dangerSection" class="settings-section">
+                        <h3 class="section-title">Danger Zone</h3>
+                        <div class="danger-zone">
+                            <h4><i class="fas fa-database"></i> Clear All Data</h4>
+                            <p>This will permanently delete all your scan history, reports, and saved preferences.</p>
+                            <button class="btn-danger" onclick="clearAllData()">Clear All Data</button>
+                        </div>
+                        <div class="danger-zone" style="margin-top: 1rem;">
+                            <h4><i class="fas fa-user-slash"></i> Deactivate Account</h4>
+                            <p>Temporarily deactivate your account. You can reactivate anytime by logging in.</p>
+                            <button class="btn-danger" onclick="deactivateAccount()">Deactivate Account</button>
+                        </div>
+                        <div class="danger-zone" style="margin-top: 1rem;">
+                            <h4><i class="fas fa-trash-alt"></i> Delete Account</h4>
+                            <p>Permanently delete your account and all associated data. This action cannot be undone.
+                            </p>
+                            <button class="btn-danger" onclick="deleteAccount()">Delete Account</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <style>
+        .btn-save {
+            background: linear-gradient(135deg, #6c63ff, #9d4edd);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            background: rgba(108, 99, 255, 0.1);
+            color: #6c63ff;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+
+    <script>
+        function switchSetting(section) {
+            // Update nav items
+            document.querySelectorAll('.settings-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.settings-nav-item').classList.add('active');
+
+            // Update sections
+            document.querySelectorAll('.settings-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(`${section}Section`).classList.add('active');
+        }
+
+        function saveSetting(key, value) {
+            localStorage.setItem(`setting_${key}`, value);
+            showToast(`${key} updated!`, 'success');
+        }
+
+        function saveToggle(key, value) {
+            localStorage.setItem(`setting_${key}`, value);
+            showToast(`${key} ${value ? 'enabled' : 'disabled'}`, 'success');
+        }
+
+        function saveScanningPreferences() {
+            const platforms = [];
+            document.querySelectorAll('.platformCheck:checked').forEach(cb => {
+                platforms.push(cb.value);
+            });
+            localStorage.setItem('scanning_platforms', JSON.stringify(platforms));
+            showToast('Scanning preferences saved!', 'success');
+        }
+
+        function regenerateApiKey() {
+            const newKey = 'dft_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 8);
+            document.getElementById('apiKey').innerHTML = newKey;
+            localStorage.setItem('api_key', newKey);
+            showToast('API key regenerated!', 'success');
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ WARNING: This will delete ALL your scan data. This cannot be undone. Continue?')) {
+                localStorage.removeItem('scans');
+                localStorage.removeItem('socialHandles');
+                showToast('All data cleared!', 'error');
+                setTimeout(() => location.reload(), 1500);
+            }
+        }
+
+        function deactivateAccount() {
+            if (confirm('Deactivate your account? You can reactivate by logging in again.')) {
+                showToast('Account deactivated. Redirecting...', 'info');
+                setTimeout(() => window.location.href = '../index.html', 2000);
+            }
+        }
+
+        function deleteAccount() {
+            if (confirm('⚠️ PERMANENT ACTION: This will delete your account forever. Type "DELETE" to confirm')) {
+                const confirmText = prompt('Type DELETE to confirm:');
+                if (confirmText === 'DELETE') {
+                    localStorage.clear();
+                    showToast('Account deleted. Goodbye!', 'error');
+                    setTimeout(() => window.location.href = '../index.html', 2000);
+                }
+            }
+        }
+
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#00c9a7' : (type === 'error' ? '#ff6b6b' : '#6c63ff')};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                z-index: 1001;
+                animation: slideIn 0.3s ease;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            `;
+            toast.innerHTML = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            localStorage.removeItem('rememberMe');
+            localStorage.removeItem('dft_user');
+            window.location.href = 'login.html';
+        }
+
+        // Load saved settings
+        function loadSettings() {
+            const settings = ['language', 'theme', 'timezone', 'dateFormat', 'sessionTimeout', 'autoScanFrequency', 'scanDepth'];
+            settings.forEach(setting => {
+                const value = localStorage.getItem(`setting_${setting}`);
+                if (value && document.getElementById(`${setting}Select`)) {
+                    document.getElementById(`${setting}Select`).value = value;
+                }
+            });
+
+            const toggles = ['dataCollection', 'publicProfile', 'emailEncryption', 'emailNotifications', 'pushNotifications', 'scanAlerts', 'weeklyReport', 'apiAccess'];
+            toggles.forEach(toggle => {
+                const value = localStorage.getItem(`setting_${toggle}`);
+                if (value !== null && document.getElementById(toggle)) {
+                    document.getElementById(toggle).checked = value === 'true';
+                }
+            });
+
+            const apiKey = localStorage.getItem('api_key');
+            if (apiKey && document.getElementById('apiKey')) {
+                document.getElementById('apiKey').innerHTML = apiKey;
+            }
+        }
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        loadSettings();
+
+        // Restore saved language + theme and apply both
+        (function initPreferences() {
+            const savedLang = localStorage.getItem('setting_language') || 'en';
+            const langSel = document.getElementById('languageSelect');
+            if (langSel) langSel.value = savedLang;
+            applyTranslations();
+
+            const savedTheme = localStorage.getItem('setting_theme') || 'light';
+            const themeSel = document.getElementById('themeSelect');
+            if (themeSel) themeSel.value = savedTheme;
+            applyTheme(savedTheme);
+        })();
+    </script>
+</body>
+
+</html>

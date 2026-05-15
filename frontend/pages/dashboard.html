@@ -1,0 +1,2723 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Footprint Tracker | Complete Privacy Solution</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/notifications.css">
+    <script src="../js/notifications.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #ff4d94;
+            /* Pink */
+            --primary-color-rgb: 255, 77, 148;
+            --secondary-color: #9d4edd;
+            /* Purple */
+            --secondary-color-rgb: 157, 78, 221;
+            --blue-color: #4361ee;
+            --accent-color: #ff6b6b;
+            --success-color: #00c9a7;
+            --success-color-rgb: 0, 201, 167;
+            --warning-color: #ffd93d;
+            --danger-color: #ff6b6b;
+            --danger-color-rgb: 255, 107, 107;
+            --dark-color: #2d3436;
+            --dark-color-rgb: 45, 52, 54;
+            --light-color: rgb(8, 7, 7);
+            --light-color-rgb: 255, 240, 246;
+            --gray-color: #6c757d;
+            --gray-color-rgb: 108, 117, 125;
+            --white-color: #fdfdff;
+            --box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
+            --box-shadow-hover: 0 10px 40px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background:
+                radial-gradient(circle at 12% 16%, rgba(157, 78, 221, 0.22), transparent 30%),
+                radial-gradient(circle at 88% 82%, rgba(255, 159, 67, 0.24), transparent 32%),
+                linear-gradient(135deg, #ffffff 0%, #f3e8ff 48%, #ffedd5 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(white);
+        }
+
+        .dashboard-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--white-color);
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            transition: all 0.3s ease;
+            border-right: 1px solid rgba(var(--secondary-color-rgb), 0.1);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 5px;
+        }
+
+        .sidebar-header {
+            padding: 1.10rem;
+            border-bottom: 1px solid rgba(var(--secondary-color-rgb), 0.1);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        .sidebar-logo i {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+
+        .sidebar-profile-column {
+            padding: 1.2rem 1rem;
+            border-bottom: 1px solid rgba(var(--secondary-color-rgb), 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(var(--primary-color-rgb), 0.02);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .sidebar-profile-column:hover {
+            background: rgba(var(--primary-color-rgb), 0.06);
+        }
+
+        .sidebar-user-avatar {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(var(--primary-color-rgb), 0.2);
+            border: 2px solid white;
+            transition: var(--transition);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--success-color);
+            border-radius: 50%;
+            position: absolute;
+            bottom: -3px;
+            right: -3px;
+            border: 2px solid white;
+        }
+
+        .sidebar-user-avatar:hover {
+            transform: scale(1.03);
+        }
+
+        .sidebar-user-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar-user-info h3 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin: 0;
+            letter-spacing: -0.01em;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-user-info p {
+            font-size: 0.72rem;
+            color: var(--gray-color);
+            font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+            margin: 0;
+            opacity: 0.7;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.8rem 1.5rem;
+            color: var(--gray-color);
+            text-decoration: none;
+            transition: all 0.3s;
+            margin: 0.2rem 0;
+            position: relative;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(var(--primary-color-rgb), 0.1);
+            color: var(--primary-color);
+        }
+
+        .sidebar-nav a.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--primary-color);
+        }
+
+        .sidebar-nav a.logout-link {
+            margin: 1rem 1rem 0;
+            border: 1px solid rgba(var(--danger-color-rgb), 0.2);
+            border-radius: 18px;
+            background: rgba(var(--danger-color-rgb), 0.05);
+            color: var(--danger-color);
+        }
+
+        .sidebar-nav a.logout-link:hover {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .sidebar-nav a i {
+            width: 22px;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .top-bar {
+            background: rgba(255, 250, 241, 0.92);
+            backdrop-filter: blur(12px);
+            padding: 1rem 1.5rem;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(var(--secondary-color-rgb), 0.12);
+            box-shadow: 0 18px 40px rgba(var(--dark-color-rgb), 0.08);
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .user-info-text {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--primary-color);
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 10px 20px rgba(123, 75, 42, 0.22);
+        }
+
+        .page-container {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 250, 241, 0.94);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 24px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid rgba(var(--primary-color-rgb), 0.15);
+            box-shadow: 0 8px 20px rgba(var(--dark-color-rgb), 0.06);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 28px rgba(var(--dark-color-rgb), 0.12);
+            border-color: rgba(var(--primary-color-rgb), 0.3);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(197, 138, 62, 0.12), rgba(123, 75, 42, 0.12));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            /* Center vertically */
+            justify-content: center;
+            /* Center horizontally */
+            margin-bottom: 1rem;
+            /* Space below the icon */
+        }
+
+        .stat-icon i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--dark-color);
+        }
+
+        .stat-label {
+            color: var(--gray-color);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-card {
+            background: rgba(255, 250, 241, 0.92);
+            backdrop-filter: blur(8px);
+            padding: 1rem;
+            border-radius: 18px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(var(--primary-color-rgb), 0.12);
+        }
+
+        .action-card:hover {
+            transform: translateY(-3px);
+            background: rgba(var(--white-color-rgb), 0.98);
+            /* Assuming white-color-rgb is defined */
+            box-shadow: 0 12px 24px rgba(var(--dark-color-rgb), 0.1);
+            border-color: rgba(var(--primary-color-rgb), 0.3);
+        }
+
+        .action-card i {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .action-card h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+            color: var(--dark-color);
+        }
+
+        .action-card p {
+            font-size: 0.7rem;
+            color: var(--gray-color);
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: rgba(255, 250, 241, 0.94);
+            backdrop-filter: blur(8px);
+            padding: 1.5rem;
+            border-radius: 24px;
+            border: 1px solid rgba(var(--primary-color-rgb), 0.12);
+        }
+
+        .chart-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+
+        .settings-container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 2rem;
+        }
+
+        .settings-sidebar {
+            background: rgba(255, 250, 241, 0.94);
+            backdrop-filter: blur(8px);
+            border-radius: 24px;
+            padding: 1.5rem;
+            border: 1px solid rgba(var(--primary-color-rgb), 0.15);
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+
+        .settings-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .settings-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.8rem 1rem;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #6b5b4e;
+            font-weight: 500;
+        }
+
+        .settings-nav-item:hover {
+            background: rgba(var(--primary-color-rgb), 0.12);
+            color: var(--primary-color);
+        }
+
+        .settings-nav-item.active {
+            background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.2), rgba(var(--secondary-color-rgb), 0.15));
+            color: var(--primary-color);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .settings-content {
+            background: rgba(255, 250, 241, 0.94);
+            backdrop-filter: blur(8px);
+            border-radius: 24px;
+            padding: 2rem;
+            border: 1px solid rgba(var(--primary-color-rgb), 0.15);
+        }
+
+        .settings-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .settings-section.active {
+            display: block;
+        }
+
+        .settings-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid rgba(var(--primary-color-rgb), 0.3);
+            color: var(--dark-color);
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.12);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+            color: var(--dark-color);
+        }
+
+        .setting-info p {
+            font-size: 0.75rem;
+            color: var(--gray-color);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--gray-color);
+            /* Off state color */
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked+.toggle-slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked+.toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .setting-select {
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(var(--primary-color-rgb), 0.3);
+            border-radius: 10px;
+            background: white;
+            font-family: inherit;
+            cursor: pointer;
+            color: var(--dark-color);
+        }
+
+        .setting-control {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.4rem;
+        }
+
+        .setting-meta {
+            font-size: 0.75rem;
+            color: var(--gray-color);
+            text-align: right;
+        }
+
+        .setting-action {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .setting-status {
+            min-width: 88px;
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-align: center;
+            border: 1px solid rgba(var(--primary-color-rgb), 0.22);
+            background: rgba(var(--primary-color-rgb), 0.08);
+            color: var(--primary-color);
+        }
+
+        .setting-status.is-on {
+            background: rgba(var(--success-color-rgb), 0.12);
+            border-color: rgba(var(--success-color-rgb), 0.2);
+            color: var(--success-color);
+        }
+
+        .setting-status.is-off {
+            background: rgba(var(--gray-color-rgb), 0.08);
+            border-color: rgba(var(--gray-color-rgb), 0.18);
+            color: var(--gray-color);
+        }
+
+        .danger-zone {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(var(--danger-color-rgb), 0.08);
+            border-radius: 20px;
+            border: 1px solid rgba(var(--danger-color-rgb), 0.3);
+        }
+
+        .danger-zone h4 {
+            color: #ff6b6b;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid transparent;
+        }
+
+        .badge-verified {
+            background: rgba(0, 201, 167, 0.15);
+            color: #00c9a7;
+            border-color: rgba(0, 201, 167, 0.3);
+        }
+
+        .badge-premium {
+            background: rgba(var(--primary-color-rgb), 0.15);
+            color: var(--primary-color);
+            border-color: rgba(var(--primary-color-rgb), 0.3);
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-danger:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        .scan-form {
+            background: rgba(var(--white-color-rgb), 0.94);
+            /* Assuming white-color-rgb is defined */
+            backdrop-filter: blur(8px);
+            border-radius: 24px;
+            padding: 2rem;
+            border: 1px solid rgba(var(--primary-color-rgb), 0.12);
+        }
+
+        .platform-input {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            /* Consistent padding */
+            background: rgba(var(--light-color-rgb), 0.8);
+            border-radius: 14px;
+            border: 1px solid rgba(var(--primary-color-rgb), 0.1);
+        }
+
+        .platform-input input {
+            flex: 1;
+            padding: 0.5rem;
+            /* Consistent padding */
+            border: 1px solid rgba(var(--gray-color-rgb), 0.3);
+            border-radius: 10px;
+            font-family: inherit;
+            background: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(var(--primary-color-rgb), 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(var(--primary-color-rgb), 0.15);
+            color: var(--primary-color);
+            border: 1px solid rgba(var(--primary-color-rgb), 0.3);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .risk-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .risk-low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .risk-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .risk-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .scans-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .scans-table th,
+        .scans-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.15);
+        }
+
+        .clickable-row {
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .clickable-row:hover {
+            background: rgba(var(--primary-color-rgb), 0.05);
+        }
+
+        .details-row {
+            display: none;
+            background: rgba(var(--primary-color-rgb), 0.02);
+        }
+
+        .details-row.active {
+            display: table-row;
+        }
+
+        .findings-detail-grid {
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+
+        .finding-detail-item {
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid rgba(var(--primary-color-rgb), 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+            font-size: 0.85rem;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar-large {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            margin: 0 auto 1rem;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--cream);
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(var(--white-color), 0.3);
+        }
+
+        .score-cell {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .score-bar {
+            width: 60px;
+            height: 4px;
+            background: #e9ecef;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(var(--primary-color-rgb), 0.15);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .stats-grid,
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>DigitalFootprintTracker</span>
+                </div>
+                <p style="font-size: 0.75rem; color: #000000; margin-top: 5px; font-weight: 600; padding-left: 32px;">
+                    Your Trusted Privacy Partner</p>
+            </div>
+            <div class="sidebar-profile-column" onclick="showPage('profile')">
+                <div id="sidebarUserAvatar" class="sidebar-user-avatar">
+                    ?
+                    <div class="status-dot"></div>
+                </div>
+                <div class="sidebar-user-info">
+                    <div style="display:flex; align-items:center; gap:4px;">
+                        <h3 id="sidebarUserName">User Name</h3>
+                        <span id="sidebarUserBadge"></span>
+                    </div>
+                    <p id="sidebarUserEmail">user@example.com</p>
+                </div>
+                <i class="fas fa-chevron-right" style="font-size: 0.7rem; color: var(--gray-color); opacity: 0.3;"></i>
+            </div>
+            <nav class="sidebar-nav">
+                <a onclick="showPage('dashboard')" class="active" id="navDashboard"><i
+                        class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a onclick="showPage('scan')" id="navScan"><i class="fas fa-search"></i> New Scan</a>
+                <a onclick="showPage('reports')" id="navReports"><i class="fas fa-chart-line"></i> Reports</a>
+                <a onclick="showPage('profile')" id="navProfile"><i class="fas fa-user"></i> Profile</a>
+                <a onclick="showPage('settings')" id="navSettings"><i class="fas fa-cog"></i> Settings</a>
+                <a href="javascript:void(0)" onclick="logout()" class="logout-link"><i class="fas fa-sign-out-alt"></i>
+                    Log Out</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <h2 class="page-title" id="pageTitle"><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                <div class="top-bar-actions">
+                    <div class="notification-wrapper">
+                        <div class="notification-bell" id="notificationBell" onclick="toggleNotifications()">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge" id="notificationBadge">1</span>
+                        </div>
+                        <div class="notification-dropdown" id="notificationDropdown">
+                            <div class="notification-header">
+                                <h3>Notifications</h3>
+                                <span onclick="clearNotifications()">Clear All</span>
+                            </div>
+                            <div class="notification-list" id="notificationList">
+                                <div class="notification-item unread">
+                                    <div class="notification-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="notification-content">
+                                        <p>A security alert has been sent to your email: <strong
+                                                id="notifEmail">user@example.com</strong></p>
+                                        <span>Just now</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-menu" onclick="showPage('profile')">
+                        <div class="user-info-text">
+                            <div style="display:flex; align-items:center; gap:6px; justify-content:flex-end;">
+                                <div class="user-name" id="userName">User</div><span id="userBadge"></span>
+                            </div>
+                            <div class="user-role">Privacy Guardian</div>
+                        </div>
+                        <div class="user-avatar" id="userAvatar">?</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Page -->
+            <div id="dashboardPage" class="page-container active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-globe"></i></div>
+                        <div class="stat-value" id="totalScans">0</div>
+                        <div class="stat-label" style="color: var(--gray-color);">Total Scans</div>
+                    </div>
+                    <div class="stat-card"
+                        onclick="document.getElementById('riskChartContainer').scrollIntoView({behavior: 'smooth'})"
+                        title="View Risk Distribution">
+                        <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="stat-value" id="riskCount">0</div>
+                        <div class="stat-label">Privacy Risks</div>
+                    </div>
+                    <div class="stat-card" onclick="showPage('scan')" style="cursor: pointer;"
+                        title="Manage Connected Platforms">
+                        <div class="stat-icon"><i class="fas fa-share-alt"></i></div>
+                        <div class="stat-value" id="socialAccounts">5</div>
+                        <div class="stat-label" style="color: var(--gray-color);">Connected Platforms</div>
+                    </div>
+                    <div class="stat-card"
+                        onclick="document.getElementById('trendChartContainer').scrollIntoView({behavior: 'smooth'})"
+                        title="View Score Trend">
+                        <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="stat-value" id="privacyScore">0</div>
+                        <div class="stat-label">Privacy Score</div>
+                    </div>
+                </div>
+                <div class="quick-actions">
+                    <div class="action-card" onclick="showPage('scan')">
+                        <i class="fas fa-link" style="color: var(--primary-color);"></i>
+                        <h4>Connect</h4>
+                        <p>Link new accounts</p>
+                    </div>
+                    <div class="action-card" onclick="showPage('scan')"><i class="fas fa-search"
+                            style="color: var(--primary-color);"></i>
+                        <h4>New Scan</h4>
+                        <p>Scan your footprint</p>
+                    </div>
+                    <div class="action-card" onclick="generateReport()"><i class="fas fa-file-alt"
+                            style="color: var(--primary-color);"></i>
+                        <h4>Generate Report</h4>
+                        <p>Get detailed analysis</p>
+                    </div>
+                    <div class="action-card" onclick="exportData()"><i class="fas fa-download"
+                            style="color: var(--primary-color);"></i>
+                        <h4>Export Data</h4>
+                        <p>Download as JSON</p>
+                    </div>
+                    <div class="action-card" onclick="scheduleScan()"><i class="fas fa-calendar-alt"
+                            style="color: var(--primary-color);"></i>
+                        <h4>Schedule Scan</h4>
+                        <p>Set auto scanning</p>
+                    </div>
+                </div>
+                <div class="charts-container">
+                    <div class="chart-card" id="trendChartContainer">
+                        <div class="chart-title" style="color: var(--dark-color);"><i class="fas fa-chart-line"
+                                style="color: var(--primary-color);"></i> Privacy Score Trend</div><canvas
+                            id="trendChart" height="200"></canvas>
+                        <div id="trendInsights"
+                            style="margin-top: 1rem; font-size: 0.85rem; padding: 0.8rem; border-radius: 12px; background: rgba(var(--primary-color-rgb), 0.05); color: var(--gray-color); display: flex; align-items: center; gap: 10px; border: 1px solid rgba(var(--primary-color-rgb), 0.1);">
+                        </div>
+                    </div>
+                    <div class="chart-card" id="riskChartContainer">
+                        <div class="chart-title"><i class="fas fa-chart-pie"></i> Risk Distribution</div><canvas
+                            id="riskChart" height="200"></canvas>
+                        <div id="riskInsights"
+                            style="margin-top: 1rem; font-size: 0.85rem; padding: 0.8rem; border-radius: 12px; background: rgba(var(--primary-color-rgb), 0.05); color: var(--gray-color); display: flex; align-items: center; gap: 10px; border: 1px solid rgba(var(--primary-color-rgb), 0.1);">
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3><i class="fas fa-history"></i> Recent Scans</h3>
+                    <div style="margin-bottom: 1.2rem; position: relative;">
+                        <i class="fas fa-filter"
+                            style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary-color); opacity: 0.7;"></i>
+                        <input type="text" id="scanSearchInput"
+                            placeholder="Filter by platform or risk level (e.g. 'Facebook' or 'High')..."
+                            oninput="filterScansTable()"
+                            style="width: 100%; padding: 0.8rem 1rem 0.8rem 2.8rem; border: 1px solid rgba(var(--primary-color-rgb), 0.15); border-radius: 14px; background: rgba(255, 255, 255, 0.5); font-family: inherit;">
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="scans-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Platforms</th>
+                                    <th>Findings</th>
+                                    <th>Risk</th>
+                                    <th>Score</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scansTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scan Page -->
+            <div id="scanPage" class="page-container">
+                <div class="scan-form">
+                    <h2><i class="fas fa-search"></i> Digital Footprint Scanner</h2>
+                    <p>Enter your social media handles to scan for privacy risks</p>
+                    <div class="platform-input"><i class="fab fa-facebook-f" style="color:#1877f2"></i><input
+                            type="text" id="facebookHandle" placeholder="Facebook Username" value=""></div>
+                    <div class="platform-input"><i class="fab fa-twitter" style="color:#1da1f2"></i><input type="text"
+                            id="twitterHandle" placeholder="Twitter Handle" value=""></div>
+                    <div class="platform-input"><i class="fab fa-instagram" style="color:#e4405f"></i><input type="text"
+                            id="instagramHandle" placeholder="Instagram Username" value=""></div>
+                    <div class="platform-input"><i class="fab fa-linkedin" style="color:#0077b5"></i><input type="text"
+                            id="linkedinHandle" placeholder="LinkedIn Username" value=""></div>
+                    <div class="platform-input"><i class="fab fa-youtube" style="color:#ff0000"></i><input type="text"
+                            id="youtubeHandle" placeholder="YouTube Channel"></div>
+                    <button class="btn-primary" onclick="startScan()" style="width:100%"><i class="fas fa-rocket"></i>
+                        Start Scan</button>
+                </div>
+                <div id="scanResults" style="margin-top:2rem; display:none;">
+                    <div class="chart-card" id="resultsCard"></div>
+                </div>
+            </div>
+
+            <!-- Reports Page -->
+            <div id="reportsPage" class="page-container">
+                <div class="reports-header"
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <div>
+                        <h2 style="color: var(--dark-color); font-size: 1.8rem;"><i class="fas fa-file-shield"
+                                style="color: var(--primary-color);"></i> Privacy Health Report</h2>
+                        <p style="color: var(--gray-color); margin-bottom: 4px;">A comprehensive analysis of your
+                            digital footprint and data
+                            exposure.</p>
+                        <p id="reportLastUpdated" style="font-size: 0.75rem; color: var(--gray-color); opacity: 0.8;"><i
+                                class="fas fa-clock"></i> Last updated: --</p>
+                    </div>
+                    <button class="btn-primary" onclick="generateFullReport()">
+                        <i class="fas fa-sync-alt"></i> Update Report
+                    </button>
+                </div>
+
+                <!-- Privacy Health Score Overview -->
+                <div class="grid-container"
+                    style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; margin-bottom: 2rem;">
+                    <div class="chart-card"
+                        style="text-align: center; display: flex; flex-direction: column; justify-content: center; padding: 2.5rem;">
+                        <h4 style="margin-bottom: 1.5rem; color: var(--gray-color);">Identity Health</h4>
+                        <div id="reportScoreGauge" class="stat-value" style="font-size: 3.5rem; margin-bottom: 0.5rem;">
+                            0</div>
+                        <div id="reportRiskBadge" class="risk-badge"
+                            style="display: inline-block; margin-bottom: 1rem;">CALCULATING...</div>
+                        <p id="reportSummaryText"
+                            style="font-size: 0.9rem; color: var(--gray-color); line-height: 1.4;">Run a scan to analyze
+                            your privacy status.</p>
+                    </div>
+
+                    <div class="chart-card">
+                        <h4 style="margin-bottom: 1.5rem;"><i class="fas fa-fingerprint"></i> Data Exposure Map</h4>
+                        <div class="exposure-grid"
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem;">
+                            <div class="exposure-item"
+                                style="padding: 1rem; background: rgba(var(--primary-color-rgb), 0.05); border-radius: 15px; border: 1px solid rgba(var(--primary-color-rgb), 0.1);">
+                                <i class="fas fa-envelope"
+                                    style="color: var(--primary-color); margin-bottom: 10px;"></i>
+                                <div style="font-size: 0.75rem; color: var(--gray-color);">Email Addresses</div>
+                                <div id="expEmail" style="font-weight: 700; color: var(--dark-color);">0 Found</div>
+                            </div>
+                            <div class="exposure-item"
+                                style="padding: 1rem; background: rgba(var(--primary-color-rgb), 0.05); border-radius: 15px; border: 1px solid rgba(var(--primary-color-rgb), 0.1);">
+                                <i class="fas fa-phone" style="color: var(--primary-color); margin-bottom: 10px;"></i>
+                                <div style="font-size: 0.75rem; color: var(--gray-color);">Phone Numbers</div>
+                                <div id="expPhone" style="font-weight: 700; color: var(--dark-color);">0 Found</div>
+                            </div>
+                            <div class="exposure-item"
+                                style="padding: 1rem; background: rgba(var(--primary-color-rgb), 0.05); border-radius: 15px; border: 1px solid rgba(var(--primary-color-rgb), 0.1);">
+                                <i class="fas fa-location-dot"
+                                    style="color: var(--primary-color); margin-bottom: 10px;"></i>
+                                <div style="font-size: 0.75rem; color: var(--gray-color);">Location Traces</div>
+                                <div id="expLocation" style="font-weight: 700; color: var(--dark-color);">0 Found</div>
+                            </div>
+                            <div class="exposure-item"
+                                style="padding: 1rem; background: rgba(var(--primary-color-rgb), 0.05); border-radius: 15px; border: 1px solid rgba(var(--primary-color-rgb), 0.1);">
+                                <i class="fas fa-key" style="color: var(--primary-color); margin-bottom: 10px;"></i>
+                                <div style="font-size: 0.75rem; color: var(--gray-color);">Password Leaks</div>
+                                <div id="expPassword" style="font-weight: 700; color: var(--dark-color);">0 Found</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Platform Specific Details -->
+                <div class="chart-card" style="margin-bottom: 2rem;">
+                    <h4 style="margin-bottom: 1.5rem;"><i class="fas fa-triangle-exclamation"></i> Critical
+                        Vulnerabilities</h4>
+                    <div id="vulnerabilityList" style="display: flex; flex-direction: column; gap: 10px;">
+                        <p style="text-align: center; padding: 2rem; color: var(--gray-color);">Complete a scan to view
+                            platform vulnerabilities.</p>
+                    </div>
+                </div>
+
+                <!-- Top Recommendations -->
+                <div class="grid-container" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+                    <div class="chart-card">
+                        <h4 style="margin-bottom: 1.2rem;"><i class="fas fa-list-check"></i> Personalized
+                            Recommendations</h4>
+                        <div id="reportRecs" style="display: flex; flex-direction: column; gap: 12px;">
+                            <div
+                                style="padding: 1rem; background: white; border-radius: 12px; border-left: 4px solid var(--primary-color);">
+                                <p style="font-size: 0.9rem; margin-bottom: 5px;"><strong>Enable 2FA</strong></p>
+                                <p style="font-size: 0.8rem; color: var(--gray-color);">Two-factor authentication adds
+                                    an extra layer of protection to your connected accounts.</p>
+                            </div>
+                            <div
+                                style="padding: 1rem; background: white; border-radius: 12px; border-left: 4px solid var(--secondary-color);">
+                                <p style="font-size: 0.9rem; margin-bottom: 5px;"><strong>Update Privacy
+                                        Settings</strong></p>
+                                <p style="font-size: 0.8rem; color: var(--gray-color);">Your Facebook profile is
+                                    publicly visible. Consider changing visibility to "Friends only".</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <h4 style="margin-bottom: 1.2rem;"><i class="fas fa-history"></i> Report History</h4>
+                        <div id="reportsList"
+                            style="display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto;">
+                            <!-- History items injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Page -->
+            <div id="profilePage" class="page-container">
+                <div class="chart-card">
+                    <div class="profile-header">
+                        <div id="profileDisplayInfo" style="margin-top:1rem;">
+                            <h3 style="color:var(--saddle); margin-bottom:0.5rem;">Account Details</h3>
+                            <h2 id="profileNameDisplay">User Name</h2>
+                            <p id="profileEmailDisplay">user@example.com</p>
+                            <p id="memberSinceDisplay" style="font-size:0.85rem; color:#8a7a6a; margin-top:5px;"><i
+                                    class="fas fa-calendar-alt"></i> Member Since: --</p>
+                            <div style="display:flex; justify-content:center; gap:10px; margin-top:15px;">
+                                <button class="btn-primary" onclick="toggleEditProfile(true)"><i class="fas fa-edit"
+                                        style="color: var(--white-color);"></i> Edit Profile</button>
+                                <button id="upgradePremiumBtn" class="btn-primary"
+                                    style="background:linear-gradient(135deg,#c58a3e,#7b4b2a); display:none;"
+                                    onclick="upgradeToPremium()"><i class="fas fa-crown"></i> Upgrade to
+                                    Premium</button>
+                                <button class="btn-secondary" onclick="showOTPModal()"><i class="fas fa-envelope"></i>
+                                    Verify Email</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="profileEditForm"
+                        style="max-width:400px; margin:0 auto 2rem; display:none; background:rgba(0,0,0,0.02); padding:20px; border-radius:15px;">
+                        <h3>Update Login Information</h3>
+                        <div style="margin-bottom:1rem;"><label style="font-size:0.8rem; font-weight:600;">Update
+                                Name</label><input type="text" id="profileNameInput" class="setting-select"
+                                style="width:100%"></div>
+                        <div style="margin-bottom:1.5rem;"><label style="font-size:0.8rem; font-weight:600;">Update
+                                Email</label><input type="email" id="profileEmailInput" class="setting-select"
+                                style="width:100%"></div>
+                        <div style="display:flex; gap:10px;"><button class="btn-primary" onclick="saveProfileChanges()"
+                                style="flex:1;"><i class="fas fa-save"></i> Save Changes</button><button
+                                class="btn-secondary" onclick="toggleEditProfile(false)" style="flex:1;">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="stat-card" style="text-align:center">
+                            <div class="stat-value" id="profileScans">0</div>
+                            <div style="color: var(--gray-color);">Total Scans</div>
+                        </div>
+                        <div class="stat-card" style="text-align:center">
+                            <div class="stat-value" id="profileScore">0</div>
+                            <div style="color: var(--gray-color);">Avg Score</div>
+                        </div>
+                        <div class="stat-card" style="text-align:center">
+                            <div class="stat-value" id="profileRisks">0</div>
+                            <div style="color: var(--gray-color);">Risks Found</div>
+                        </div>
+                    </div>
+                    <hr>
+                    <h3>Connected Accounts</h3>
+                    <div id="connectedAccountsList"></div>
+                    <button class="btn-primary" onclick="showPage('scan')" style="margin-top:1rem">Connect New
+                        Account</button>
+                </div>
+            </div>
+
+            <!-- Settings Page - Updated with Dashboard Customization (removed Language) -->
+            <div id="settingsPage" class="page-container">
+                <div class="settings-container">
+                    <div class="settings-sidebar">
+                        <div class="settings-nav">
+                            <div class="settings-nav-item active" onclick="switchSetting('general')"><i
+                                    class="fas fa-globe" style="color: var(--primary-color);"></i> General</div>
+                            <div class="settings-nav-item" onclick="switchSetting('privacy')"><i
+                                    class="fas fa-shield-alt" style="color: var(--primary-color);"></i> Privacy &
+                                Security</div>
+                            <div class="settings-nav-item" onclick="switchSetting('notifications')"><i
+                                    class="fas fa-bell" style="color: var(--primary-color);"></i> Notifications</div>
+                            <div class="settings-nav-item" onclick="switchSetting('scanning')"><i class="fas fa-search"
+                                    style="color: var(--primary-color);"></i> Scanning Preferences</div>
+                            <div class="settings-nav-item" onclick="switchSetting('api')"><i class="fas fa-plug"
+                                    style="color: var(--primary-color);"></i>
+                                API & Integrations</div>
+                            <div class="settings-nav-item" onclick="switchSetting('danger')"><i
+                                    class="fas fa-exclamation-triangle" style="color: var(--primary-color);"></i> Danger
+                                Zone</div>
+                        </div>
+                    </div>
+                    <div class="settings-content">
+                        <!-- General Settings - Language REMOVED, added Dashboard Customization -->
+                        <div id="generalSection" class="settings-section active">
+                            <h3 style="color: var(--dark-color);">General Settings</h3>
+
+                            <!-- Dashboard Layout Preference (NEW) -->
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Dashboard Layout</h4>
+                                    <p>Choose how your dashboard cards and charts are displayed</p>
+                                </div>
+                                <select class="setting-select" id="dashboardLayout" onchange="applyDashboardLayout();">
+                                    <option value="detailed" selected>Detailed</option>
+                                    <option value="grid">Grid</option>
+                                </select>
+                            </div>
+
+                            <!-- Card Size Preference (NEW) -->
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Card Size</h4>
+                                    <p>Adjust the size of stat cards for better readability</p>
+                                </div>
+                                <select class="setting-select" id="cardSize" onchange="applyCardSize();">
+                                    <option value="small">Small</option>
+                                    <option value="medium" selected>Medium (Default)</option>
+                                </select>
+                            </div>
+
+                            <!-- Animation Effects (NEW) -->
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Animation Effects</h4>
+                                    <p>Enable smooth transitions and hover animations</p>
+                                </div>
+                                <div class="setting-action">
+                                    <span id="animationStatus" class="setting-status is-on">Enabled</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="animationEffects" checked
+                                            onchange="applyAnimationSettings();">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Data Refresh Interval (NEW) -->
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Auto-Refresh Interval</h4>
+                                    <p>How often dashboard data should refresh automatically</p>
+                                </div>
+                                <select class="setting-select" id="refreshInterval" onchange="applyRefreshInterval();">
+                                    <option value="off">Off (Manual Only)</option>
+                                    <option value="60" selected>1 minute</option>
+                                    <option value="300">5 minutes</option>
+                                </select>
+                            </div>
+
+                            <!-- Theme -->
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Theme</h4>
+                                    <p>Choose your preferred theme</p>
+                                </div>
+                                <select class="setting-select" id="themeSelect" onchange="applyTheme(this.value);">
+                                    <option value="light">Light</option>
+                                    <option value="dark">Dark</option>
+                                    <option value="system">System Default</option>
+                                </select>
+                            </div>
+
+                            <!-- Time Zone -->
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Time Zone</h4>
+                                    <p>Select your time zone</p>
+                                </div>
+                                <div class="setting-control">
+                                    <select class="setting-select" id="timezoneSelect" onchange="applyTimezone();">
+                                        <option value="Asia/Kolkata">IST (UTC+5:30)</option>
+                                        <option value="Asia/Karachi">PKT (UTC+5)</option>
+                                        <option value="Asia/Dhaka">BST (UTC+6)</option>
+                                        <option value="Asia/Bangkok">ICT (UTC+7)</option>
+                                        <option value="Asia/Singapore">SGT (UTC+8)</option>
+                                        <option value="Asia/Tokyo">JST (UTC+9)</option>
+                                        <option value="Australia/Sydney">AEST (UTC+10)</option>
+                                        <option value="America/New_York">EST (UTC-5)</option>
+                                        <option value="America/Los_Angeles">PST (UTC-8)</option>
+                                        <option value="Europe/London">GMT (UTC+0)</option>
+                                        <option value="Europe/Paris">CET (UTC+1)</option>
+                                        <option value="Africa/Johannesburg">SAST (UTC+2)</option>
+                                    </select>
+                                    <div id="timezoneCurrentValue" class="setting-meta"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Privacy & Security -->
+                        <div id="privacySection" class="settings-section">
+                            <h3 style="color: var(--dark-color);">Privacy & Security</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Data Collection</h4>
+                                    <p>Allow anonymous usage data collection</p>
+                                </div>
+                                <div class="setting-action"><span id="dataCollectionStatus"
+                                        class="setting-status">Enabled</span>
+                                    <label class="toggle-switch"><input type="checkbox" id="dataCollection"
+                                            checked><span class="toggle-slider"></span></label>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Show Profile in Search</h4>
+                                    <p>Control profile visibility in search results</p>
+                                </div>
+                                <div class="setting-action"><span id="publicProfileStatus"
+                                        class="setting-status">Hidden</span>
+                                    <label class="toggle-switch"><input type="checkbox" id="publicProfile"><span
+                                            class="toggle-slider"></span></label>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Email Encryption</h4>
+                                    <p>Enable end-to-end encryption</p>
+                                </div>
+                                <label class="toggle-switch"><input type="checkbox" id="emailEncryption" checked><span
+                                        class="toggle-slider"></span></label>
+                            </div>
+                        </div>
+
+                        <!-- Notifications -->
+                        <div id="notificationsSection" class="settings-section">
+                            <h3 style="color: var(--dark-color);">Notifications</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Email Notifications</h4>
+                                </div><label class="toggle-switch"><input type="checkbox" id="emailNotifications"
+                                        checked><span class="toggle-slider"></span></label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Push Notifications</h4>
+                                </div><label class="toggle-switch"><input type="checkbox" id="pushNotifications"><span
+                                        class="toggle-slider"></span></label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Scan Completion Alerts</h4>
+                                </div><label class="toggle-switch"><input type="checkbox" id="scanAlerts" checked><span
+                                        class="toggle-slider"></span></label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Weekly Privacy Report</h4>
+                                </div><label class="toggle-switch"><input type="checkbox" id="weeklyReport"
+                                        checked><span class="toggle-slider"></span></label>
+                            </div>
+                        </div>
+
+                        <!-- Scanning Preferences -->
+                        <div id="scanningSection" class="settings-section">
+                            <h3 style="color: var(--dark-color);">Scanning Preferences</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Auto-Scan Frequency</h4>
+                                </div><select class="setting-select" id="autoScanFrequency">
+                                    <option value="Never">Never</option>
+                                    <option value="Daily">Daily</option>
+                                    <option value="Weekly" selected>Weekly</option>
+                                    <option value="Monthly">Monthly</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>Scan Depth</h4>
+                                </div><select class="setting-select" id="scanDepth">
+                                    <option value="basic">Basic</option>
+                                    <option value="standard" selected>Standard</option>
+                                    <option value="deep">Deep</option>
+                                </select>
+                            </div>
+                            <button class="btn-primary" onclick="saveScanningPreferences()">Save Preferences</button>
+                        </div>
+
+                        <!-- API & Integrations -->
+                        <div id="apiSection" class="settings-section">
+                            <h3 style="color: var(--dark-color);">API & Integrations</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h4>API Access</h4>
+                                </div><label class="toggle-switch"><input type="checkbox" id="apiAccess"><span
+                                        class="toggle-slider"></span></label>
+                            </div>
+                            <div class="setting-item">
+                                <div><code id="apiKey">••••••••</code><button class="btn-secondary"
+                                        onclick="regenerateApiKey()">Regenerate</button></div>
+                            </div>
+                        </div>
+
+                        <!-- Danger Zone -->
+                        <div id="dangerSection" class="settings-section">
+                            <h3 style="color: var(--dark-color);">Danger Zone</h3>
+                            <div class="danger-zone">
+                                <h4><i class="fas fa-database"></i> Clear All Data</h4><button class="btn-danger"
+                                    onclick="clearAllData()">Clear All Data</button>
+                            </div>
+                            <div class="danger-zone">
+                                <h4><i class="fas fa-trash-alt"></i> Delete Account</h4><button class="btn-danger"
+                                    onclick="deleteAccount()">Delete Account</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- OTP Modal -->
+    <div id="otpModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; margin-bottom:1rem; color: var(--dark-color);">
+                <h3>Email Verification</h3><button onclick="closeOTPModal()"
+                    style="background:none; border:none; font-size:1.5rem;">&times;</button>
+            </div>
+            <div id="otpStep1"><input type="email" id="verifyEmail" placeholder="Enter your email"
+                    style="width:100%; padding:0.8rem; margin-bottom:1rem; border-radius:12px;"><button
+                    class="btn-primary" onclick="sendOTP()" style="width:100%">Send OTP</button></div>
+            <div id="otpStep2" style="display:none;">
+                <p>Enter 6-digit code sent to <strong id="sentToDisplay"></strong></p>
+                <div style="display:flex; gap:0.5rem; justify-content:center; margin:1rem 0;"><input type="text"
+                        maxlength="1" class="otp-digit"
+                        style="width:50px; height:60px; text-align:center; font-size:1.5rem;"><input type="text"
+                        maxlength="1" class="otp-digit"
+                        style="width:50px; height:60px; text-align:center; font-size:1.5rem;"><input type="text"
+                        maxlength="1" class="otp-digit"
+                        style="width:50px; height:60px; text-align:center; font-size:1.5rem;"><input type="text"
+                        maxlength="1" class="otp-digit"
+                        style="width:50px; height:60px; text-align:center; font-size:1.5rem;"><input type="text"
+                        maxlength="1" class="otp-digit"
+                        style="width:50px; height:60px; text-align:center; font-size:1.5rem;"><input type="text"
+                        maxlength="1" class="otp-digit"
+                        style="width:50px; height:60px; text-align:center; font-size:1.5rem;"></div>
+                <div id="otpTimer" style="text-align:center; margin-bottom:1rem;"></div><button class="btn-primary"
+                    onclick="verifyOTP()" style="width:100%">Verify</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteConfirmModal" class="modal">
+        <div class="modal-content" style="text-align: center;">
+            <h3 style="color: var(--danger-color); margin-bottom: 1rem;"><i class="fas fa-exclamation-triangle"></i>
+                Confirm Delete</h3>
+            <p>Are you sure you want to delete this scan record? This action cannot be undone.</p>
+            <div style="display: flex; gap: 10px; margin-top: 2rem;">
+                <button class="btn-danger" id="confirmDeleteBtn" onclick="confirmDelete()"
+                    style="flex: 1;">Delete</button>
+                <button class="btn-secondary" onclick="closeDeleteModal()" style="flex: 1;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div id="modalBody"></div><button class="btn-primary" onclick="closeModal()"
+                style="margin-top:1rem">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DATA STORAGE ====================
+        const loginPagePath = 'login.html';
+        const authStorage = localStorage.getItem('isLoggedIn') === 'true'
+            ? localStorage
+            : (sessionStorage.getItem('isLoggedIn') === 'true' ? sessionStorage : null);
+
+        if (!authStorage) {
+            window.location.href = loginPagePath;
+        }
+
+        const currentUserData = authStorage
+            ? JSON.parse(authStorage.getItem('user') || 'null')
+            : null;
+
+        if (!currentUserData) {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            sessionStorage.removeItem('isLoggedIn');
+            sessionStorage.removeItem('user');
+            sessionStorage.removeItem('token');
+            window.location.href = loginPagePath;
+        }
+
+        // Global workspace isolation check
+        if (currentUserData && currentUserData.email) {
+            const currentSessionOwner = localStorage.getItem('dft_active_session_owner');
+            if (currentSessionOwner !== currentUserData.email) {
+                localStorage.removeItem('scans');
+                localStorage.removeItem('socialHandles');
+                localStorage.removeItem('userSettings');
+                localStorage.removeItem('scanning_platforms');
+                localStorage.setItem('dft_active_session_owner', currentUserData.email);
+            }
+        }
+
+        let scans = JSON.parse(localStorage.getItem('scans') || '[]');
+        let socialHandles = JSON.parse(localStorage.getItem('socialHandles') || '{}');
+        let otpTimer = null;
+        let storedOTP = null;
+        let currentOTPEmail = null;
+        let refreshIntervalTimer = null;
+
+        // Global chart instances to manage their lifecycle
+        let trendChartInstance = null;
+        let riskChartInstance = null;
+
+        function getCssColor(variableName, fallback) {
+            const value = getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
+            return value || fallback;
+        }
+
+        function getScanIdentifier(scan) {
+            return scan?._id || scan?.id || scan?.createdAt || scan?.date;
+        }
+
+        function getCurrentUser() {
+            return JSON.parse((authStorage && authStorage.getItem('user')) || 'null');
+        }
+
+        function setCurrentUser(userData) {
+            if (!authStorage) return;
+            authStorage.setItem('user', JSON.stringify(userData));
+        }
+
+        function findScanByIdentifier(identifier) {
+            return scans.find(s => getScanIdentifier(s) === identifier);
+        }
+
+        function getPlatformIcon(platform) {
+            const iconMap = {
+                facebook: 'facebook-f',
+                twitter: 'twitter',
+                instagram: 'instagram',
+                linkedin: 'linkedin-in',
+                youtube: 'youtube'
+            };
+            return iconMap[(platform || '').toLowerCase()] || 'globe';
+        }
+
+        // ==================== PAGE NAVIGATION ====================
+        function showPage(page) {
+            document.querySelectorAll('.page-container').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+            document.getElementById(`${page}Page`).classList.add('active');
+
+            // Highlight sidebar item
+            const navId = page === 'scan' ? 'navScan' : `nav${page.charAt(0).toUpperCase() + page.slice(1)}`;
+            const navElem = document.getElementById(navId);
+            if (navElem) navElem.classList.add('active');
+
+            const titles = { dashboard: 'Dashboard', scan: 'New Scan', reports: 'Reports', profile: 'Profile', settings: 'Settings' };
+            const icons = { dashboard: 'tachometer-alt', scan: 'search', reports: 'chart-line', profile: 'user', settings: 'cog' };
+            document.getElementById('pageTitle').innerHTML = `<i class="fas fa-${icons[page]}"></i> ${titles[page]}`;
+            if (page === 'dashboard') loadDashboard();
+            if (page === 'profile') loadProfile();
+            if (page === 'reports') loadReports();
+        }
+
+        // ==================== SETTINGS FUNCTIONS ====================
+        function switchSetting(section) {
+            document.querySelectorAll('.settings-nav-item').forEach(item => item.classList.remove('active'));
+            event.target.closest('.settings-nav-item').classList.add('active');
+            document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(`${section}Section`).classList.add('active');
+        }
+
+        // Dashboard Customization Functions
+        function applyDashboardLayout() {
+            const layout = document.getElementById('dashboardLayout').value;
+            const statsGrid = document.querySelector('.stats-grid');
+            const quickActions = document.querySelector('.quick-actions');
+
+            if (layout === 'detailed') {
+                statsGrid.style.gap = '1.5rem';
+                document.querySelectorAll('.stat-card').forEach(card => card.style.padding = '1.5rem');
+            } else if (layout === 'grid') {
+                statsGrid.style.gap = '1rem';
+                quickActions.style.gap = '0.75rem';
+            }
+            localStorage.setItem('dashboard_layout', layout);
+        }
+
+        function applyCardSize() {
+            const size = document.getElementById('cardSize').value;
+            const cards = document.querySelectorAll('.stat-card');
+            if (size === 'small') {
+                cards.forEach(card => { card.style.padding = '1rem'; card.style.borderRadius = '16px'; });
+            } else if (size === 'medium') {
+                cards.forEach(card => { card.style.padding = '1.5rem'; card.style.borderRadius = '20px'; });
+            }
+            localStorage.setItem('card_size', size);
+        }
+
+        function applyAnimationSettings() {
+            const enabled = document.getElementById('animationEffects').checked;
+            const statusSpan = document.getElementById('animationStatus');
+            const cards = document.querySelectorAll('.stat-card, .action-card, .chart-card');
+
+            if (enabled) {
+                cards.forEach(card => { card.style.transition = 'all 0.3s'; card.style.opacity = '1'; });
+                statusSpan.textContent = 'Enabled';
+                statusSpan.className = 'setting-status is-on';
+                showToast('enabled', 'success');
+            } else {
+                cards.forEach(card => { card.style.transition = 'none'; });
+                statusSpan.textContent = 'Off';
+                statusSpan.className = 'setting-status is-off';
+            }
+            localStorage.setItem('animation_effects', enabled);
+        }
+
+        function applyRefreshInterval() {
+            const interval = document.getElementById('refreshInterval').value;
+            if (refreshIntervalTimer) clearInterval(refreshIntervalTimer);
+
+            if (interval !== 'off') {
+                const seconds = parseInt(interval);
+                refreshIntervalTimer = setInterval(() => {
+                    loadDashboard();
+                    console.log('Dashboard auto-refreshed');
+                }, seconds * 1000);
+                showToast(`${seconds} seconds`, 'success');
+            }
+            localStorage.setItem('refresh_interval', interval);
+        }
+
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.body.style.background = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';
+            } else {
+                document.body.style.background = 'radial-gradient(circle at 12% 16%, rgba(157, 78, 221, 0.22), transparent 30%), radial-gradient(circle at 88% 82%, rgba(255, 159, 67, 0.24), transparent 32%), linear-gradient(135deg, #ffffff 0%, #f3e8ff 48%, #ffedd5 100%)';
+            }
+            localStorage.setItem('theme', theme);
+        }
+
+        function applyTimezone() {
+            const tz = document.getElementById('timezoneSelect').value;
+            const tzText = document.getElementById('timezoneSelect').options[document.getElementById('timezoneSelect').selectedIndex]?.text;
+            const preview = document.getElementById('timezoneCurrentValue');
+            const currentTime = new Date().toLocaleTimeString('en-US', { timeZone: tz });
+            if (preview) preview.textContent = `${tzText} | ${currentTime}`;
+            localStorage.setItem('timezone', tz);
+        }
+
+        function saveScanningPreferences() {
+            const frequency = document.getElementById('autoScanFrequency').value;
+            const depth = document.getElementById('scanDepth').value;
+            localStorage.setItem('scan_frequency', frequency);
+            localStorage.setItem('scan_depth', depth);
+            showToast('Scanning preferences saved!', 'success');
+        }
+
+        function regenerateApiKey() {
+            const newKey = 'dft_' + Math.random().toString(36).substring(2, 10);
+            document.getElementById('apiKey').innerHTML = newKey;
+            localStorage.setItem('api_key', newKey);
+            showToast('API key regenerated!', 'success');
+        }
+
+        // ==================== TOAST NOTIFICATION ====================
+        function showToast(message, type) {
+            let container = document.getElementById('toastContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toastContainer';
+                container.style.cssText = 'position:fixed; bottom:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px;';
+                document.body.appendChild(container);
+            }
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? '#00c9a7' : (type === 'error' ? '#ff6b6b' : '#c58a3e');
+            toast.style.cssText = `background:${bgColor}; color:white; padding:12px 20px; border-radius:12px; animation:slideIn 0.3s ease;`;
+            toast.innerHTML = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // ==================== OTP VERIFICATION ====================
+        function showOTPModal() {
+            document.getElementById('otpModal').style.display = 'flex';
+            document.getElementById('otpStep1').style.display = 'block';
+            document.getElementById('otpStep2').style.display = 'none';
+        }
+
+        function closeOTPModal() {
+            document.getElementById('otpModal').style.display = 'none';
+            if (otpTimer) clearInterval(otpTimer);
+        }
+
+        function sendOTP() {
+            const email = document.getElementById('verifyEmail').value;
+            if (!email) { showToast('Enter email address', 'error'); return; }
+            currentOTPEmail = email;
+            storedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            showToast(`OTP sent to ${email} (Demo: ${storedOTP})`, 'success');
+            document.getElementById('otpStep1').style.display = 'none';
+            document.getElementById('otpStep2').style.display = 'block';
+            document.getElementById('sentToDisplay').innerText = email;
+            let timeLeft = 300;
+            const timerDisplay = document.getElementById('otpTimer');
+            if (otpTimer) clearInterval(otpTimer);
+            otpTimer = setInterval(() => {
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                timerDisplay.innerHTML = `Expires in ${mins}:${secs.toString().padStart(2, '0')}`;
+                if (timeLeft <= 0) { clearInterval(otpTimer); timerDisplay.innerHTML = 'Expired'; }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function verifyOTP() {
+            let otp = '';
+            document.querySelectorAll('.otp-digit').forEach(input => otp += input.value);
+            if (otp.length !== 6) { showToast('Enter 6-digit OTP', 'error'); return; }
+            if (otp === storedOTP) {
+                showToast('Email verified successfully!', 'success');
+                localStorage.setItem('emailVerified', 'true');
+                closeOTPModal();
+            } else {
+                showToast('Invalid OTP', 'error');
+            }
+        }
+
+        // Auto-tab for OTP inputs
+        document.querySelectorAll('.otp-digit').forEach((input, idx, inputs) => {
+            input.addEventListener('input', (e) => { if (e.target.value.length === 1 && idx < inputs.length - 1) inputs[idx + 1].focus(); });
+            input.addEventListener('keydown', (e) => { if (e.key === 'Backspace' && idx > 0 && !e.target.value) inputs[idx - 1].focus(); });
+        });
+
+        // ==================== PROFILE FUNCTIONS ====================
+        function toggleEditProfile(show) {
+            document.getElementById('profileDisplayInfo').style.display = show ? 'none' : 'block';
+            document.getElementById('profileEditForm').style.display = show ? 'block' : 'none';
+        }
+
+        function updateUserUI() {
+            const userData = getCurrentUser();
+            if (!userData) return;
+            const name = userData.fullName || userData.name || 'User';
+            const email = userData.email || 'user@example.com';
+            const initial = name.charAt(0).toUpperCase();
+            document.getElementById('sidebarUserName').innerText = name;
+            document.getElementById('sidebarUserEmail').innerText = email;
+            document.getElementById('userName').innerText = name.split(' ')[0];
+            document.getElementById('profileNameDisplay').innerText = name;
+            document.getElementById('profileEmailDisplay').innerText = email;
+            document.getElementById('profileNameInput').value = name;
+            document.getElementById('profileEmailInput').value = email;
+
+            // Update Premium Badge
+            const sidebarBadge = document.getElementById('sidebarUserBadge');
+            const userBadge = document.getElementById('userBadge');
+            if (userData.isPremium) {
+                const badgeHtml = '<span class="info-badge badge-premium"><i class="fas fa-crown"></i> PRO</span>';
+                if (sidebarBadge) sidebarBadge.innerHTML = badgeHtml;
+                if (userBadge) userBadge.innerHTML = badgeHtml;
+            } else {
+                if (sidebarBadge) sidebarBadge.innerHTML = '';
+                if (userBadge) userBadge.innerHTML = '';
+            }
+
+            if (document.getElementById('notifEmail')) document.getElementById('notifEmail').innerText = email;
+            const avatarContent = userData.avatar ? `<img src="${userData.avatar}" style="width:100%; height:100%; border-radius:12px; object-fit:cover;">` : initial;
+            document.getElementById('sidebarUserAvatar').innerHTML = `${avatarContent}<div class="status-dot"></div>`;
+            document.getElementById('userAvatar').innerHTML = userData.avatar ? `<img src="${userData.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">` : initial;
+            const profileAvatar = document.getElementById('profileAvatar');
+            if (profileAvatar) {
+                profileAvatar.innerHTML = userData.avatar ? `<img src="${userData.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">` : initial;
+            }
+        }
+
+        function loadProfile() {
+            scans = JSON.parse(localStorage.getItem('scans') || '[]');
+            document.getElementById('profileScans').innerText = scans.length;
+            let avgScore = scans.length ? Math.round(scans.reduce((s, a) => s + a.privacyScore, 0) / scans.length) : 85;
+            document.getElementById('profileScore').innerText = avgScore;
+            document.getElementById('profileRisks').innerText = scans.reduce((s, a) => s + (a.riskCount || 0), 0);
+            updateUserUI();
+            const icons = { facebook: 'fab fa-facebook-f', twitter: 'fab fa-twitter', instagram: 'fab fa-instagram', linkedin: 'fab fa-linkedin' };
+            document.getElementById('connectedAccountsList').innerHTML = Object.entries(socialHandles).map(([p, h]) => `<div class="platform-input"><i class="${icons[p]}"></i> ${p}: ${h || 'Not connected'}</div>`).join('');
+        }
+
+        function saveProfileChanges() {
+            const newName = document.getElementById('profileNameInput').value;
+            const newEmail = document.getElementById('profileEmailInput').value;
+            if (!newName || !newEmail) { showToast('Please fill all fields', 'error'); return; }
+            let userData = getCurrentUser() || {};
+            userData.fullName = newName;
+            userData.name = newName;
+            userData.email = newEmail;
+            setCurrentUser(userData);
+            updateUserUI();
+            toggleEditProfile(false);
+            showToast('Profile updated!', 'success');
+        }
+
+        function handleAvatarUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    let userData = getCurrentUser() || {};
+                    userData.avatar = e.target.result;
+                    setCurrentUser(userData);
+                    updateUserUI();
+                    showToast('Photo updated!', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeProfilePhoto() {
+            let userData = getCurrentUser() || {};
+            userData.avatar = null;
+            setCurrentUser(userData);
+            updateUserUI();
+            showToast('Photo removed', 'success');
+        }
+
+        async function upgradeToPremium() {
+            showToast('Premium upgrade feature coming soon!', 'info');
+        }
+
+        // ==================== DASHBOARD FUNCTIONS ====================
+        function generateDemoData() {
+            if (scans.length === 0) {
+                const platforms = ['Facebook', 'Twitter', 'Instagram', 'LinkedIn'];
+                for (let i = 0; i < 5; i++) {
+                    const date = new Date(); date.setDate(date.getDate() - i * 5);
+                    const riskLevel = ['low', 'medium', 'high'][Math.floor(Math.random() * 3)];
+                    let score = riskLevel === 'low' ? 85 : riskLevel === 'medium' ? 70 : 50;
+                    const demoPlatforms = platforms.slice(0, 3);
+                    scans.push({
+                        id: (Date.now() + i).toString(),
+                        user: 'User',
+                        date: date.toISOString().split('T')[0],
+                        platforms: demoPlatforms,
+                        findings: 10 + Math.random() * 10,
+                        riskLevel: riskLevel,
+                        privacyScore: score,
+                        riskCount: riskLevel === 'low' ? 8 : riskLevel === 'medium' ? 18 : 35,
+                        details: demoPlatforms.map(p => ({ platform: p.toLowerCase(), risk: riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1) }))
+                    });
+                }
+                localStorage.setItem('scans', JSON.stringify(scans));
+            }
+            if (Object.keys(socialHandles).length === 0) {
+                socialHandles = { facebook: 'madhura.s', twitter: '@madhura', instagram: 'madhura_official', linkedin: 'madhura-s' };
+                localStorage.setItem('socialHandles', JSON.stringify(socialHandles));
+            }
+        }
+
+        function loadDashboard() {
+            scans = JSON.parse(localStorage.getItem('scans') || '[]');
+            socialHandles = JSON.parse(localStorage.getItem('socialHandles') || '{}');
+            document.getElementById('totalScans').innerText = scans.length;
+            const latestScan = scans[0] || null;
+            let totalScore = scans.reduce((sum, s) => sum + (s.privacyScore || 85), 0);
+            document.getElementById('riskCount').innerText = latestScan ? Math.round(latestScan.riskCount || 0) : 0;
+            document.getElementById('privacyScore').innerText = scans.length ? Math.round(totalScore / scans.length) : 85;
+
+            // Dynamic platform count based on handles or scan data
+            const activePlatforms = Object.values(socialHandles).filter(h => h && h.trim()).length;
+            document.getElementById('socialAccounts').innerText = activePlatforms || (latestScan ? latestScan.platforms.length : 0);
+
+            if (authStorage.getItem('token') && typeof updateDashboardStats === 'function') {
+                updateDashboardStats();
+            } else {
+                filterScansTable();
+            }
+
+            const last10 = scans.slice(0, 10).reverse();
+            const primaryColor = getCssColor('--primary-color', '#ff4d94');
+            const primaryColorRgb = getCssColor('--primary-color-rgb', '255, 77, 148');
+
+            // Destroy existing chart instances before creating new ones
+            if (trendChartInstance) trendChartInstance.destroy();
+            trendChartInstance = new Chart(document.getElementById('trendChart'), {
+                type: 'line',
+                data: {
+                    labels: last10.map(s => s.date.slice(5)),
+                    datasets: [{
+                        label: 'Privacy Score',
+                        data: last10.map(s => s.privacyScore),
+                        borderColor: primaryColor,
+                        backgroundColor: `rgba(${primaryColorRgb}, 0.1)`,
+                        tension: 0.4,
+                        fill: true,
+                        segment: {
+                            borderColor: ctx => {
+                                const p0 = ctx.p0.parsed.y;
+                                const p1 = ctx.p1.parsed.y;
+                                return p1 > p0 ? '#00c9a7' : (p1 < p0 ? '#ff6b6b' : primaryColor);
+                            }
+                        }
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { min: 0, max: 100, title: { display: true, text: 'Score Out of 100' } },
+                        x: { title: { display: true, text: 'Date (Month/Day)' } }
+                    },
+                    plugins: {
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function (context) {
+                                    const scan = last10[context.dataIndex];
+                                    return [
+                                        `Score: ${scan.privacyScore}/100`,
+                                        `Risk Level: ${scan.riskLevel.toUpperCase()}`,
+                                        `Findings: ${Math.round(scan.findings)} traces`,
+                                        `Platforms: ${scan.platforms.join(', ')}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    onClick: (e, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const scan = last10[index];
+                            viewReportDetails(getScanIdentifier(scan));
+                        }
+                    }
+                }
+            });
+
+            // Update trend insights summary
+            const trendInsights = document.getElementById('trendInsights');
+            if (trendInsights) {
+                if (last10.length > 1) {
+                    const latest = last10[last10.length - 1];
+                    const previous = last10[last10.length - 2];
+                    const diff = (latest.privacyScore || 0) - (previous.privacyScore || 0);
+                    if (diff > 0) trendInsights.innerHTML = `<i class="fas fa-circle-check" style="color:var(--success-color)"></i> Your privacy score improved by ${diff} points since the last scan.`;
+                    else if (diff < 0) trendInsights.innerHTML = `<i class="fas fa-circle-exclamation" style="color:var(--danger-color)"></i> Your score dropped by ${Math.abs(diff)} points. Click points for details.`;
+                    else trendInsights.innerHTML = `<i class="fas fa-circle-info"></i> Your privacy score is stable at ${latest.privacyScore}/100.`;
+                } else if (last10.length === 1) {
+                    trendInsights.innerHTML = `<i class="fas fa-circle-info"></i> Initial scan recorded. Score: ${last10[0].privacyScore}/100.`;
+                } else {
+                    trendInsights.innerHTML = `<i class="fas fa-circle-info"></i> Perform more scans to see trend analytics.`;
+                }
+            }
+
+            // Calculate Risk Distribution for the LATEST scan outcomes
+            let low = 0, medium = 0, high = 0;
+            if (latestScan && latestScan.details) {
+                latestScan.details.forEach(f => {
+                    const r = (f.risk || '').toLowerCase();
+                    if (r === 'low') low++;
+                    else if (r === 'medium') medium++;
+                    else if (r === 'high') high++;
+                });
+            }
+
+            const riskInsights = document.getElementById('riskInsights');
+            if (riskInsights) {
+                if (latestScan && latestScan.details && latestScan.details.length > 0) {
+                    const dominantRisk = high > 0 ? 'high' : (medium > 0 ? 'medium' : 'low');
+                    const dominantCount = high > 0 ? high : (medium > 0 ? medium : low);
+                    const dominantColor = dominantRisk === 'high' ? 'var(--danger-color)' : (dominantRisk === 'medium' ? '#d4a017' : 'var(--success-color)');
+                    riskInsights.innerHTML = `<i class="fas fa-shield-halved" style="color:${dominantColor}"></i> Latest scan found ${latestScan.details.length} platform checks with ${dominantCount} ${dominantRisk}-risk outcome${dominantCount === 1 ? '' : 's'}.`;
+                } else {
+                    riskInsights.innerHTML = `<i class="fas fa-circle-info"></i> Complete a scan to view the latest risk breakdown.`;
+                }
+            }
+
+            const riskData = (low + medium + high) === 0 ? [1, 0, 0] : [low, medium, high];
+
+            // Destroy existing chart instances before creating new ones
+            if (riskChartInstance) riskChartInstance.destroy();
+            riskChartInstance = new Chart(document.getElementById('riskChart'), {
+                type: 'doughnut',
+                data: { labels: ['Low Risk', 'Medium Risk', 'High Risk'], datasets: [{ data: riskData, backgroundColor: ['#00c9a7', '#ffd93d', '#ff6b6b'] }] }
+                , options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: { callbacks: { label: (ctx) => ` ${ctx.label}: ${ctx.raw} Platform${ctx.raw === 1 ? '' : 's'} in latest scan` } }
+                    }
+                }
+            });
+        }
+
+        function filterScansTable() {
+            const query = document.getElementById('scanSearchInput')?.value.toLowerCase() || '';
+            const tbody = document.getElementById('scansTableBody');
+            if (!tbody) return;
+
+            const filteredScans = scans.filter(s => {
+                const platforms = Array.isArray(s.platforms) ? s.platforms : [];
+                const platformsMatch = platforms.some(p => p.toLowerCase().includes(query));
+                const riskMatch = (s.riskLevel || '').toLowerCase().includes(query);
+                const userMatch = (s.user || '').toLowerCase().includes(query);
+                return !query || platformsMatch || riskMatch || userMatch;
+            });
+
+            if (filteredScans.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:2rem;">${scans.length === 0 ? 'No scans yet' : 'No matching scans found'}</td></tr>`;
+            } else {
+                tbody.innerHTML = filteredScans.slice(0, 5).map(s => {
+                    const scanId = getScanIdentifier(s);
+                    // Support both backend fields (totalFindings) and local simulation fields (findings)
+                    const findingsCount = s.totalFindings !== undefined ? s.totalFindings : Math.round(s.findings || 0);
+                    const displayPlatforms = Array.isArray(s.platforms) ? s.platforms.join(', ') : 'N/A';
+
+                    const detailsHtml = s.details ? s.details.map(d => `
+                        <div class="finding-detail-item">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                <strong><i class="fab fa-${getPlatformIcon(d.platform)}"></i> ${d.platform}</strong>
+                                <span class="risk-badge risk-${d.risk.toLowerCase()}">${d.risk}</span>
+                            </div>
+                            <div style="color: var(--gray-color);">
+                                <div>Handle: ${d.handle || 'N/A'}</div>
+                                <div style="margin-top:4px; font-size:0.75rem;">${d.details || 'Identity trace found in public directory.'}</div>
+                            </div>
+                        </div>
+                    `).join('') : '<p style="padding:1rem;">No detailed findings data available.</p>';
+
+                    return `
+                        <tr class="clickable-row" onclick="toggleRowExpansion('${scanId}')" title="Click to expand/collapse details">
+                            <td>${s.date}</td>
+                            <td>${s.platforms.join(', ')}</td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span>${Math.round(s.findings)} traces</span>
+                                    <i class="fas fa-chevron-down" id="icon-${scanId}" style="transition:0.3s; font-size:0.7rem; color:var(--primary-color);"></i>
+                                </div>
+                                <div style="font-size: 0.8rem; color: var(--gray-color); margin-top: 4px; display: flex; gap: 6px;">
+                                    ${s.details ? s.details.map(d =>
+                        `<i class="fab fa-${getPlatformIcon(d.platform)}" title="${d.platform}: ${d.risk} Risk"></i>`
+                    ).join('') : ''}
+                                </div>
+                            </td>
+                            <td><span class="risk-badge risk-${s.riskLevel}">${s.riskLevel.toUpperCase()}</span></td>
+                            <td>
+                                <div class="score-cell">
+                                    <span>${s.privacyScore}/100</span>
+                                    <div class="score-bar"><div class="score-bar-fill" style="width:${s.privacyScore}%"></div></div>
+                                </div>
+                            </td>
+                            <td>
+                                <button class="btn-secondary" onclick="event.stopPropagation(); viewReportDetails('${scanId}')" title="View Report"><i class="fas fa-eye"></i></button>
+                                <button class="btn-secondary" onclick="event.stopPropagation(); downloadScanAsPDF('${scanId}')" title="Download PDF" style="margin-left: 5px;"><i class="fas fa-file-pdf"></i></button>
+                                <button class="btn-danger" onclick="event.stopPropagation(); deleteScanFromTable('${scanId}')" title="Delete Scan" style="padding: 0.4rem 0.8rem; border-radius: 20px; margin-left: 5px;"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr class="details-row" id="details-${scanId}">
+                            <td colspan="6">
+                                <div class="findings-detail-grid">
+                                    ${detailsHtml}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        function toggleRowExpansion(id) {
+            const detailsRow = document.getElementById(`details-${id}`);
+            const icon = document.getElementById(`icon-${id}`);
+
+            if (detailsRow) {
+                const isActive = detailsRow.classList.contains('active');
+
+                // Optional: Close other expanded rows
+                document.querySelectorAll('.details-row').forEach(row => row.classList.remove('active'));
+                document.querySelectorAll('.fa-chevron-down').forEach(i => i.style.transform = 'rotate(0deg)');
+
+                if (!isActive) {
+                    detailsRow.classList.add('active');
+                    if (icon) icon.style.transform = 'rotate(180deg)';
+                }
+            }
+        }
+
+        async function startScan() {
+            const handles = {
+                facebook: document.getElementById('facebookHandle').value,
+                twitter: document.getElementById('twitterHandle').value,
+                instagram: document.getElementById('instagramHandle').value,
+                linkedin: document.getElementById('linkedinHandle').value,
+                youtube: document.getElementById('youtubeHandle')?.value || ''
+            };
+            const activeHandles = Object.entries(handles).filter(([, handle]) => handle && handle.trim());
+            if (activeHandles.length === 0) {
+                showToast('Enter at least one social handle before scanning.', 'error');
+                return;
+            }
+
+            localStorage.setItem('socialHandles', JSON.stringify(handles));
+            document.getElementById('scanResults').style.display = 'block';
+            const resultsDiv = document.getElementById('resultsCard');
+            resultsDiv.innerHTML = '<div style="text-align:center; padding:2rem;"><div class="spinner"></div><p>Scanning...</p></div>';
+
+            // Real-time Upload: Send scan data to the backend API if authenticated
+            const token = authStorage.getItem('token');
+            let backendScan = null;
+            if (token) {
+                try {
+                    const response = await fetch('/api/scan', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ socialHandles: handles })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        backendScan = data.scan;
+                    }
+                } catch (err) {
+                    console.error('Background sync failed:', err);
+                }
+            }
+
+            await new Promise(r => setTimeout(r, 1500));
+            let findings = [], riskCount = 0;
+            for (let [platform, handle] of activeHandles) {
+                if (handle) {
+                    let risk = Math.random() > 0.6 ? 'Medium' : 'Low';
+                    let dataFound = [];
+
+
+                    // Assign realistic simulated data based on platform
+                    if (platform === 'facebook') dataFound = ['email', 'friends list', 'phone number'];
+                    if (platform === 'twitter') dataFound = ['tweets'];
+                    if (platform === 'instagram') dataFound = ['location tags', 'photos'];
+                    if (platform === 'linkedin') dataFound = ['work history'];
+
+                    if (platform === 'instagram') risk = 'High';
+                    findings.push({
+                        platform,
+                        handle: handle.trim(),
+                        risk,
+                        details: risk === 'High'
+                            ? 'Highly visible profile activity may expose personal details publicly.'
+                            : risk === 'Medium'
+                                ? 'Some public references were detected and should be reviewed.'
+                                : 'Minimal public exposure was detected for this profile.',
+                        dataFound: dataFound
+                    });
+                    riskCount += risk === 'High' ? 25 : risk === 'Medium' ? 15 : 8;
+                }
+            }
+
+            // Simulate Data Breach Check
+            if (Math.random() > 0.7) {
+                findings.push({
+                    platform: 'Global Breach Database',
+                    handle: currentUserData.email,
+                    risk: 'High',
+                    details: 'Email found in a known historical data leak.',
+                    dataFound: ['email', 'password hash']
+                });
+                riskCount += 25;
+            }
+
+            const privacyScore = Math.max(0, 100 - Math.min(riskCount, 100));
+            const riskLevel = riskCount > 60 ? 'high' : riskCount > 30 ? 'medium' : 'low';
+
+            const userData = getCurrentUser();
+            const userName = userData ? (userData.fullName || userData.name) : 'User';
+
+            let newScan;
+            if (backendScan) {
+                newScan = {
+                    ...backendScan,
+                    id: backendScan.id || backendScan._id,
+                    date: new Date(backendScan.createdAt).toISOString().split('T')[0],
+                    user: userName,
+                    platforms: activeHandles.map(([p]) => p.charAt(0).toUpperCase() + p.slice(1)),
+                    findings: backendScan.totalFindings || findings.length * 3,
+                    details: backendScan.findings || findings
+                };
+            } else {
+                newScan = {
+                    id: Date.now().toString(),
+                    user: userName,
+                    date: new Date().toISOString().split('T')[0],
+                    platforms: activeHandles.map(([platform]) => platform.charAt(0).toUpperCase() + platform.slice(1)),
+                    findings: findings.length * 3,
+                    riskLevel: riskLevel,
+                    privacyScore: privacyScore,
+                    riskCount: riskCount,
+                    details: findings
+                };
+            }
+
+            // Calculate trend comparison outcome
+            const prevScan = scans.length > 0 ? scans[0] : null;
+            let trendHtml = '';
+            if (prevScan) {
+                const diff = privacyScore - prevScan.privacyScore;
+                const icon = diff > 0 ? 'fa-arrow-trend-up' : (diff < 0 ? 'fa-arrow-trend-down' : 'fa-minus');
+                const color = diff > 0 ? 'var(--success-color)' : (diff < 0 ? 'var(--danger-color)' : 'var(--gray-color)');
+                trendHtml = `<div style="margin: 1rem 0; color: ${color}; font-weight: 700; font-size: 1.1rem; text-align: center;"><i class="fas ${icon}"></i> ${diff > 0 ? '+' : ''}${diff} points compared to last scan</div>`;
+            }
+
+            scans.unshift(newScan);
+            localStorage.setItem('scans', JSON.stringify(scans));
+            resultsDiv.innerHTML = `<h3>Scan Results</h3><div style="text-align:center"><div class="stat-value">${privacyScore}/100</div><div>Privacy Score</div></div>${trendHtml}<div class="risk-badge risk-${riskLevel}">${riskLevel.toUpperCase()} RISK</div><h4>Findings:</h4>${findings.map(f => `<div class="platform-input"><i class="fab fa-${getPlatformIcon(f.platform)}"></i> ${f.handle} - ${f.risk} Risk</div>`).join('')}<button class="btn-primary" onclick="showPage('dashboard')">View Dashboard</button>`;
+
+            loadDashboard(); // Refresh charts and table
+            if (token && typeof updateDashboardStats === 'function') {
+                updateDashboardStats(); // Refresh stat numbers
+            }
+            showPage('dashboard');
+            showToast('Scan completed and dashboard updated.', 'success');
+        }
+
+        // ==================== REPORTS FUNCTIONS ====================
+        function loadReports() {
+            scans = JSON.parse(localStorage.getItem('scans') || '[]');
+            const latest = scans[0];
+
+            // Update Health Score UI
+            const scoreEl = document.getElementById('reportScoreGauge');
+            const badgeEl = document.getElementById('reportRiskBadge');
+            const summaryEl = document.getElementById('reportSummaryText');
+
+            if (latest) {
+                // Update Last Updated timestamp
+                const updatedEl = document.getElementById('reportLastUpdated');
+                if (updatedEl) {
+                    const dateStr = latest.date || (latest.createdAt ? new Date(latest.createdAt).toLocaleString() : '--');
+                    updatedEl.innerHTML = `<i class="fas fa-clock"></i> Last updated: ${dateStr}`;
+                }
+
+                scoreEl.innerText = latest.privacyScore;
+                badgeEl.className = `risk-badge risk-${latest.riskLevel}`;
+                badgeEl.innerText = latest.riskLevel.toUpperCase() + ' RISK';
+                summaryEl.innerText = `Your last analysis on ${latest.date} shows ${latest.riskLevel} risk exposure across ${latest.platforms.length} platforms.`;
+
+                // Aggregate findings for the Data Exposure Map
+                const exposure = { email: 0, phone: 0, location: 0, password: 0 };
+                const findingsArray = latest.details || latest.findings || [];
+
+                if (Array.isArray(findingsArray)) {
+                    findingsArray.forEach(f => {
+                        const text = (f.platform + " " + f.details + " " + (f.dataFound || []).join(" ")).toLowerCase();
+                        if (text.includes('email') || text.includes('breach') || text.includes('leak')) exposure.email++;
+                        if (text.includes('phone') || text.includes('mobile')) exposure.phone++;
+                        if (text.includes('location') || text.includes('gps') || text.includes('tag')) exposure.location++;
+                        if (text.includes('password') || text.includes('hash')) exposure.password++;
+                    });
+                }
+
+                // Update Exposure Map UI
+                document.getElementById('expEmail').innerText = exposure.email > 0 ? `${exposure.email} Found` : 'Secure';
+                document.getElementById('expPhone').innerText = exposure.phone > 0 ? `${exposure.phone} Trace` : 'Secure';
+                document.getElementById('expLocation').innerText = exposure.location > 0 ? 'Exposed' : 'Secure';
+                document.getElementById('expPassword').innerText = exposure.password > 0 ? `${exposure.password} Leaks` : 'Secure';
+
+                // Update Vulnerability List
+                const vulnList = document.getElementById('vulnerabilityList');
+                if (latest.details) {
+                    vulnList.innerHTML = latest.details.map(d => `
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: white; border-radius: 12px; border: 1px solid rgba(0,0,0,0.05);">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div style="width: 40px; height: 40px; background: rgba(var(--primary-color-rgb), 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary-color);">
+                                    <i class="fab fa-${getPlatformIcon(d.platform)}"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.9rem;">${d.platform} Exposure</div>
+                                    <div style="font-size: 0.75rem; color: var(--gray-color);">${d.details}</div>
+                                </div>
+                            </div>
+                            <span class="risk-badge risk-${d.risk.toLowerCase()}">${d.risk}</span>
+                        </div>
+                    `).join('');
+                }
+
+                // Update Personalized Recommendations
+                const recsContainer = document.getElementById('reportRecs');
+                if (recsContainer) {
+                    const dismissedRecs = JSON.parse(localStorage.getItem('dismissedRecommendations') || '[]');
+                    const recList = [];
+
+
+                    if (exposure.password > 0) {
+                        recList.push({
+                            id: 'rec-password',
+                            title: 'Change Compromised Passwords',
+                            text: 'Your credentials were found in a data breach. Change your passwords immediately and use a manager.',
+                            color: 'var(--danger-color)',
+                            link: 'https://myaccount.google.com/security'
+                        });
+                    }
+
+
+                    if (exposure.email > 0) {
+                        recList.push({
+                            id: 'rec-email-2fa',
+                            title: 'Enable Two-Factor Authentication',
+                            text: 'Email exposure increases phishing risk. 2FA provides a critical extra layer of defense.',
+                            color: 'var(--primary-color)',
+                            link: 'https://myaccount.google.com/signinoptions/two-step-verification'
+                        });
+                    }
+
+                    if (exposure.location > 0) {
+                        recList.push({
+                            id: 'rec-location',
+                            title: 'Sanitize Metadata',
+                            text: 'Location tags were found in your posts. Disable GPS tagging in your camera settings.',
+                            color: 'var(--secondary-color)',
+                            link: 'https://www.instagram.com/accounts/privacy_and_security/'
+                        });
+                    }
+
+                    if (exposure.phone > 0) {
+                        recList.push({
+                            id: 'rec-phone',
+                            title: 'Limit Phone Visibility',
+                            text: 'Your mobile number is exposed on some platforms. Move it to "Private" or "Only Me" settings.',
+                            color: 'var(--blue-color)',
+                            link: 'https://www.facebook.com/settings?tab=privacy'
+                        });
+                    }
+
+                    // Add a general one if list is short or score is low
+                    if (recList.length < 2 || latest.privacyScore < 70) {
+                        recList.push({
+                            id: 'rec-general-privacy',
+                            title: 'Review Account Privacy',
+                            text: 'Set your profiles to "Private" or "Friends Only" to prevent unauthorized data scraping.',
+                            color: 'var(--gray-color)',
+                            link: 'https://www.facebook.com/settings?tab=privacy'
+                        });
+                    }
+
+                    const visibleRecs = recList.filter(r => !dismissedRecs.includes(r.id));
+
+                    recsContainer.innerHTML = visibleRecs.length > 0 ? visibleRecs.map(r => `
+                        <div id="${r.id}" style="padding: 1.2rem; background: white; border-radius: 12px; border-left: 4px solid ${r.color}; position: relative; transition: all 0.3s ease;">
+                            <button onclick="dismissRecommendation('${r.id}')" style="position: absolute; top: 12px; right: 12px; background: none; border: none; color: var(--gray-color); cursor: pointer; font-size: 1.1rem;" title="Mark as Completed">
+                                <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
+                            </button>
+                            <p style="font-size: 0.95rem; margin-bottom: 6px; padding-right: 25px;"><strong>${r.title}</strong></p>
+                            <p style="font-size: 0.85rem; color: var(--gray-color); margin-bottom: 12px; line-height: 1.4;">${r.text}</p>
+                            <a href="${r.link}" target="_blank" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.8rem; padding: 6px 14px; text-decoration: none; border-radius: 8px;">
+                                <i class="fas fa-external-link-alt"></i> Go to Settings
+                            </a>
+                        </div>
+                    `).join('') : `
+                        <div style="text-align: center; padding: 2.5rem; color: var(--gray-color); background: rgba(var(--success-color-rgb), 0.05); border-radius: 15px; border: 1px dashed var(--success-color);">
+                            <i class="fas fa-shield-check" style="font-size: 2.5rem; color: var(--success-color); margin-bottom: 1rem;"></i>
+                            <p style="font-weight: 600; color: var(--dark-color);">You're all caught up!</p>
+                            <p style="font-size: 0.85rem;">All security recommendations have been completed.</p>
+                            <button onclick="resetRecommendations()" style="background:none; border:none; color:var(--primary-color); font-size:0.75rem; text-decoration:underline; cursor:pointer; margin-top:10px;">Undo all completions</button>
+                        </div>
+                    `;
+                }
+            }
+
+            // Helper to dismiss recommendations
+            window.dismissRecommendation = function (id) {
+                const dismissed = JSON.parse(localStorage.getItem('dismissedRecommendations') || '[]');
+                if (!dismissed.includes(id)) {
+                    dismissed.push(id);
+                    localStorage.setItem('dismissedRecommendations', JSON.stringify(dismissed));
+                }
+                loadReports();
+                if (typeof showToast === 'function') showToast('Task marked as completed!');
+            };
+
+            // Helper to reset dismissals
+            window.resetRecommendations = function () {
+                localStorage.removeItem('dismissedRecommendations');
+                loadReports();
+            };
+
+            // Load History List
+            const container = document.getElementById('reportsList');
+            if (scans.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--gray-color); font-size: 0.8rem; padding: 1rem;">No reports found.</p>';
+            } else {
+                container.innerHTML = scans.map(s => `
+                    <div style="padding: 0.8rem; background: rgba(0,0,0,0.02); border-radius: 10px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 0.8rem; font-weight: 600;">Report ${s.date}</div>
+                            <div style="font-size: 0.7rem; color: var(--gray-color);">Score: ${s.privacyScore}/100</div>
+                        </div>
+                        <button class="btn-secondary" style="padding: 4px 10px; font-size: 0.7rem;" onclick="viewReportDetails('${getScanIdentifier(s)}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function viewReportDetails(identifier) {
+            const scan = findScanByIdentifier(identifier);
+            if (!scan) return;
+            document.getElementById('modalBody').innerHTML = `<h3>Report - ${scan.date}</h3><p>Privacy Score: ${scan.privacyScore}/100</p><p>Risk: ${scan.riskLevel.toUpperCase()}</p><p>Findings: ${scan.findings} traces</p><h4>Recommendations:</h4><ul><li>Review privacy settings</li><li>Enable 2FA</li><li>Remove old accounts</li></ul>`;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function deleteScanFromTable(id) {
+            if (confirm('Are you sure you want to delete this scan record?')) {
+                scans = scans.filter(s => getScanIdentifier(s) !== id);
+                localStorage.setItem('scans', JSON.stringify(scans));
+                loadDashboard();
+                showToast('Scan deleted successfully', 'success');
+            }
+        }
+
+        function generateReport() {
+            showPage('reports');
+            generateFullReport();
+        }
+
+        async function generateFullReport() {
+            const token = authStorage?.getItem('token');
+            if (!token) return;
+
+            const btn = window.event?.currentTarget;
+            const originalHTML = btn ? btn.innerHTML : '';
+
+            if (btn && btn.tagName === 'BUTTON') {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+            }
+
+            try {
+                const res = await fetch('/api/report/generate', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    // Sync local scans history to refresh the report UI and health metrics
+                    const historyRes = await fetch('/api/scan/history', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const historyData = await historyRes.json();
+                    if (historyData.success) {
+                        localStorage.setItem('scans', JSON.stringify(historyData.scans));
+                    }
+                    loadReports();
+                    showToast('Privacy report updated successfully!', 'success');
+                }
+            } catch (err) {
+                console.error('Failed to update report:', err);
+                showToast('Error connecting to server while updating report.', 'error');
+            } finally {
+                if (btn && btn.tagName === 'BUTTON') {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHTML;
+                }
+            }
+        }
+
+        // ==================== DATA FUNCTIONS ====================
+        function exportData() {
+            const data = { scans, socialHandles, exportDate: new Date().toISOString() };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `digital_footprint_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            showToast('Data exported!', 'success');
+        }
+
+        function downloadScanAsPDF(id) {
+            const scan = findScanByIdentifier(id);
+            if (!scan) return;
+
+            showToast('Generating PDF report...', 'info');
+
+            setTimeout(() => {
+                // Simulation of PDF export using Blob
+                const dataStr = JSON.stringify(scan, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Privacy-Report-${scan.date}.json`;
+                a.click();
+                showToast('Report downloaded successfully!', 'success');
+            }, 1000);
+        }
+
+        function clearAllData() {
+            if (confirm('Delete all scan data?')) {
+                localStorage.removeItem('scans');
+                scans = [];
+                localStorage.setItem('scans', JSON.stringify(scans));
+                loadDashboard();
+                showToast('Data cleared', 'success');
+            }
+        }
+
+        function scheduleScan() {
+            const days = prompt('Auto-scan every how many days?', '30');
+            if (days) showToast(`Scheduled every ${days} days`, 'success');
+        }
+
+        function deleteAccount() {
+            if (confirm('Delete account? This cannot be undone.')) {
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = '../index.html';
+            }
+        }
+
+        function logout() {
+            if (confirm('Logout?')) {
+                [localStorage, sessionStorage].forEach(s => {
+                    s.removeItem('isLoggedIn');
+                    s.removeItem('user');
+                    s.removeItem('token');
+                    s.removeItem('dft_user');
+                    s.removeItem('dft_user_name');
+                    s.removeItem('rememberMe');
+                });
+                window.location.href = '../index.html';
+            }
+        }
+
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+
+        // ==================== INITIALIZE ====================
+        function initPreferences() {
+            // Load theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.getElementById('themeSelect').value = savedTheme;
+            applyTheme(savedTheme);
+
+            // Load timezone
+            const savedTz = localStorage.getItem('timezone') || 'Asia/Kolkata';
+            document.getElementById('timezoneSelect').value = savedTz;
+            applyTimezone();
+
+            // Load dashboard layout
+            const savedLayout = localStorage.getItem('dashboard_layout') || 'detailed';
+            document.getElementById('dashboardLayout').value = savedLayout;
+            applyDashboardLayout();
+
+            // Load card size
+            const savedCardSize = localStorage.getItem('card_size') || 'medium';
+            document.getElementById('cardSize').value = savedCardSize;
+            applyCardSize();
+
+            // Load animation settings
+            const savedAnimations = localStorage.getItem('animation_effects') === 'true';
+            document.getElementById('animationEffects').checked = savedAnimations;
+            applyAnimationSettings();
+
+            // Load refresh interval
+            const savedInterval = localStorage.getItem('refresh_interval') || '60';
+            document.getElementById('refreshInterval').value = savedInterval;
+            applyRefreshInterval();
+
+            // Load scanning preferences
+            const savedFreq = localStorage.getItem('scan_frequency') || 'Weekly';
+            const savedDepth = localStorage.getItem('scan_depth') || 'standard';
+            if (document.getElementById('autoScanFrequency')) document.getElementById('autoScanFrequency').value = savedFreq;
+            if (document.getElementById('scanDepth')) document.getElementById('scanDepth').value = savedDepth;
+        }
+
+        // generateDemoData(); // Removed to avoid polluting real user accounts with demo data on first login
+        loadDashboard();
+        updateUserUI();
+        initPreferences();
+
+        // Attach OTP auto-tab listener
+        document.querySelectorAll('.otp-digit').forEach((input, idx, inputs) => {
+            input.addEventListener('input', (e) => { if (e.target.value.length === 1 && idx < inputs.length - 1) inputs[idx + 1].focus(); });
+            input.addEventListener('keydown', (e) => { if (e.key === 'Backspace' && idx > 0 && !e.target.value) inputs[idx - 1].focus(); });
+        });
+    </script>
+</body>
+
+</html>
