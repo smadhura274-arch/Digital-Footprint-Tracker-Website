@@ -1,12 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const { body } = require('express-validator');
 const User = require('../models/User');
 const { protect, generateToken } = require('../middleware/auth');
-const { signupValidation, loginValidation, validateRequest } = require('../middleware/validation');
-const { createChallenge, consumeChallenge, getChallenge, OTP_TTL_MS } = require('../utils/otpStore');
-const { sendOtpEmail } = require('../utils/mailer');
+const { signupValidation, loginValidation } = require('../middleware/validation');
+const { generateCaptchaChallenge, verifyCaptchaChallenge } = require('../utils/captcha');
 const stripe = process.env.STRIPE_SECRET_KEY
   ? require('stripe')(process.env.STRIPE_SECRET_KEY)
   : null;
@@ -23,127 +20,38 @@ const requireStripe = (res) => {
   return false;
 };
 
-const signupOtpRequestValidation = [
-  body('fullName')
-    .trim()
-    .notEmpty().withMessage('Full name is required')
-    .isLength({ min: 2, max: 50 }).withMessage('Name must be between 2 and 50 characters')
-    .matches(/^[a-zA-Z\s]+$/).withMessage('Name can only contain letters and spaces'),
-  body('email')
-    .isEmail().withMessage('Please enter a valid email')
-    .normalizeEmail()
-    .notEmpty().withMessage('Email is required'),
-  body('password')
-    .isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
-    .matches(/^(?=.*[A-Za-z])(?=.*\d)/).withMessage('Password must contain at least one letter and one number'),
-  validateRequest
-];
+const requireValidCaptcha = (req, res) => {
+  const { captchaToken, captchaResponse } = req.body;
 
-const otpVerificationValidation = [
-  body('challengeId')
-    .trim()
-    .notEmpty().withMessage('Challenge ID is required'),
-  body('otp')
-    .trim()
-    .isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits')
-    .isNumeric().withMessage('OTP must contain only numbers'),
-  validateRequest
-];
-
-const buildOtpResponse = (message, challengeId, mailResult) => ({
-  success: true,
-  message,
-  challengeId,
-  expiresInMinutes: Math.floor(OTP_TTL_MS / 60000),
-  previewOtp: mailResult.previewOtp
-});
-
-// @route   POST /api/auth/signup/request-otp
-// @desc    Send signup OTP
-// @access  Public
-router.post('/signup/request-otp', signupOtpRequestValidation, async (req, res) => {
-  try {
-    const { fullName, email, password } = req.body;
-    const normalizedEmail = email.toLowerCase();
-
-    const existingUser = await User.findOne({ email: normalizedEmail });
-    if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email already registered. Please login instead.'
-      });
-    }
-
-    const { challengeId, otp } = createChallenge('signup', {
-      fullName: fullName.trim(),
-      email: normalizedEmail,
-      password
-    });
-
-    const mailResult = await sendOtpEmail({
-      email: normalizedEmail,
-      fullName: fullName.trim(),
-      otp,
-      purpose: 'signup'
-    });
-
-    res.json(buildOtpResponse('OTP sent to your email', challengeId, mailResult));
-  } catch (error) {
-    console.error('Signup OTP error:', error);
-    res.status(500).json({
+  if (!captchaToken || !captchaResponse) {
+    res.status(400).json({
       success: false,
-      message: 'Unable to send OTP. Please try again later.'
+      message: 'Complete the CAPTCHA challenge before continuing.'
     });
+    return false;
   }
-});
 
-// @route   POST /api/auth/signup/verify-otp
-// @desc    Verify signup OTP and create user
-// @access  Public
-router.post('/signup/verify-otp', otpVerificationValidation, async (req, res) => {
-  try {
-    const { challengeId, otp } = req.body;
-    const result = consumeChallenge(challengeId, 'signup', otp);
-
-    if (!result.ok) {
-      return res.status(400).json({
-        success: false,
-        message: result.reason === 'mismatch' ? 'Invalid OTP code' : 'OTP expired or invalid'
-      });
-    }
-
-    const { fullName, email, password } = result.payload;
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email already registered. Please login instead.'
-      });
-    }
-
-    const user = await User.create({
-      fullName,
-      email,
-      password,
-      authProvider: 'local',
-      emailVerified: true
-    });
-
-    const token = generateToken(user._id);
-
-    res.status(201).json({
-      success: true,
-      message: 'Account created successfully',
-      token,
-      user: user.getPublicProfile()
-    });
-  } catch (error) {
-    console.error('Signup OTP verification error:', error);
-    res.status(500).json({
+  if (!verifyCaptchaChallenge(captchaToken, captchaResponse)) {
+    res.status(400).json({
       success: false,
-      message: 'Server error. Please try again later.'
+      message: 'CAPTCHA verification failed. Please try again.'
     });
+    return false;
   }
+
+  return true;
+};
+
+// @route   GET /api/auth/captcha
+// @desc    Generate a new CAPTCHA challenge
+// @access  Public
+router.get('/captcha', (req, res) => {
+  const challenge = generateCaptchaChallenge();
+
+  res.json({
+    success: true,
+    ...challenge
+  });
 });
 
 // @route   POST /api/auth/signup
@@ -151,7 +59,12 @@ router.post('/signup/verify-otp', otpVerificationValidation, async (req, res) =>
 // @access  Public
 router.post('/signup', signupValidation, async (req, res) => {
   try {
+    if (!requireValidCaptcha(req, res)) {
+      return;
+    }
+
     const { fullName, email, password } = req.body;
+
     const normalizedEmail = email.toLowerCase();
 
     const existingUser = await User.findOne({ email: normalizedEmail });
@@ -167,7 +80,7 @@ router.post('/signup', signupValidation, async (req, res) => {
       email: normalizedEmail,
       password,
       authProvider: 'local',
-      emailVerified: false
+      emailVerified: true
     });
 
     const token = generateToken(user._id);
@@ -187,105 +100,17 @@ router.post('/signup', signupValidation, async (req, res) => {
   }
 });
 
-// @route   POST /api/auth/login/request-otp
-// @desc    Validate credentials and send login OTP
-// @access  Public
-router.post('/login/request-otp', loginValidation, async (req, res) => {
-  try {
-    const { email, password, rememberMe } = req.body;
-    const normalizedEmail = email.toLowerCase();
-
-    const user = await User.findOne({ email: normalizedEmail });
-
-    if (!user || !(await user.comparePassword(password))) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid email or password'
-      });
-    }
-
-    if (!user.isActive) {
-      return res.status(401).json({
-        success: false,
-        message: 'Account is deactivated. Please contact support.'
-      });
-    }
-
-    const { challengeId, otp } = createChallenge('login', {
-      userId: user._id.toString(),
-      rememberMe: Boolean(rememberMe)
-    });
-
-    const mailResult = await sendOtpEmail({
-      email: user.email,
-      fullName: user.fullName,
-      otp,
-      purpose: 'login'
-    });
-
-    res.json(buildOtpResponse('OTP sent to your email', challengeId, mailResult));
-  } catch (error) {
-    console.error('Login OTP error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Unable to send OTP. Please try again later.'
-    });
-  }
-});
-
-// @route   POST /api/auth/login/verify-otp
-// @desc    Verify login OTP and create session token
-// @access  Public
-router.post('/login/verify-otp', otpVerificationValidation, async (req, res) => {
-  try {
-    const { challengeId, otp } = req.body;
-    const result = consumeChallenge(challengeId, 'login', otp);
-
-    if (!result.ok) {
-      return res.status(400).json({
-        success: false,
-        message: result.reason === 'mismatch' ? 'Invalid OTP code' : 'OTP expired or invalid'
-      });
-    }
-
-    const { userId, rememberMe } = result.payload;
-    const user = await User.findById(userId);
-
-    if (!user || !user.isActive) {
-      return res.status(401).json({
-        success: false,
-        message: 'Account is unavailable. Please login again.'
-      });
-    }
-
-    await user.updateLastLogin();
-
-    const tokenExpire = rememberMe ? '30d' : process.env.JWT_EXPIRE;
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: tokenExpire
-    });
-
-    res.json({
-      success: true,
-      message: 'Login successful',
-      token,
-      user: user.getPublicProfile()
-    });
-  } catch (error) {
-    console.error('Login OTP verification error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error. Please try again later.'
-    });
-  }
-});
-
 // @route   POST /api/auth/login
 // @desc    Login user
 // @access  Public
 router.post('/login', loginValidation, async (req, res) => {
   try {
+    if (!requireValidCaptcha(req, res)) {
+      return;
+    }
+
     const { email, password } = req.body;
+
     const normalizedEmail = email.toLowerCase();
 
     const user = await User.findOne({ email: normalizedEmail });

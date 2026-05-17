@@ -362,37 +362,76 @@
             font-size: 0.78rem;
         }
 
-        .otp-banner {
-            margin-bottom: 18px;
-            padding: 16px 18px;
-            border-radius: 18px;
-            background: linear-gradient(135deg, rgba(108, 99, 255, 0.12), rgba(255, 184, 107, 0.16));
-            color: #4f4970;
-            line-height: 1.6;
-            font-size: 0.92rem;
+        .captcha-panel {
+            margin-top: 10px;
+            padding: 16px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.08), rgba(255, 184, 107, 0.12));
+            border: 1px solid rgba(108, 99, 255, 0.12);
         }
 
-        .otp-banner strong {
-            color: var(--primary-dark);
-        }
-
-        .otp-grid {
-            display: grid;
-            grid-template-columns: 1fr auto;
+        .captcha-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             gap: 12px;
-            align-items: start;
+            margin-bottom: 12px;
         }
 
-        .otp-grid .field {
-            margin-bottom: 0;
+        .captcha-label strong {
+            font-size: 0.92rem;
+            color: #3a3557;
         }
 
-        .otp-input {
-            letter-spacing: 0.5em;
-            text-align: center;
-            padding-left: 16px !important;
-            font-size: 1.15rem;
-            font-weight: 700;
+        .captcha-label span {
+            font-size: 0.8rem;
+            color: #6e678b;
+        }
+
+        .captcha-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.86);
+            border: 1px solid rgba(108, 99, 255, 0.12);
+        }
+
+        .captcha-code {
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+        }
+
+        .captcha-refresh {
+            width: 40px;
+            height: 40px;
+            border-radius: 14px;
+            border: 0;
+            background: rgba(108, 99, 255, 0.1);
+            color: var(--primary-dark);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .captcha-input {
+            width: 100%;
+            margin-top: 12px;
+            border: 1px solid rgba(108, 99, 255, 0.14);
+            border-radius: 18px;
+            background: #ffffff;
+            padding: 14px 16px;
+            font: inherit;
+            color: var(--ink);
+            text-transform: uppercase;
+        }
+
+        .captcha-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.12);
         }
 
         .subtle-row {
@@ -461,15 +500,6 @@
             transform: translateY(-1px);
         }
 
-        .preview-otp {
-            margin-top: 12px;
-            padding: 12px 14px;
-            border-radius: 14px;
-            background: rgba(108, 99, 255, 0.08);
-            color: var(--primary-dark);
-            font-size: 0.88rem;
-        }
-
         .footer-row {
             margin-top: 22px;
             text-align: center;
@@ -530,7 +560,7 @@
                 padding: 18px;
             }
 
-            .otp-grid,
+            .security-strip,
             .actions {
                 grid-template-columns: 1fr;
                 display: grid;
@@ -539,6 +569,10 @@
             .subtle-row {
                 flex-direction: column;
                 align-items: flex-start;
+            }
+
+            .captcha-box {
+                flex-wrap: wrap;
             }
         }
     </style>
@@ -549,129 +583,105 @@
         <section class="brand-panel">
             <div class="brand-top">
                 <div class="brand-badge">
-                    <i class="fas fa-satellite-dish"></i>
+                    <i class="fas fa-shield-halved"></i>
                     <span>Secure access to your footprint control center</span>
                 </div>
-                <h1>Sign in to the same privacy cockpit your homepage promises.</h1>
-                <p>Continue with your account credentials, confirm the inbox with a one-time code, and return to your
-                    dashboard inside the same gradient-driven experience.</p>
+                <h1>Sign in without friction, then prove you're human.</h1>
+                <p>Use your email and password, complete a quick CAPTCHA check, and return to your dashboard inside the
+                    same responsive privacy experience.</p>
             </div>
 
             <div class="brand-grid">
                 <article class="brand-card">
-                    <i class="fas fa-envelope-open-text"></i>
-                    <strong>Inbox verification</strong>
-                    <span>Each sign-in requests a fresh six-digit code sent to your registered email.</span>
+                    <i class="fas fa-bolt"></i>
+                    <strong>Faster entry</strong>
+                    <span>No inbox detours. You can sign in directly after passing the security check.</span>
+                </article>
+                <article class="brand-card">
+                    <i class="fas fa-robot"></i>
+                    <strong>Bot resistance</strong>
+                    <span>The CAPTCHA filter blocks basic scripted login abuse before it reaches your session.</span>
                 </article>
                 <article class="brand-card">
                     <i class="fas fa-shield-heart"></i>
                     <strong>Account protection</strong>
-                    <span>Passwords alone are not enough, which cuts down simple takeover attempts.</span>
-                </article>
-                <article class="brand-card">
-                    <i class="fas fa-wave-square"></i>
-                    <strong>Live trust signal</strong>
                     <span>Your access flow mirrors the site’s ongoing monitoring and verification model.</span>
                 </article>
                 <article class="brand-card">
-                    <i class="fas fa-door-open"></i>
-                    <strong>Fast return path</strong>
-                    <span>Successful verification creates your session and routes you straight to the dashboard.</span>
+                    <i class="fas fa-mobile-screen"></i>
+                    <strong>Responsive access</strong>
+                    <span>The sign-in flow stays clean and usable across mobile, tablet, and desktop screens.</span>
                 </article>
             </div>
         </section>
 
         <section class="form-panel">
             <div class="panel-head">
-                <div class="eyebrow"><i class="fas fa-lock"></i> Two-step login</div>
+                <div class="eyebrow"><i class="fas fa-lock"></i> Secure login</div>
                 <h2>Welcome back</h2>
-                <p>Use the account you created during signup, then enter the email OTP to finish signing in.</p>
-            </div>
-
-            <div class="stepper">
-                <div class="step-chip active" id="stepChipCredentials">
-                    <strong>1. Credentials</strong>
-                    <span>Email, password, remember me</span>
-                </div>
-                <div class="step-chip" id="stepChipOtp">
-                    <strong>2. Verify OTP</strong>
-                    <span>Enter the code from your inbox</span>
-                </div>
+                <p>Use your account credentials and complete the CAPTCHA check to sign in securely in one step.</p>
             </div>
 
             <div class="auth-card">
                 <div class="account-notice" id="accountNotice"></div>
 
-                <section class="auth-step active" id="credentialsStep">
-                    <form id="loginForm" novalidate>
-                        <div class="field">
-                            <label for="loginEmail">Email address</label>
-                            <div class="field-wrap">
-                                <i class="fas fa-envelope"></i>
-                                <input type="email" id="loginEmail" placeholder="Enter your email address"
-                                    autocomplete="email" required>
-                            </div>
-                            <small class="hint" id="emailHint"></small>
+                <form id="loginForm" novalidate>
+                    <div class="field">
+                        <label for="loginEmail">Email address</label>
+                        <div class="field-wrap">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="loginEmail" name="login_email_input"
+                                placeholder="Enter your email address" autocomplete="off" autocapitalize="none"
+                                autocorrect="off" spellcheck="false" required>
                         </div>
-
-                        <div class="field">
-                            <label for="loginPassword">Password</label>
-                            <div class="field-wrap">
-                                <i class="fas fa-key"></i>
-                                <input type="password" id="loginPassword" placeholder="Enter your password"
-                                    autocomplete="off" required>
-                                <button type="button" class="password-toggle" id="togglePassword"
-                                    aria-label="Show password" aria-pressed="false">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </div>
-                            <small class="hint" id="passwordHint"></small>
-                        </div>
-
-                        <div class="subtle-row">
-                            <label>
-                                <input type="checkbox" id="rememberMe">
-                                <span>Keep me signed in</span>
-                            </label>
-                            <button type="button" class="link-btn" id="forgotPassword">Forgot password?</button>
-                        </div>
-
-                        <div class="actions">
-                            <button type="submit" class="btn btn-primary" id="requestOtpBtn">
-                                <span>Send OTP to email</span>
-                            </button>
-                        </div>
-                    </form>
-                </section>
-
-                <section class="auth-step" id="otpStep">
-                    <div class="otp-banner" id="otpBanner">
-                        We sent a six-digit code to <strong id="otpEmailText">your email</strong>. Enter it below to
-                        finish signing in.
+                        <small class="hint" id="emailHint"></small>
                     </div>
 
-                    <form id="otpForm" novalidate>
-                        <div class="otp-grid">
-                            <div class="field">
-                                <label for="loginOtp">One-time password</label>
-                                <div class="field-wrap">
-                                    <input type="text" id="loginOtp" class="otp-input" inputmode="numeric" maxlength="6"
-                                        placeholder="123456" autocomplete="one-time-code" required>
-                                </div>
-                                <small class="hint" id="otpHint"></small>
-                                <div class="preview-otp" id="previewOtp" style="display:none;"></div>
-                            </div>
-                            <button type="button" class="btn btn-secondary" id="resendOtpBtn">Resend OTP</button>
-                        </div>
-
-                        <div class="actions">
-                            <button type="button" class="btn btn-secondary" id="backBtn">Back</button>
-                            <button type="submit" class="btn btn-primary" id="verifyOtpBtn">
-                                <span>Verify and sign in</span>
+                    <div class="field">
+                        <label for="loginPassword">Password</label>
+                        <div class="field-wrap">
+                            <i class="fas fa-key"></i>
+                            <input type="password" id="loginPassword" name="login_password_input"
+                                placeholder="Enter your password" autocomplete="new-password" required>
+                            <button type="button" class="password-toggle" id="togglePassword" aria-label="Show password"
+                                aria-pressed="false">
+                                <i class="fas fa-eye"></i>
                             </button>
                         </div>
-                    </form>
-                </section>
+                        <small class="hint" id="passwordHint"></small>
+                    </div>
+
+                    <div class="captcha-panel">
+                        <div class="captcha-label">
+                            <strong>CAPTCHA verification</strong>
+                            <span>Refresh if the code is hard to read.</span>
+                        </div>
+                        <div class="captcha-box">
+                            <div class="captcha-code" id="captchaImage" aria-live="polite">Loading...</div>
+                            <button type="button" class="captcha-refresh" id="refreshCaptcha"
+                                aria-label="Refresh CAPTCHA">
+                                <i class="fas fa-rotate-right"></i>
+                            </button>
+                        </div>
+                        <input type="text" id="loginCaptchaInput" class="captcha-input" placeholder="Enter the code"
+                            inputmode="text" autocomplete="off" maxlength="6" required>
+                        <small class="hint" id="captchaHint"></small>
+                    </div>
+
+                    <div class="subtle-row">
+                        <label>
+                            <input type="checkbox" id="rememberMe">
+                            <span>Keep me signed in</span>
+                        </label>
+                        <button type="button" class="link-btn" id="forgotPassword">Forgot password?</button>
+                    </div>
+
+                    <div class="actions">
+                        <button type="submit" class="btn btn-primary" id="loginBtn">
+                            <span>Sign in securely</span>
+                        </button>
+                    </div>
+                </form>
             </div>
 
             <p class="footer-row">
@@ -685,31 +695,22 @@
     <script>
         (function () {
             const loginForm = document.getElementById('loginForm');
-            const otpForm = document.getElementById('otpForm');
             const emailInput = document.getElementById('loginEmail');
             const passwordInput = document.getElementById('loginPassword');
             const rememberInput = document.getElementById('rememberMe');
-            const otpInput = document.getElementById('loginOtp');
+            const captchaInput = document.getElementById('loginCaptchaInput');
+            const captchaImage = document.getElementById('captchaImage');
+            const refreshCaptchaBtn = document.getElementById('refreshCaptcha');
             const toast = document.getElementById('toast');
-            const requestOtpBtn = document.getElementById('requestOtpBtn');
-            const verifyOtpBtn = document.getElementById('verifyOtpBtn');
-            const resendOtpBtn = document.getElementById('resendOtpBtn');
-            const backBtn = document.getElementById('backBtn');
-            const previewOtpBox = document.getElementById('previewOtp');
-            const otpEmailText = document.getElementById('otpEmailText');
-            const credentialsStep = document.getElementById('credentialsStep');
-            const otpStep = document.getElementById('otpStep');
+            const loginBtn = document.getElementById('loginBtn');
             const accountNotice = document.getElementById('accountNotice');
-            const stepChipCredentials = document.getElementById('stepChipCredentials');
-            const stepChipOtp = document.getElementById('stepChipOtp');
             const emailHint = document.getElementById('emailHint');
             const passwordHint = document.getElementById('passwordHint');
-            const otpHint = document.getElementById('otpHint');
+            const captchaHint = document.getElementById('captchaHint');
             const forgotPasswordBtn = document.getElementById('forgotPassword');
             const dashboardPath = 'dashboard.html';
 
-            let challengeId = '';
-            let loginContext = null;
+            let captchaToken = '';
             let submitted = false;
 
             const showToast = (message, isError) => {
@@ -742,20 +743,14 @@
                 accountNotice.classList.add('show');
             };
 
-            const setStep = (step) => {
-                const onOtp = step === 'otp';
-                credentialsStep.classList.toggle('active', !onOtp);
-                otpStep.classList.toggle('active', onOtp);
-                stepChipCredentials.classList.toggle('active', !onOtp);
-                stepChipCredentials.classList.toggle('complete', onOtp);
-                stepChipOtp.classList.toggle('active', onOtp);
-                if (onOtp) {
-                    otpInput.focus();
-                }
-            };
-
             const createLoginSession = (user, token, remember) => {
                 const storage = remember ? localStorage : sessionStorage;
+                const normalizedUser = {
+                    ...user,
+                    fullName: user.fullName || user.name || user.email || 'User',
+                    name: user.fullName || user.name || user.email || 'User',
+                    email: user.email || ''
+                };
 
                 localStorage.removeItem('isLoggedIn');
                 localStorage.removeItem('user');
@@ -765,17 +760,16 @@
                 sessionStorage.removeItem('token');
 
                 storage.setItem('isLoggedIn', 'true');
-                storage.setItem('user', JSON.stringify(user));
+                storage.setItem('user', JSON.stringify(normalizedUser));
                 storage.setItem('token', token);
+                localStorage.setItem('dft_user', normalizedUser.email);
+                localStorage.setItem('dft_user_name', normalizedUser.fullName);
+                localStorage.setItem('dft_active_session_owner', normalizedUser.email);
 
                 if (remember) {
                     localStorage.setItem('rememberMe', 'true');
-                    localStorage.setItem('dft_user', user.email);
-                    localStorage.setItem('dft_user_name', user.fullName);
                 } else {
                     localStorage.removeItem('rememberMe');
-                    localStorage.removeItem('dft_user');
-                    localStorage.removeItem('dft_user_name');
                 }
             };
 
@@ -795,11 +789,11 @@
                 return valid;
             };
 
-            const validateOtp = (showError) => {
-                const value = otpInput.value.trim();
-                const valid = /^\d{6}$/.test(value);
-                otpHint.textContent = !valid && showError ? (value ? 'Enter the 6-digit OTP from your email' : 'OTP is required') : '';
-                otpInput.classList.toggle('error', !valid && showError);
+            const validateCaptcha = (showError) => {
+                const value = captchaInput.value.trim().toUpperCase();
+                const valid = /^[A-Z0-9]{6}$/.test(value);
+                captchaHint.textContent = !valid && showError ? (value ? 'Enter the 6-character CAPTCHA code' : 'CAPTCHA is required') : '';
+                captchaInput.classList.toggle('error', !valid && showError);
                 return valid;
             };
 
@@ -815,44 +809,25 @@
                 button.disabled = false;
             };
 
-            const showPreviewOtp = (previewOtp) => {
-                if (previewOtp) {
-                    previewOtpBox.style.display = 'block';
-                    previewOtpBox.textContent = `Development preview OTP: ${previewOtp}`;
-                } else {
-                    previewOtpBox.style.display = 'none';
-                    previewOtpBox.textContent = '';
+            const loadCaptcha = async () => {
+                captchaHint.textContent = '';
+                captchaInput.classList.remove('error');
+
+                try {
+                    const response = await fetch('/api/auth/captcha', { cache: 'no-store' });
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(getApiError(result, 'Unable to load CAPTCHA.'));
+                    }
+
+                    captchaToken = result.captchaToken;
+                    captchaImage.innerHTML = result.captchaSvg;
+                } catch (error) {
+                    captchaToken = '';
+                    captchaImage.textContent = 'Unavailable';
+                    captchaHint.textContent = error.message || 'Unable to load CAPTCHA.';
                 }
-            };
-
-            const requestOtp = async (payload) => {
-                const response = await fetch('/api/auth/login/request-otp', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(getApiError(result, 'Unable to send OTP.'));
-                }
-
-                return result;
-            };
-
-            const verifyOtp = async (payload) => {
-                const response = await fetch('/api/auth/login/verify-otp', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(getApiError(result, 'OTP verification failed.'));
-                }
-
-                return result;
             };
 
             loginForm.addEventListener('submit', async (event) => {
@@ -861,90 +836,47 @@
 
                 const emailOk = validateEmail(true);
                 const passwordOk = validatePassword(true);
+                const captchaOk = validateCaptcha(true);
 
-                if (!emailOk || !passwordOk) {
+                if (!emailOk || !passwordOk || !captchaOk || !captchaToken) {
                     showToast('Fix the highlighted fields first.', true);
                     return;
                 }
 
-                loginContext = {
-                    email: emailInput.value.trim(),
-                    password: passwordInput.value,
-                    rememberMe: rememberInput.checked
-                };
-
-                toggleBusy(requestOtpBtn, 'Sending OTP...', true);
+                toggleBusy(loginBtn, 'Signing in...', true);
 
                 try {
-                    const result = await requestOtp(loginContext);
-                    challengeId = result.challengeId;
-                    otpEmailText.textContent = loginContext.email;
-                    otpInput.value = '';
-                    showPreviewOtp(result.previewOtp);
-                    showAccountNotice('');
-                    setStep('otp');
-                    showToast(result.message || 'OTP sent to your email.');
-                } catch (error) {
-                    showToast(error.message || 'Unable to send OTP.', true);
-                } finally {
-                    toggleBusy(requestOtpBtn, '', false);
-                }
-            });
-
-            otpForm.addEventListener('submit', async (event) => {
-                event.preventDefault();
-
-                if (!validateOtp(true) || !challengeId) {
-                    showToast('Enter the OTP first.', true);
-                    return;
-                }
-
-                toggleBusy(verifyOtpBtn, 'Verifying...', true);
-
-                try {
-                    const result = await verifyOtp({
-                        challengeId,
-                        otp: otpInput.value.trim()
+                    const response = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            email: emailInput.value.trim(),
+                            password: passwordInput.value,
+                            captchaToken,
+                            captchaResponse: captchaInput.value.trim().toUpperCase()
+                        })
                     });
+                    const result = await response.json();
 
-                    createLoginSession(result.user, result.token, Boolean(loginContext && loginContext.rememberMe));
+                    if (!response.ok) {
+                        throw new Error(getApiError(result, 'Login failed.'));
+                    }
+
+                    createLoginSession(result.user, result.token, rememberInput.checked);
                     sessionStorage.removeItem('dft_signup_success');
                     localStorage.removeItem('dft_recent_signup_email');
+                    showAccountNotice('');
                     showToast(result.message || 'Login successful.');
                     setTimeout(() => {
                         window.location.href = dashboardPath;
                     }, 650);
                 } catch (error) {
-                    showToast(error.message || 'OTP verification failed.', true);
+                    showToast(error.message || 'Login failed.', true);
+                    await loadCaptcha();
+                    captchaInput.value = '';
                 } finally {
-                    toggleBusy(verifyOtpBtn, '', false);
+                    toggleBusy(loginBtn, '', false);
                 }
-            });
-
-            resendOtpBtn.addEventListener('click', async () => {
-                if (!loginContext) {
-                    showToast('Go back and enter your credentials again.', true);
-                    return;
-                }
-
-                toggleBusy(resendOtpBtn, 'Resending...', true);
-
-                try {
-                    const result = await requestOtp(loginContext);
-                    challengeId = result.challengeId;
-                    showPreviewOtp(result.previewOtp);
-                    showToast('A fresh OTP has been sent.');
-                } catch (error) {
-                    showToast(error.message || 'Unable to resend OTP.', true);
-                } finally {
-                    toggleBusy(resendOtpBtn, '', false);
-                }
-            });
-
-            backBtn.addEventListener('click', () => {
-                setStep('credentials');
-                otpInput.value = '';
-                otpHint.textContent = '';
             });
 
             emailInput.addEventListener('input', () => {
@@ -959,11 +891,16 @@
                 }
             });
 
-            otpInput.addEventListener('input', () => {
-                otpInput.value = otpInput.value.replace(/\D/g, '').slice(0, 6);
-                if (otpHint.textContent) {
-                    validateOtp(true);
+            captchaInput.addEventListener('input', () => {
+                captchaInput.value = captchaInput.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+                if (submitted) {
+                    validateCaptcha(true);
                 }
+            });
+
+            refreshCaptchaBtn.addEventListener('click', async () => {
+                captchaInput.value = '';
+                await loadCaptcha();
             });
 
             forgotPasswordBtn.addEventListener('click', () => {
@@ -990,15 +927,31 @@
                 window.location.href = dashboardPath;
             }
 
-            const rememberedEmail = localStorage.getItem('rememberMe') === 'true'
-                ? (localStorage.getItem('dft_user') || '')
-                : '';
             const recentSignupEmail = localStorage.getItem('dft_recent_signup_email') || '';
             const signupSuccess = sessionStorage.getItem('dft_signup_success') || '';
 
-            emailInput.value = rememberedEmail || recentSignupEmail;
+            if (localStorage.getItem('dft_user') === 'bnn86031@gmail.com') {
+                localStorage.removeItem('dft_user');
+                localStorage.removeItem('dft_user_name');
+                localStorage.removeItem('rememberMe');
+            }
+
+            emailInput.value = recentSignupEmail;
             passwordInput.value = '';
-            rememberInput.checked = localStorage.getItem('rememberMe') === 'true';
+            rememberInput.checked = false;
+            emailInput.setAttribute('data-lpignore', 'true');
+            passwordInput.setAttribute('data-lpignore', 'true');
+            emailInput.readOnly = true;
+            passwordInput.readOnly = true;
+
+            const enableManualEntry = (input) => {
+                input.readOnly = false;
+            };
+
+            emailInput.addEventListener('focus', () => enableManualEntry(emailInput), { once: true });
+            passwordInput.addEventListener('focus', () => enableManualEntry(passwordInput), { once: true });
+            emailInput.addEventListener('pointerdown', () => enableManualEntry(emailInput), { once: true });
+            passwordInput.addEventListener('pointerdown', () => enableManualEntry(passwordInput), { once: true });
 
             if (signupSuccess) {
                 showAccountNotice(signupSuccess);
@@ -1012,6 +965,8 @@
                     window.location.href = '../index.html';
                 }
             });
+
+            loadCaptcha();
         })();
     </script>
 </body>

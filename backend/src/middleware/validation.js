@@ -27,6 +27,12 @@ const signupValidation = [
   body('password')
     .isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
     .matches(/^(?=.*[A-Za-z])(?=.*\d)/).withMessage('Password must contain at least one letter and one number'),
+  body('captchaToken')
+    .trim()
+    .notEmpty().withMessage('CAPTCHA challenge is required'),
+  body('captchaResponse')
+    .trim()
+    .isLength({ min: 4, max: 8 }).withMessage('Enter the CAPTCHA code shown in the image'),
   validateRequest
 ];
 
@@ -35,6 +41,12 @@ const loginValidation = [
     .notEmpty().withMessage('Email is required'),
   body('password')
     .notEmpty().withMessage('Password is required'),
+  body('captchaToken')
+    .trim()
+    .notEmpty().withMessage('CAPTCHA challenge is required'),
+  body('captchaResponse')
+    .trim()
+    .isLength({ min: 4, max: 8 }).withMessage('Enter the CAPTCHA code shown in the image'),
   validateRequest
 ];
 

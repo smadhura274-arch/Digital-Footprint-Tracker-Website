@@ -400,46 +400,76 @@
             text-decoration: none;
         }
 
-        .otp-banner {
-            margin-bottom: 18px;
-            padding: 16px 18px;
-            border-radius: 18px;
-            background: linear-gradient(135deg, rgba(108, 99, 255, 0.12), rgba(255, 184, 107, 0.16));
-            color: #4f4970;
-            line-height: 1.6;
-            font-size: 0.92rem;
+        .captcha-panel {
+            margin: 2px 0 20px;
+            padding: 16px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.08), rgba(255, 184, 107, 0.12));
+            border: 1px solid rgba(108, 99, 255, 0.12);
         }
 
-        .otp-banner strong {
-            color: var(--primary-dark);
-        }
-
-        .otp-grid {
-            display: grid;
-            grid-template-columns: 1fr auto;
+        .captcha-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             gap: 12px;
-            align-items: start;
+            margin-bottom: 12px;
         }
 
-        .otp-grid .field {
-            margin-bottom: 0;
+        .captcha-label strong {
+            font-size: 0.92rem;
+            color: #3a3557;
         }
 
-        .otp-input {
-            letter-spacing: 0.5em;
-            text-align: center;
-            padding-left: 16px !important;
-            font-size: 1.15rem;
-            font-weight: 700;
+        .captcha-label span {
+            font-size: 0.8rem;
+            color: #6e678b;
         }
 
-        .preview-otp {
-            margin-top: 12px;
-            padding: 12px 14px;
+        .captcha-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.86);
+            border: 1px solid rgba(108, 99, 255, 0.12);
+        }
+
+        .captcha-code {
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+        }
+
+        .captcha-refresh {
+            width: 40px;
+            height: 40px;
             border-radius: 14px;
-            background: rgba(108, 99, 255, 0.08);
+            border: 0;
+            background: rgba(108, 99, 255, 0.1);
             color: var(--primary-dark);
-            font-size: 0.88rem;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .captcha-input {
+            width: 100%;
+            margin-top: 12px;
+            border: 1px solid rgba(108, 99, 255, 0.14);
+            border-radius: 18px;
+            background: #ffffff;
+            padding: 14px 16px;
+            font: inherit;
+            color: var(--ink);
+            text-transform: uppercase;
+        }
+
+        .captcha-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.12);
         }
 
         .actions {
@@ -535,7 +565,6 @@
                 padding: 18px;
             }
 
-            .otp-grid,
             .actions {
                 grid-template-columns: 1fr;
                 display: grid;
@@ -553,15 +582,15 @@
                     <span>Onboarding that matches the site signal layer</span>
                 </div>
                 <h1>Open your account inside the same gradient-first privacy experience.</h1>
-                <p>Create your profile, verify your email with a one-time code, and finish with a reusable account you
-                    can sign into any time.</p>
+                <p>Create your profile, pass a quick CAPTCHA challenge, and finish with a reusable account you can sign
+                    into any time.</p>
             </div>
 
             <div class="promise-list">
                 <article class="promise-item">
                     <i class="fas fa-user-check"></i>
-                    <div><strong>Verified registration</strong><span>Only inbox owners can complete activation and start
-                            a live session.</span></div>
+                    <div><strong>Verified registration</strong><span>CAPTCHA helps block scripted signups before new
+                            accounts are created.</span></div>
                 </article>
                 <article class="promise-item">
                     <i class="fas fa-fingerprint"></i>
@@ -578,107 +607,83 @@
 
         <section class="form-panel">
             <div class="panel-head">
-                <div class="eyebrow"><i class="fas fa-user-plus"></i> Two-step sign up</div>
+                <div class="eyebrow"><i class="fas fa-user-plus"></i> Secure sign up</div>
                 <h2>Create account</h2>
-                <p>Enter your details, request the email OTP, then verify the code to activate your account for future
-                    logins.</p>
-            </div>
-
-            <div class="stepper">
-                <div class="step-chip active" id="stepChipDetails">
-                    <strong>1. Account details</strong>
-                    <span>Name, email, password</span>
-                </div>
-                <div class="step-chip" id="stepChipOtp">
-                    <strong>2. Verify OTP</strong>
-                    <span>Confirm the email address</span>
-                </div>
+                <p>Enter your details, complete the CAPTCHA check, and create your account in a single step.</p>
             </div>
 
             <div class="auth-card">
-                <section class="auth-step active" id="detailsStep">
-                    <form id="signupForm" novalidate>
-                        <div class="field">
-                            <label for="fullName">Full name</label>
-                            <div class="field-wrap">
-                                <i class="fas fa-user"></i>
-                                <input type="text" id="fullName" placeholder="Alex Johnson" autocomplete="name"
-                                    required>
-                            </div>
-                            <small class="hint" id="nameHint"></small>
+                <form id="signupForm" novalidate>
+                    <div class="field">
+                        <label for="fullName">Full name</label>
+                        <div class="field-wrap">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="fullName" placeholder="Alex Johnson" autocomplete="name" required>
                         </div>
+                        <small class="hint" id="nameHint"></small>
+                    </div>
 
-                        <div class="field">
-                            <label for="signupEmail">Email address</label>
-                            <div class="field-wrap">
-                                <i class="fas fa-envelope"></i>
-                                <input type="email" id="signupEmail" placeholder="hello@example.com"
-                                    autocomplete="email" required>
-                            </div>
-                            <small class="hint" id="emailHint"></small>
+                    <div class="field">
+                        <label for="signupEmail">Email address</label>
+                        <div class="field-wrap">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="signupEmail" placeholder="hello@example.com" autocomplete="email"
+                                required>
                         </div>
+                        <small class="hint" id="emailHint"></small>
+                    </div>
 
-                        <div class="field">
-                            <label for="signupPassword">Password</label>
-                            <div class="field-wrap">
-                                <i class="fas fa-lock"></i>
-                                <input type="password" id="signupPassword" placeholder="Create a strong password"
-                                    autocomplete="new-password" required>
-                                <button type="button" class="password-toggle" id="togglePassword"
-                                    aria-label="Show password" aria-pressed="false">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </div>
-                            <small class="hint" id="passwordHint"></small>
+                    <div class="field">
+                        <label for="signupPassword">Password</label>
+                        <div class="field-wrap">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="signupPassword" placeholder="Create a strong password"
+                                autocomplete="new-password" required>
+                            <button type="button" class="password-toggle" id="togglePassword" aria-label="Show password"
+                                aria-pressed="false">
+                                <i class="fas fa-eye"></i>
+                            </button>
                         </div>
+                        <small class="hint" id="passwordHint"></small>
+                    </div>
 
-                        <div class="strength">
-                            <div class="strength-track">
-                                <div class="strength-bar" id="strengthBar"></div>
-                            </div>
-                            <p class="strength-copy">Password strength: <strong id="strengthText">Not entered</strong>
-                            </p>
+                    <div class="strength">
+                        <div class="strength-track">
+                            <div class="strength-bar" id="strengthBar"></div>
                         </div>
+                        <p class="strength-copy">Password strength: <strong id="strengthText">Not entered</strong>
+                        </p>
+                    </div>
 
-                        <label class="terms-row">
-                            <input type="checkbox" id="termsAccepted">
-                            <span>I agree to the <a href="#" id="termsLink">Terms & Conditions</a> and want to verify
-                                this email address.</span>
-                        </label>
-                        <small class="hint" id="termsHint"></small>
-
-                        <div class="actions">
-                            <button type="submit" class="btn btn-primary" id="requestOtpBtn"><span>Send OTP to
-                                    email</span></button>
+                    <div class="captcha-panel">
+                        <div class="captcha-label">
+                            <strong>CAPTCHA verification</strong>
+                            <span>Refresh if the code is hard to read.</span>
                         </div>
-                    </form>
-                </section>
-
-                <section class="auth-step" id="otpStep">
-                    <div class="otp-banner">We sent a six-digit code to <strong id="otpEmailText">your email</strong>.
-                        Enter it below to finish creating the account.</div>
-
-                    <form id="otpForm" novalidate>
-                        <div class="otp-grid">
-                            <div class="field">
-                                <label for="signupOtp">One-time password</label>
-                                <div class="field-wrap">
-                                    <input type="text" id="signupOtp" class="otp-input" inputmode="numeric"
-                                        maxlength="6" placeholder="123456" autocomplete="one-time-code" required>
-                                </div>
-                                <small class="hint" id="otpHint"></small>
-                                <div class="preview-otp" id="previewOtp" style="display:none;"></div>
-                            </div>
-                            <button type="button" class="btn btn-secondary" id="resendOtpBtn">Resend OTP</button>
+                        <div class="captcha-box">
+                            <div class="captcha-code" id="captchaImage" aria-live="polite">Loading...</div>
+                            <button type="button" class="captcha-refresh" id="refreshCaptcha"
+                                aria-label="Refresh CAPTCHA">
+                                <i class="fas fa-rotate-right"></i>
+                            </button>
                         </div>
+                        <input type="text" id="signupCaptchaInput" class="captcha-input" placeholder="Enter the code"
+                            inputmode="text" autocomplete="off" maxlength="6" required>
+                        <small class="hint" id="captchaHint"></small>
+                    </div>
 
-                        <div class="actions">
-                            <button type="button" class="btn btn-secondary" id="backBtn">Back</button>
-                            <button type="submit" class="btn btn-primary" id="verifyOtpBtn"><span>Verify and create
-                                    account</span></button>
-                        </div>
-                    </form>
-                </section>
+                    <label class="terms-row">
+                        <input type="checkbox" id="termsAccepted">
+                        <span>I agree to the <a href="#" id="termsLink">Terms & Conditions</a> and want to create this
+                            account.</span>
+                    </label>
+                    <small class="hint" id="termsHint"></small>
+
+                    <div class="actions">
+                        <button type="submit" class="btn btn-primary" id="signupBtn"><span>Create
+                                account</span></button>
+                    </div>
+                </form>
             </div>
 
             <p class="footer-row">Already registered? <a href="login.html">Sign in</a></p>
@@ -690,33 +695,24 @@
     <script>
         (function () {
             const signupForm = document.getElementById('signupForm');
-            const otpForm = document.getElementById('otpForm');
             const nameInput = document.getElementById('fullName');
             const emailInput = document.getElementById('signupEmail');
             const passwordInput = document.getElementById('signupPassword');
             const termsInput = document.getElementById('termsAccepted');
-            const otpInput = document.getElementById('signupOtp');
-            const requestOtpBtn = document.getElementById('requestOtpBtn');
-            const verifyOtpBtn = document.getElementById('verifyOtpBtn');
-            const resendOtpBtn = document.getElementById('resendOtpBtn');
-            const backBtn = document.getElementById('backBtn');
+            const captchaInput = document.getElementById('signupCaptchaInput');
+            const captchaImage = document.getElementById('captchaImage');
+            const refreshCaptchaBtn = document.getElementById('refreshCaptcha');
+            const signupBtn = document.getElementById('signupBtn');
             const toast = document.getElementById('toast');
-            const otpEmailText = document.getElementById('otpEmailText');
-            const previewOtpBox = document.getElementById('previewOtp');
-            const detailsStep = document.getElementById('detailsStep');
-            const otpStep = document.getElementById('otpStep');
-            const stepChipDetails = document.getElementById('stepChipDetails');
-            const stepChipOtp = document.getElementById('stepChipOtp');
             const nameHint = document.getElementById('nameHint');
             const emailHint = document.getElementById('emailHint');
             const passwordHint = document.getElementById('passwordHint');
             const termsHint = document.getElementById('termsHint');
-            const otpHint = document.getElementById('otpHint');
+            const captchaHint = document.getElementById('captchaHint');
             const strengthBar = document.getElementById('strengthBar');
             const strengthText = document.getElementById('strengthText');
 
-            let signupContext = null;
-            let challengeId = '';
+            let captchaToken = '';
             let submitted = false;
             const dashboardPath = 'dashboard.html';
 
@@ -739,19 +735,14 @@
                 return fallbackMessage;
             };
 
-            const setStep = (step) => {
-                const onOtp = step === 'otp';
-                detailsStep.classList.toggle('active', !onOtp);
-                otpStep.classList.toggle('active', onOtp);
-                stepChipDetails.classList.toggle('active', !onOtp);
-                stepChipDetails.classList.toggle('complete', onOtp);
-                stepChipOtp.classList.toggle('active', onOtp);
-                if (onOtp) {
-                    otpInput.focus();
-                }
-            };
-
             const createSignupSession = (user, token) => {
+                const normalizedUser = {
+                    ...user,
+                    fullName: user.fullName || user.name || emailInput.value.trim() || 'User',
+                    name: user.fullName || user.name || emailInput.value.trim() || 'User',
+                    email: user.email || emailInput.value.trim()
+                };
+
                 localStorage.removeItem('isLoggedIn');
                 localStorage.removeItem('user');
                 localStorage.removeItem('token');
@@ -760,11 +751,12 @@
                 sessionStorage.removeItem('token');
 
                 localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('user', JSON.stringify(user));
+                localStorage.setItem('user', JSON.stringify(normalizedUser));
                 localStorage.setItem('token', token);
                 localStorage.setItem('rememberMe', 'true');
-                localStorage.setItem('dft_user', user.email || signupContext.email);
-                localStorage.setItem('dft_user_name', user.fullName || signupContext.fullName);
+                localStorage.setItem('dft_user', normalizedUser.email);
+                localStorage.setItem('dft_user_name', normalizedUser.fullName);
+                localStorage.setItem('dft_active_session_owner', normalizedUser.email);
             };
 
             const updateStrength = (password) => {
@@ -821,11 +813,11 @@
                 return valid;
             };
 
-            const validateOtp = (showError) => {
-                const value = otpInput.value.trim();
-                const valid = /^\d{6}$/.test(value);
-                otpHint.textContent = !valid && showError ? (value ? 'Enter the 6-digit OTP from your email' : 'OTP is required') : '';
-                otpInput.classList.toggle('error', !valid && showError);
+            const validateCaptcha = (showError) => {
+                const value = captchaInput.value.trim().toUpperCase();
+                const valid = /^[A-Z0-9]{6}$/.test(value);
+                captchaHint.textContent = !valid && showError ? (value ? 'Enter the 6-character CAPTCHA code' : 'CAPTCHA is required') : '';
+                captchaInput.classList.toggle('error', !valid && showError);
                 return valid;
             };
 
@@ -841,44 +833,25 @@
                 button.disabled = false;
             };
 
-            const showPreviewOtp = (previewOtp) => {
-                if (previewOtp) {
-                    previewOtpBox.style.display = 'block';
-                    previewOtpBox.textContent = `Development preview OTP: ${previewOtp}`;
-                } else {
-                    previewOtpBox.style.display = 'none';
-                    previewOtpBox.textContent = '';
+            const loadCaptcha = async () => {
+                captchaHint.textContent = '';
+                captchaInput.classList.remove('error');
+
+                try {
+                    const response = await fetch('/api/auth/captcha', { cache: 'no-store' });
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(getApiError(result, 'Unable to load CAPTCHA.'));
+                    }
+
+                    captchaToken = result.captchaToken;
+                    captchaImage.innerHTML = result.captchaSvg;
+                } catch (error) {
+                    captchaToken = '';
+                    captchaImage.textContent = 'Unavailable';
+                    captchaHint.textContent = error.message || 'Unable to load CAPTCHA.';
                 }
-            };
-
-            const requestOtp = async (payload) => {
-                const response = await fetch('/api/auth/signup/request-otp', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(getApiError(result, 'Unable to send OTP.'));
-                }
-
-                return result;
-            };
-
-            const verifyOtp = async (payload) => {
-                const response = await fetch('/api/auth/signup/verify-otp', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(getApiError(result, 'OTP verification failed.'));
-                }
-
-                return result;
             };
 
             signupForm.addEventListener('submit', async (event) => {
@@ -889,53 +862,35 @@
                 const emailOk = validateEmail(true);
                 const passwordOk = validatePassword(true);
                 const termsOk = validateTerms(true);
+                const captchaOk = validateCaptcha(true);
 
-                if (!nameOk || !emailOk || !passwordOk || !termsOk) {
+                if (!nameOk || !emailOk || !passwordOk || !termsOk || !captchaOk || !captchaToken) {
                     showToast('Fix the highlighted fields first.', true);
                     return;
                 }
 
-                signupContext = {
-                    fullName: nameInput.value.trim(),
-                    email: emailInput.value.trim(),
-                    password: passwordInput.value
-                };
-
-                toggleBusy(requestOtpBtn, 'Sending OTP...', true);
+                toggleBusy(signupBtn, 'Creating account...', true);
 
                 try {
-                    const result = await requestOtp(signupContext);
-                    challengeId = result.challengeId;
-                    otpEmailText.textContent = signupContext.email;
-                    otpInput.value = '';
-                    showPreviewOtp(result.previewOtp);
-                    setStep('otp');
-                    showToast(result.message || 'OTP sent to your email.');
-                } catch (error) {
-                    showToast(error.message || 'Unable to send OTP.', true);
-                } finally {
-                    toggleBusy(requestOtpBtn, '', false);
-                }
-            });
-
-            otpForm.addEventListener('submit', async (event) => {
-                event.preventDefault();
-
-                if (!validateOtp(true) || !challengeId) {
-                    showToast('Enter the OTP first.', true);
-                    return;
-                }
-
-                toggleBusy(verifyOtpBtn, 'Verifying...', true);
-
-                try {
-                    const result = await verifyOtp({
-                        challengeId,
-                        otp: otpInput.value.trim()
+                    const response = await fetch('/api/auth/signup', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            fullName: nameInput.value.trim(),
+                            email: emailInput.value.trim(),
+                            password: passwordInput.value,
+                            captchaToken,
+                            captchaResponse: captchaInput.value.trim().toUpperCase()
+                        })
                     });
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(getApiError(result, 'Signup failed.'));
+                    }
 
                     createSignupSession(result.user, result.token);
-                    localStorage.setItem('dft_recent_signup_email', signupContext.email);
+                    localStorage.setItem('dft_recent_signup_email', emailInput.value.trim());
                     sessionStorage.setItem(
                         'dft_signup_success',
                         `${result.message || 'Account created successfully.'} Dashboard access is now enabled.`
@@ -945,36 +900,12 @@
                         window.location.href = dashboardPath;
                     }, 700);
                 } catch (error) {
-                    showToast(error.message || 'OTP verification failed.', true);
+                    showToast(error.message || 'Signup failed.', true);
+                    await loadCaptcha();
+                    captchaInput.value = '';
                 } finally {
-                    toggleBusy(verifyOtpBtn, '', false);
+                    toggleBusy(signupBtn, '', false);
                 }
-            });
-
-            resendOtpBtn.addEventListener('click', async () => {
-                if (!signupContext) {
-                    showToast('Go back and enter your details again.', true);
-                    return;
-                }
-
-                toggleBusy(resendOtpBtn, 'Resending...', true);
-
-                try {
-                    const result = await requestOtp(signupContext);
-                    challengeId = result.challengeId;
-                    showPreviewOtp(result.previewOtp);
-                    showToast('A fresh OTP has been sent.');
-                } catch (error) {
-                    showToast(error.message || 'Unable to resend OTP.', true);
-                } finally {
-                    toggleBusy(resendOtpBtn, '', false);
-                }
-            });
-
-            backBtn.addEventListener('click', () => {
-                setStep('details');
-                otpInput.value = '';
-                otpHint.textContent = '';
             });
 
             nameInput.addEventListener('input', () => {
@@ -991,9 +922,13 @@
                     termsHint.textContent = '';
                 }
             });
-            otpInput.addEventListener('input', () => {
-                otpInput.value = otpInput.value.replace(/\D/g, '').slice(0, 6);
-                if (otpHint.textContent) validateOtp(true);
+            captchaInput.addEventListener('input', () => {
+                captchaInput.value = captchaInput.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+                if (submitted) validateCaptcha(true);
+            });
+            refreshCaptchaBtn.addEventListener('click', async () => {
+                captchaInput.value = '';
+                await loadCaptcha();
             });
 
             const passwordToggle = document.getElementById('togglePassword');
@@ -1021,6 +956,7 @@
             });
 
             updateStrength('');
+            loadCaptcha();
         })();
     </script>
 </body>

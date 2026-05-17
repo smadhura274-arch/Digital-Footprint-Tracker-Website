@@ -1660,12 +1660,30 @@
         }
 
         function getCurrentUser() {
-            return JSON.parse((authStorage && authStorage.getItem('user')) || 'null');
+            const rawUser = JSON.parse((authStorage && authStorage.getItem('user')) || 'null');
+            if (!rawUser) return null;
+
+            return {
+                ...rawUser,
+                fullName: rawUser.fullName || rawUser.name || rawUser.email || localStorage.getItem('dft_user_name') || 'User',
+                name: rawUser.name || rawUser.fullName || rawUser.email || localStorage.getItem('dft_user_name') || 'User',
+                email: rawUser.email || localStorage.getItem('dft_user') || ''
+            };
         }
 
         function setCurrentUser(userData) {
             if (!authStorage) return;
-            authStorage.setItem('user', JSON.stringify(userData));
+            const normalizedUser = {
+                ...userData,
+                fullName: userData.fullName || userData.name || userData.email || 'User',
+                name: userData.name || userData.fullName || userData.email || 'User',
+                email: userData.email || ''
+            };
+
+            authStorage.setItem('user', JSON.stringify(normalizedUser));
+            localStorage.setItem('dft_user_name', normalizedUser.fullName);
+            localStorage.setItem('dft_user', normalizedUser.email);
+            localStorage.setItem('dft_active_session_owner', normalizedUser.email);
         }
 
         function findScanByIdentifier(identifier) {
@@ -1886,7 +1904,7 @@
             const initial = name.charAt(0).toUpperCase();
             document.getElementById('sidebarUserName').innerText = name;
             document.getElementById('sidebarUserEmail').innerText = email;
-            document.getElementById('userName').innerText = name.split(' ')[0];
+            document.getElementById('userName').innerText = name;
             document.getElementById('profileNameDisplay').innerText = name;
             document.getElementById('profileEmailDisplay').innerText = email;
             document.getElementById('profileNameInput').value = name;
@@ -1912,6 +1930,8 @@
             if (profileAvatar) {
                 profileAvatar.innerHTML = userData.avatar ? `<img src="${userData.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">` : initial;
             }
+
+            setCurrentUser(userData);
         }
 
         function loadProfile() {
@@ -1926,8 +1946,8 @@
         }
 
         function saveProfileChanges() {
-            const newName = document.getElementById('profileNameInput').value;
-            const newEmail = document.getElementById('profileEmailInput').value;
+            const newName = document.getElementById('profileNameInput').value.trim();
+            const newEmail = document.getElementById('profileEmailInput').value.trim().toLowerCase();
             if (!newName || !newEmail) { showToast('Please fill all fields', 'error'); return; }
             let userData = getCurrentUser() || {};
             userData.fullName = newName;
@@ -2223,6 +2243,41 @@
             }
         }
 
+        function validateSocialHandle(value) {
+            const normalizedValue = typeof value === 'string' ? value.trim() : '';
+            const compactValue = normalizedValue.toLowerCase().replace(/[._0-9]/g, '');
+
+            if (!normalizedValue) {
+                return { isValid: false, message: 'Please enter at least one username to scan.' };
+            }
+
+            if (normalizedValue.length < 4 || normalizedValue.length > 30) {
+                return { isValid: false, message: 'Use 4 to 30 characters.' };
+            }
+
+            if (!/^[A-Za-z0-9._]+$/.test(normalizedValue)) {
+                return { isValid: false, message: 'Use only letters, numbers, dots, or underscores.' };
+            }
+
+            if (!/[A-Za-z]/.test(normalizedValue)) {
+                return { isValid: false, message: 'Username must include at least one letter.' };
+            }
+
+            if (/^[._]|[._]$/.test(normalizedValue)) {
+                return { isValid: false, message: 'Username cannot start or end with a dot or underscore.' };
+            }
+
+            if (/(.)\1{2,}/.test(normalizedValue)) {
+                return { isValid: false, message: 'Avoid repeated characters like "aaa" in a username.' };
+            }
+
+            if (/^(asd|qwe|zxc|dfg|fgh|jkl)$/.test(compactValue)) {
+                return { isValid: false, message: 'Enter a real social media username, not a random pattern.' };
+            }
+
+            return { isValid: true, normalizedValue };
+        }
+
         async function startScan() {
             const handles = {
                 facebook: document.getElementById('facebookHandle').value,
@@ -2237,7 +2292,17 @@
                 return;
             }
 
-            localStorage.setItem('socialHandles', JSON.stringify(handles));
+            const normalizedHandles = { ...handles };
+            for (const [platform, handle] of activeHandles) {
+                const validation = validateSocialHandle(handle);
+                if (!validation.isValid) {
+                    showToast(`${platform.charAt(0).toUpperCase() + platform.slice(1)}: ${validation.message}`, 'error');
+                    return;
+                }
+                normalizedHandles[platform] = validation.normalizedValue;
+            }
+
+            localStorage.setItem('socialHandles', JSON.stringify(normalizedHandles));
             document.getElementById('scanResults').style.display = 'block';
             const resultsDiv = document.getElementById('resultsCard');
             resultsDiv.innerHTML = '<div style="text-align:center; padding:2rem;"><div class="spinner"></div><p>Scanning...</p></div>';
@@ -2250,20 +2315,23 @@
                     const response = await fetch('/api/scan', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                        body: JSON.stringify({ socialHandles: handles })
+                        body: JSON.stringify({ socialHandles: normalizedHandles })
                     });
                     const data = await response.json();
                     if (data.success) {
                         backendScan = data.scan;
+                    } else {
+                        throw new Error(data.message || 'Scan failed. Please try again.');
                     }
                 } catch (err) {
                     console.error('Background sync failed:', err);
+                    showToast(err.message || 'Scan failed. Please try again.', 'error');
                 }
             }
 
             await new Promise(r => setTimeout(r, 1500));
             let findings = [], riskCount = 0;
-            for (let [platform, handle] of activeHandles) {
+            for (let [platform, handle] of Object.entries(normalizedHandles).filter(([, value]) => value && value.trim())) {
                 if (handle) {
                     let risk = Math.random() > 0.6 ? 'Medium' : 'Low';
                     let dataFound = [];

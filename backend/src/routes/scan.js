@@ -4,8 +4,46 @@ const Scan = require('../models/Scan');
 const Notification = require('../models/Notification');
 const { protect } = require('../middleware/auth');
 const { sendBreachAlertEmail } = require('../utils/mailer');
-const { scanValidation } = require('../middleware/validation');
 const { RISK_LEVELS, DEFAULT_PRIVACY_SCORE } = require('../config/constants');
+
+function normalizeHandle(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function validateHandle(value) {
+  const normalizedValue = normalizeHandle(value);
+  const compactValue = normalizedValue.toLowerCase().replace(/[._0-9]/g, '');
+
+  if (!normalizedValue) {
+    return { isValid: false, message: 'Please provide a username to scan.' };
+  }
+
+  if (normalizedValue.length < 4 || normalizedValue.length > 30) {
+    return { isValid: false, message: 'Usernames must be 4 to 30 characters long.' };
+  }
+
+  if (!/^[A-Za-z0-9._]+$/.test(normalizedValue)) {
+    return { isValid: false, message: 'Usernames can only contain letters, numbers, dots, and underscores.' };
+  }
+
+  if (!/[A-Za-z]/.test(normalizedValue)) {
+    return { isValid: false, message: 'Usernames must include at least one letter.' };
+  }
+
+  if (/^[._]|[._]$/.test(normalizedValue)) {
+    return { isValid: false, message: 'Usernames cannot start or end with a dot or underscore.' };
+  }
+
+  if (/(.)\1{2,}/.test(normalizedValue)) {
+    return { isValid: false, message: 'Usernames with repeated characters like "aaa" are not allowed.' };
+  }
+
+  if (/^(asd|qwe|zxc|dfg|fgh|jkl)$/.test(compactValue)) {
+    return { isValid: false, message: 'Please enter a real social media username.' };
+  }
+
+  return { isValid: true, normalizedValue };
+}
 
 // Helper function to calculate privacy score
 function calculatePrivacyScore(findings) {
@@ -52,63 +90,70 @@ function generateRecommendations(score, findings) {
 // @route   POST /api/scan
 // @desc    Perform a new digital footprint scan
 // @access  Private
-router.post('/', protect, scanValidation, async (req, res) => {
+router.post('/', protect, async (req, res) => {
   try {
-    const { socialHandles = {} } = req.body;
+    const rawTargetName = normalizeHandle(req.body.targetName);
+    const submittedHandles = req.body.socialHandles && typeof req.body.socialHandles === 'object'
+      ? req.body.socialHandles
+      : {};
+    const activeHandles = Object.entries(submittedHandles)
+      .map(([platform, handle]) => [platform, normalizeHandle(handle)])
+      .filter(([, handle]) => handle);
+
+    if (!rawTargetName && activeHandles.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide at least one username to scan.'
+      });
+    }
+
+    const normalizedHandles = {};
+    for (const [platform, handle] of activeHandles) {
+      const validation = validateHandle(handle);
+      if (!validation.isValid) {
+        return res.status(400).json({
+          success: false,
+          message: `${platform} username is invalid. ${validation.message}`
+        });
+      }
+      normalizedHandles[platform] = validation.normalizedValue;
+    }
+
+    let targetName = rawTargetName;
+    if (targetName) {
+      const validation = validateHandle(targetName);
+      if (!validation.isValid) {
+        return res.status(400).json({
+          success: false,
+          message: validation.message
+        });
+      }
+      targetName = validation.normalizedValue;
+    } else {
+      targetName = activeHandles[0][1];
+    }
 
     // Simulate scan processing
     const findings = [];
 
-    // Analyze each platform
-    if (socialHandles.facebook && socialHandles.facebook.trim()) {
-      findings.push({
-        platform: 'Facebook',
-        status: 'Profile Found',
-        risk: 'Medium',
-        details: `Profile "${socialHandles.facebook}" is publicly visible`,
-        dataFound: ['profile picture', 'cover photo', 'public posts', 'friends list']
-      });
-    }
+    // Analyze platforms based on the provided target name
+    const platforms = [
+      { name: 'Facebook', risk: 'Medium', details: 'Public profile visible', data: ['profile info', 'posts'] },
+      { name: 'Twitter', risk: 'Low', details: 'Public tweets detected', data: ['tweets', 'likes'] },
+      { name: 'Instagram', risk: 'High', details: 'Personal photos exposed', data: ['photos', 'location'] },
+      { name: 'LinkedIn', risk: 'Low', details: 'Work history visible', data: ['experience', 'skills'] },
+      { name: 'YouTube', risk: 'Medium', details: 'Channel activity found', data: ['comments', 'playlists'] }
+    ];
 
-    if (socialHandles.twitter && socialHandles.twitter.trim()) {
+    platforms.forEach(p => {
       findings.push({
-        platform: 'Twitter',
+        platform: p.name,
         status: 'Profile Found',
-        risk: 'Low',
-        details: `Tweets and profile information are visible to public`,
-        dataFound: ['tweets', 'follower count', 'retweets', 'likes']
+        risk: p.risk,
+        details: `${p.details} for "${targetName}"`,
+        dataFound: p.data
       });
-    }
-
-    if (socialHandles.instagram && socialHandles.instagram.trim()) {
-      findings.push({
-        platform: 'Instagram',
-        status: 'Profile Found',
-        risk: 'High',
-        details: `Personal photos and location data may be visible`,
-        dataFound: ['photos', 'location tags', 'follower list', 'stories']
-      });
-    }
-
-    if (socialHandles.linkedin && socialHandles.linkedin.trim()) {
-      findings.push({
-        platform: 'LinkedIn',
-        status: 'Profile Found',
-        risk: 'Low',
-        details: `Professional information and work history visible`,
-        dataFound: ['work history', 'education', 'skills', 'recommendations']
-      });
-    }
-
-    if (socialHandles.youtube && socialHandles.youtube.trim()) {
-      findings.push({
-        platform: 'YouTube',
-        status: 'Channel Found',
-        risk: 'Medium',
-        details: `Channel content and subscriber information visible`,
-        dataFound: ['video titles', 'subscriber count', 'playlists', 'comments']
-      });
-    }
+    });
 
     // Simulate Data Breach Check (e.g. searching HIBP database)
     const breachFound = Math.random() > 0.7; // 30% chance for simulation
@@ -138,7 +183,7 @@ router.post('/', protect, scanValidation, async (req, res) => {
 
     const scan = await Scan.create({
       userId: req.user._id,
-      socialHandles,
+      socialHandles: Object.keys(normalizedHandles).length ? normalizedHandles : { fullName: targetName },
       findings,
       totalFindings: findings.length,
       riskCount: 100 - privacyScore,

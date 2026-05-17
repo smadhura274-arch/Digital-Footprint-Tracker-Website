@@ -35,7 +35,7 @@ const TRANSLATIONS = {
     score: "Score",
     // Scan page
     scanner_title: "Digital Footprint Scanner",
-    scanner_desc: "Enter your social media handles to scan for privacy risks",
+    scanner_desc: "Enter the name you use on social media to scan for privacy risks",
     start_scan: "Start Scan",
     clear_all: "Clear All",
     scanning: "Scanning...",

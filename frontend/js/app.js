@@ -254,19 +254,13 @@ const Auth = {
         if (signupBtn) signupBtn.style.display = 'inline-flex';
     },
 
-    // New properties to store signup data and challengeId temporarily
-    _signupData: null,
-    _challengeId: null,
-    _otpTimer: null,
-    _otpExpiresInMinutes: null,
-
-    login: async (email, password, remember) => {
+    login: async (email, password, remember, captchaResponse) => {
         try {
             // Assuming a login API endpoint exists on the backend
             const response = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ email, password, captchaResponse })
             });
 
             const data = await response.json();
@@ -278,11 +272,11 @@ const Auth = {
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('user', JSON.stringify(data.user)); // Assuming API returns user data
             localStorage.setItem('token', data.token); // Assuming API returns a token
+            localStorage.setItem('dft_user', data.user.email);
+            localStorage.setItem('dft_user_name', data.user.fullName || data.user.name);
 
             if (remember) {
                 localStorage.setItem('rememberMe', 'true');
-                localStorage.setItem('dft_user', data.user.email);
-                localStorage.setItem('dft_user_name', data.user.fullName || data.user.name);
             } else {
                 localStorage.removeItem('rememberMe');
             }
@@ -296,167 +290,34 @@ const Auth = {
         }
     },
 
-    signup: async (userData) => {
+    signup: async (userData, captchaResponse) => {
         try {
             const response = await fetch('/api/auth/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userData)
+                body: JSON.stringify({ ...userData, captchaResponse })
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || (data.errors && data.errors[0] && data.errors[0].message) || 'Failed to request OTP.');
+                throw new Error(data.message || (data.errors && data.errors[0] && data.errors[0].message) || 'Failed to create account.');
             }
 
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('user', JSON.stringify(data.user));
             localStorage.setItem('token', data.token);
+            localStorage.setItem('dft_user', data.user.email);
+            localStorage.setItem('dft_user_name', data.user.fullName || data.user.name);
 
             alert('Account created successfully!');
             const isPagesFolder = window.location.pathname.includes('/pages/');
             window.location.href = isPagesFolder ? 'dashboard.html' : 'pages/dashboard.html';
 
         } catch (error) {
-            console.error('Signup OTP request error:', error);
+            console.error('Signup error:', error);
             alert(error.message || 'An unexpected error occurred during signup.');
         }
-    },
-
-    // New function to handle OTP verification
-    verifyOtp: async (otp) => {
-        if (!Auth._challengeId || !Auth._signupData) {
-            alert('Signup process not initiated or expired. Please try again.');
-            return;
-        }
-
-        try {
-            const response = await fetch('/api/auth/signup/verify-otp', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    challengeId: Auth._challengeId,
-                    otp: otp
-                })
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'OTP verification failed.');
-            }
-
-            // OTP verified, now perform actual login/redirection
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('user', JSON.stringify(data.user)); // Assuming API returns user data
-            localStorage.setItem('token', data.token); // Assuming API returns a token
-
-            localStorage.setItem('rememberMe', 'true');
-            localStorage.setItem('dft_user', data.user.email);
-            localStorage.setItem('dft_user_name', data.user.fullName || data.user.name);
-
-            // Clear temporary signup data
-            Auth._signupData = null;
-            Auth._challengeId = null;
-            Auth._stopOtpTimer();
-
-            alert('Account created and verified successfully!');
-            const isPagesFolder = window.location.pathname.includes('/pages/');
-            window.location.href = isPagesFolder ? 'dashboard.html' : 'pages/dashboard.html';
-
-        } catch (error) {
-            console.error('OTP verification error:', error);
-            alert(error.message || 'An unexpected error occurred during OTP verification.');
-        }
-    },
-
-    // New function to resend OTP
-    resendOtp: async () => {
-        if (!Auth._signupData) {
-            alert('Signup data not found. Please start the signup process again.');
-            return;
-        }
-
-        try {
-            const response = await fetch('/api/auth/signup/request-otp', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(Auth._signupData) // Use stored signup data
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to resend OTP.');
-            }
-
-            Auth._challengeId = data.challengeId;
-            Auth._otpExpiresInMinutes = data.expiresInMinutes;
-
-            alert(`New OTP sent to ${Auth._signupData.email}. It expires in ${data.expiresInMinutes} minutes.`);
-            Auth._startOtpTimer(); // Restart timer
-
-        } catch (error) {
-            console.error('Resend OTP error:', error);
-            alert(error.message || 'An unexpected error occurred during OTP resend.');
-        }
-    },
-
-    // UI helper functions (assuming HTML elements exist)
-    _showOtpVerificationUI: (email) => {
-        const signupForm = document.getElementById('signupForm'); // Assuming signup form ID
-        const otpVerificationSection = document.getElementById('otpVerificationSection'); // Assuming OTP section ID
-        const otpEmailDisplay = document.getElementById('otpEmailDisplay');
-
-        if (signupForm) signupForm.style.display = 'none';
-        if (otpVerificationSection) otpVerificationSection.style.display = 'block';
-        if (otpEmailDisplay) otpEmailDisplay.textContent = email;
-    },
-
-    _hideOtpVerificationUI: () => {
-        const signupForm = document.getElementById('signupForm');
-        const otpVerificationSection = document.getElementById('otpVerificationSection');
-
-        if (signupForm) signupForm.style.display = 'block';
-        if (otpVerificationSection) otpVerificationSection.style.display = 'none';
-        Auth._stopOtpTimer();
-    },
-
-    _startOtpTimer: () => {
-        Auth._stopOtpTimer(); // Clear any existing timer
-        const otpTimerDisplay = document.getElementById('otpTimerDisplay');
-        const resendOtpBtn = document.getElementById('resendOtpBtn');
-
-        if (!otpTimerDisplay || !resendOtpBtn) return;
-
-        let timeLeft = Auth._otpExpiresInMinutes * 60; // Convert minutes to seconds
-        resendOtpBtn.disabled = true;
-        otpTimerDisplay.style.display = 'block';
-
-        Auth._otpTimer = setInterval(() => {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            otpTimerDisplay.textContent = `OTP expires in ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-            if (timeLeft <= 0) {
-                Auth._stopOtpTimer();
-                otpTimerDisplay.textContent = 'OTP expired. Please resend.';
-                resendOtpBtn.disabled = false;
-            }
-            timeLeft--;
-        }, 1000);
-    },
-
-    _stopOtpTimer: () => {
-        if (Auth._otpTimer) {
-            clearInterval(Auth._otpTimer);
-            Auth._otpTimer = null;
-        }
-        const otpTimerDisplay = document.getElementById('otpTimerDisplay');
-        const resendOtpBtn = document.getElementById('resendOtpBtn');
-        if (otpTimerDisplay) otpTimerDisplay.style.display = 'none';
-        if (resendOtpBtn) resendOtpBtn.disabled = false; // Enable resend if timer is stopped manually
     },
 
     logout: async () => {
@@ -484,6 +345,29 @@ const Auth = {
     }
 };
 window.Auth = Auth;
+
+// ==================== CAPTCHA UTILITY ====================
+const Captcha = {
+    _codes: {},
+    generate: (containerId, formId) => {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+        let code = '';
+        for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+        Captcha._codes[formId] = code;
+        container.innerHTML = `
+            <div style="display:flex; align-items:center; gap:10px; background:#f3f4f6; padding:10px; border-radius:6px; border:1px solid #ddd; user-select:none; margin-bottom:15px;">
+                <span style="font-family:'Courier New', monospace; font-weight:bold; font-size:1.3rem; letter-spacing:4px; font-style:italic; color:#4b5563; text-decoration:line-through;">${code}</span>
+                <button type="button" onclick="Captcha.generate('${containerId}', '${formId}')" style="background:none; border:none; color:#9ca3af; cursor:pointer;" title="Refresh Captcha"><i class="fas fa-sync-alt"></i></button>
+            </div>`;
+    },
+    validate: (formId, userValue) => {
+        return userValue && userValue.toUpperCase() === Captcha._codes[formId];
+    }
+};
+window.Captcha = Captcha;
+
 Auth.checkAccess();
 Auth.updateNav();
 
@@ -589,22 +473,31 @@ document.querySelectorAll('[data-social-auth]').forEach(button => {
 
 // ==================== AUTH FORM SUBMISSION HANDLERS ====================
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize CAPTCHAs if containers exist
+    Captcha.generate('signupCaptchaContainer', 'signupForm');
+    Captcha.generate('loginCaptchaContainer', 'loginForm');
+
     const signupForm = document.getElementById('signupForm');
     if (signupForm) {
         signupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (validateAuthForm(signupForm)) {
-                const fullName = document.getElementById('fullName')?.value;
-                const email = document.getElementById('signupEmail')?.value;
-                const password = document.getElementById('signupPassword')?.value;
+            if (!validateAuthForm(signupForm)) return alert('Please correct the errors in the form.');
 
-                if (fullName && email && password) {
-                    await Auth.signup({ fullName, email, password });
-                } else {
-                    alert('Please fill in all required fields for signup.');
-                }
+            const captchaInput = document.getElementById('signupCaptchaInput')?.value;
+            if (!Captcha.validate('signupForm', captchaInput)) {
+                alert('Invalid CAPTCHA code. Please try again.');
+                Captcha.generate('signupCaptchaContainer', 'signupForm');
+                return;
+            }
+
+            const fullName = document.getElementById('fullName')?.value;
+            const email = document.getElementById('signupEmail')?.value;
+            const password = document.getElementById('signupPassword')?.value;
+
+            if (fullName && email && password) {
+                await Auth.signup({ fullName, email, password }, captchaInput.toUpperCase());
             } else {
-                alert('Please correct the errors in the form.');
+                alert('Please fill in all required fields for signup.');
             }
         });
     }
@@ -613,29 +506,26 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (validateAuthForm(loginForm)) {
-                const email = document.getElementById('loginEmail')?.value;
-                const password = document.getElementById('loginPassword')?.value;
-                const rememberMe = document.getElementById('rememberMe')?.checked || false; // Assuming a remember me checkbox
+            if (!validateAuthForm(loginForm)) return alert('Please correct the errors in the form.');
 
-                if (email && password) {
-                    await Auth.login(email, password, rememberMe);
-                } else {
-                    alert('Please enter your email and password.');
-                }
+            const captchaInput = document.getElementById('loginCaptchaInput')?.value;
+            if (!Captcha.validate('loginForm', captchaInput)) {
+                alert('Invalid CAPTCHA code. Please try again.');
+                Captcha.generate('loginCaptchaContainer', 'loginForm');
+                return;
+            }
+
+            const email = document.getElementById('loginEmail')?.value;
+            const password = document.getElementById('loginPassword')?.value;
+            const rememberMe = document.getElementById('rememberMe')?.checked || false;
+
+            if (email && password) {
+                await Auth.login(email, password, rememberMe, captchaInput.toUpperCase());
             } else {
-                alert('Please correct the errors in the form.');
+                alert('Please enter your email and password.');
             }
         });
     }
-
-    // OTP Verification button handlers
-    document.getElementById('verifyOtpBtn')?.addEventListener('click', async () => {
-        const otp = document.getElementById('otpInput')?.value;
-        if (otp) await Auth.verifyOtp(otp);
-    });
-    document.getElementById('resendOtpBtn')?.addEventListener('click', async () => await Auth.resendOtp());
-    document.getElementById('cancelOtpBtn')?.addEventListener('click', () => Auth._hideOtpVerificationUI());
 });
 
 // ==================== NEWSLETTER FORM HANDLER ====================
@@ -933,18 +823,48 @@ function getRiskBadge(riskLevel) {
     return colors[riskLevel.toLowerCase()] || colors.low;
 }
 
+function validateScanIdentity(value) {
+    const normalizedValue = typeof value === 'string' ? value.trim() : '';
+    const compactValue = normalizedValue.toLowerCase().replace(/[._0-9]/g, '');
+
+    if (!normalizedValue) {
+        return { isValid: false, message: 'Please enter a username to scan.' };
+    }
+
+    if (normalizedValue.length < 4 || normalizedValue.length > 30) {
+        return { isValid: false, message: 'Use 4 to 30 characters.' };
+    }
+
+    if (!/^[A-Za-z0-9._]+$/.test(normalizedValue)) {
+        return { isValid: false, message: 'Use only letters, numbers, dots, or underscores.' };
+    }
+
+    if (!/[A-Za-z]/.test(normalizedValue)) {
+        return { isValid: false, message: 'Username must include at least one letter.' };
+    }
+
+    if (/^[._]|[._]$/.test(normalizedValue)) {
+        return { isValid: false, message: 'Username cannot start or end with a dot or underscore.' };
+    }
+
+    if (/(.)\1{2,}/.test(normalizedValue)) {
+        return { isValid: false, message: 'Avoid repeated characters like "aaa" in a username.' };
+    }
+
+    if (/^(asd|qwe|zxc|dfg|fgh|jkl)$/.test(compactValue)) {
+        return { isValid: false, message: 'Enter a real social media username, not a random pattern.' };
+    }
+
+    return { isValid: true, normalizedValue };
+}
+
 // ==================== SCANNER FORM HANDLERS ====================
 document.addEventListener('DOMContentLoaded', () => {
     // Load saved handles into inputs
     const loadSavedHandles = () => {
-        const saved = Storage.getSocialHandles();
-        const platforms = ['facebook', 'twitter', 'instagram', 'linkedin', 'youtube'];
-        platforms.forEach(id => {
-            const el = document.getElementById(id);
-            if (el && saved[id]) {
-                el.value = saved[id];
-            }
-        });
+        const savedName = localStorage.getItem('dft_scan_name') || '';
+        const el = document.getElementById('socialName');
+        if (el) el.value = savedName;
     };
 
     loadSavedHandles();
@@ -956,15 +876,13 @@ document.addEventListener('DOMContentLoaded', () => {
         startScanBtn.addEventListener('click', () => {
             const originalContent = startScanBtn.innerHTML;
 
-            const handles = {
-                facebook: document.getElementById('facebook')?.value.trim() || '',
-                twitter: document.getElementById('twitter')?.value.trim() || '',
-                instagram: document.getElementById('instagram')?.value.trim() || '',
-                linkedin: document.getElementById('linkedin')?.value.trim() || '',
-                youtube: document.getElementById('youtube')?.value.trim() || ''
-            };
+            const targetName = document.getElementById('socialName')?.value.trim() || '';
+            const validation = validateScanIdentity(targetName);
+            if (!validation.isValid) {
+                return showToast(validation.message, 'error');
+            }
 
-            Storage.saveSocialHandles(handles);
+            localStorage.setItem('dft_scan_name', validation.normalizedValue);
 
             // Start the actual scan on the backend immediately
             const scanRequest = fetch('/api/scan', {
@@ -973,8 +891,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify({ socialHandles: handles })
-            }).catch(err => console.error('Backend scan failed:', err));
+                body: JSON.stringify({ targetName: validation.normalizedValue })
+            })
+                .then(async response => {
+                    const data = await response.json().catch(() => ({}));
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.message || 'Scan failed. Please try again.');
+                    }
+                    return data;
+                });
 
             // Visual feedback: Loading Spinner
             startScanBtn.disabled = true;
@@ -1010,10 +935,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         scanRequest.then(() => {
                             updateDashboardStats();
                             if (window.updateNotifications) window.updateNotifications();
+                            console.log('Scan completed for:', validation.normalizedValue);
+                            showToast(typeof t === 'function' ? t('scan_success') : 'Scan completed successfully!');
+                        }).catch(err => {
+                            console.error('Backend scan failed:', err);
+                            showToast(err.message || 'Scan failed. Please try again.', 'error');
                         });
-
-                        console.log('Scan completed for handles:', handles);
-                        showToast(typeof t === 'function' ? t('scan_success') : 'Scan completed successfully!');
                     }, 500);
                 }
 
@@ -1025,12 +952,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (clearAllBtn) {
         clearAllBtn.addEventListener('click', () => {
-            const platforms = ['facebook', 'twitter', 'instagram', 'linkedin', 'youtube'];
-            platforms.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.value = '';
-            });
-            Storage.saveSocialHandles({ facebook: '', twitter: '', instagram: '', linkedin: '', youtube: '' });
+            const el = document.getElementById('socialName');
+            if (el) el.value = '';
+            localStorage.removeItem('dft_scan_name');
         });
     }
 });
