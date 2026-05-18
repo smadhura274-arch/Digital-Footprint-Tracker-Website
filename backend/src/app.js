@@ -35,7 +35,10 @@ const isAllowedOrigin = (origin) => {
 
   try {
     const { hostname } = new URL(origin);
-    return hostname === 'localhost' || hostname === '127.0.0.1' || hostname.endsWith('.vercel.app');
+    return hostname === 'localhost' || 
+           hostname === '127.0.0.1' || 
+           hostname.endsWith('.vercel.app') || 
+           hostname.endsWith('.onrender.com');
   } catch (_) {
     return false;
   }
