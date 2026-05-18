@@ -1,6 +1,5 @@
 services:
   # ── Unified Web Service (Backend + Frontend) ────────────────────────────────
-  # This service handles both the API and serves the static frontend files.
   - type: web
     name: digital-footprint-tracker
     runtime: node
@@ -13,12 +12,12 @@ services:
       - key: NODE_ENV
         value: production
       - key: MONGODB_URI
-        sync: false          # REQUIRED: Set your MongoDB Atlas URI in Render Dashboard
+        value: mongodb://MadhuShwetha:MadhuShwetha123@ac-3zsisvn-shard-00-00.aorwser.mongodb.net:27017,ac-3zsisvn-shard-00-01.aorwser.mongodb.net:27017,ac-3zsisvn-shard-00-02.aorwser.mongodb.net:27017/digital_footprint_tracker?replicaSet=atlas-lhc3o8-shard-0&authSource=admin&retryWrites=true&w=majority&tls=true
       - key: JWT_SECRET
-        sync: false          # REQUIRED: Set a secure secret in Render Dashboard
+        value: dft_prod_secret_8472_9x_!  # I've generated this secure secret for you
       - key: JWT_EXPIRE
         value: 7d
       - key: CLIENT_URL
-        sync: false          # Optional: Your production URL
+        value: https://digital-footprint-tracker.onrender.com
       - key: PORT
         value: 10000
