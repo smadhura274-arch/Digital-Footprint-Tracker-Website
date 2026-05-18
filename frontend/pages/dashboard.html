@@ -1063,6 +1063,11 @@
                         <h4>Generate Report</h4>
                         <p>Get detailed analysis</p>
                     </div>
+                    <div class="action-card" onclick="openExposureMap()"><i class="fas fa-fingerprint"
+                            style="color: var(--primary-color);"></i>
+                        <h4>Exposure Map</h4>
+                        <p>Open data exposure details</p>
+                    </div>
                     <div class="action-card" onclick="exportData()"><i class="fas fa-download"
                             style="color: var(--primary-color);"></i>
                         <h4>Export Data</h4>
@@ -1175,7 +1180,7 @@
                             your privacy status.</p>
                     </div>
 
-                    <div class="chart-card">
+                    <div class="chart-card" id="dataExposureMapSection">
                         <h4 style="margin-bottom: 1.5rem;"><i class="fas fa-fingerprint"></i> Data Exposure Map</h4>
                         <div class="exposure-grid"
                             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem;">
@@ -2624,6 +2629,18 @@
         function generateReport() {
             showPage('reports');
             generateFullReport();
+        }
+
+        function openExposureMap() {
+            showPage('reports');
+            loadReports();
+
+            requestAnimationFrame(() => {
+                const section = document.getElementById('dataExposureMapSection');
+                if (section) {
+                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
         }
 
         async function generateFullReport() {

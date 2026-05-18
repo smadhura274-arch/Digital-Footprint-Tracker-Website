@@ -1,14 +1,25 @@
 const mongoose = require('mongoose');
 const { MONGODB_URI } = require('./constants');
 
+let connectionPromise = null;
+
 const connectDB = async () => {
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
+  }
+
+  if (connectionPromise) {
+    return connectionPromise;
+  }
+
   try {
-    const conn = await mongoose.connect(MONGODB_URI, {
+    connectionPromise = mongoose.connect(MONGODB_URI, {
       serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
       maxPoolSize: 10,
       retryWrites: true,
     });
+    const conn = await connectionPromise;
 
     const connectionType = connectDB.isAtlasUri(MONGODB_URI) ? 'MongoDB Atlas' : 'MongoDB';
     console.log(`${connectionType} connected: ${conn.connection.host}`);
@@ -20,9 +31,12 @@ const connectDB = async () => {
     mongoose.connection.on('reconnected', () => {
       console.log('MongoDB reconnected.');
     });
+
+    return conn;
   } catch (error) {
+    connectionPromise = null;
     console.error(`MongoDB connection error: ${error.message}`);
-    process.exit(1);
+    throw error;
   }
 };
 
