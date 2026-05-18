@@ -1,34 +1,24 @@
 services:
-  # ── Backend API (Web Service) ──────────────────────────────────────────────
+  # ── Unified Web Service (Backend + Frontend) ────────────────────────────────
+  # This service handles both the API and serves the static frontend files.
   - type: web
-    name: digital-footprint-tracker-api
+    name: digital-footprint-tracker
     runtime: node
     plan: free
-    rootDir: backend
-    buildCommand: npm install
-    startCommand: node server.js
+    rootDir: .
+    buildCommand: npm install && npm --prefix backend install
+    startCommand: node backend/server.js
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 10000
       - key: MONGODB_URI
-        sync: false          # Set this in Render dashboard
+        sync: false          # REQUIRED: Set your MongoDB Atlas URI in Render Dashboard
       - key: JWT_SECRET
-        sync: false          # Set this in Render dashboard
+        sync: false          # REQUIRED: Set a secure secret in Render Dashboard
       - key: JWT_EXPIRE
         value: 7d
       - key: CLIENT_URL
-        sync: false          # Set to your static site URL after it's created
-
-  # ── Frontend (Static Site) ────────────────────────────────────────────────
-  - type: web
-    name: digital-footprint-tracker-frontend
-    runtime: static
-    plan: free
-    staticPublishPath: frontend
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+        sync: false          # Optional: Your production URL
+      - key: PORT
+        value: 10000
