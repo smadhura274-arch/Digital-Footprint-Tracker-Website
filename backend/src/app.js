@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
+const connectDB = require('./config/database');
 
 const authRoutes = require('./routes/auth');
 const scanRoutes = require('./routes/scan');
@@ -11,6 +12,10 @@ const dashboardRoutes = require('./routes/dashboard');
 const reportRoutes = require('./routes/report');
 
 const app = express();
+
+// Initialize Database Connection
+connectDB();
+
 const frontendPath = path.join(__dirname, '..', '..', 'frontend');
 
 // Security middleware
@@ -35,10 +40,10 @@ const isAllowedOrigin = (origin) => {
 
   try {
     const { hostname } = new URL(origin);
-    return hostname === 'localhost' || 
-           hostname === '127.0.0.1' || 
-           hostname.endsWith('.vercel.app') || 
-           hostname.endsWith('.onrender.com');
+    return hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname.endsWith('.vercel.app') ||
+      hostname.endsWith('.onrender.com');
   } catch (_) {
     return false;
   }
@@ -167,9 +172,11 @@ app.use((err, req, res, next) => {
     });
   }
 
-  res.status(500).json({
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).json({
     success: false,
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+    message: err.message || 'Internal Server Error',
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
   });
 });
 

@@ -309,6 +309,24 @@ router.get('/:id', protect, async (req, res) => {
   }
 });
 
+// @route   DELETE /api/scan/admin/clear-all
+// @desc    Clear all scans for every user (Maintenance/Admin)
+// @access  Private
+router.delete('/admin/clear-all', protect, async (req, res) => {
+  try {
+    // Note: In a production environment, verify req.user.role === 'admin'
+    const result = await Scan.deleteMany({});
+
+    res.json({
+      success: true,
+      message: `Successfully cleared ${result.deletedCount} scan records from the system.`
+    });
+  } catch (error) {
+    console.error('Bulk delete error:', error);
+    res.status(500).json({ success: false, message: 'Server error during data cleanup.' });
+  }
+});
+
 // @route   DELETE /api/scan/:id
 // @desc    Delete a scan record
 // @access  Private

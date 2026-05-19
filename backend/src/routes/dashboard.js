@@ -24,9 +24,10 @@ router.get('/stats', protect, async (req, res) => {
     scans.forEach(scan => {
       totalRiskCount += scan.riskCount || 0;
       totalScore += scan.privacyScore || 85;
-      if (scan.riskLevel === 'high') highRiskCount++;
-      else if (scan.riskLevel === 'medium') mediumRiskCount++;
-      else lowRiskCount++;
+      const risk = (scan.riskLevel || 'low').toLowerCase();
+      if (risk === 'high') highRiskCount++;
+      else if (risk === 'medium') mediumRiskCount++;
+      else if (risk === 'low') lowRiskCount++;
     });
 
     const avgPrivacyScore = scans.length > 0 ? Math.round(totalScore / scans.length) : 85;

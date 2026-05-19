@@ -927,37 +927,11 @@
                 window.location.href = dashboardPath;
             }
 
-            const recentSignupEmail = localStorage.getItem('dft_recent_signup_email') || '';
             const signupSuccess = sessionStorage.getItem('dft_signup_success') || '';
-
-            if (localStorage.getItem('dft_user') === 'bnn86031@gmail.com') {
-                localStorage.removeItem('dft_user');
-                localStorage.removeItem('dft_user_name');
-                localStorage.removeItem('rememberMe');
-            }
-
-            emailInput.value = recentSignupEmail;
-            passwordInput.value = '';
-            rememberInput.checked = false;
-            emailInput.setAttribute('data-lpignore', 'true');
-            passwordInput.setAttribute('data-lpignore', 'true');
-            emailInput.readOnly = true;
-            passwordInput.readOnly = true;
-
-            const enableManualEntry = (input) => {
-                input.readOnly = false;
-            };
-
-            emailInput.addEventListener('focus', () => enableManualEntry(emailInput), { once: true });
-            passwordInput.addEventListener('focus', () => enableManualEntry(passwordInput), { once: true });
-            emailInput.addEventListener('pointerdown', () => enableManualEntry(emailInput), { once: true });
-            passwordInput.addEventListener('pointerdown', () => enableManualEntry(passwordInput), { once: true });
 
             if (signupSuccess) {
                 showAccountNotice(signupSuccess);
                 sessionStorage.removeItem('dft_signup_success');
-            } else if (recentSignupEmail) {
-                showAccountNotice(`Account ready for ${recentSignupEmail}. Sign in any time with your password.`);
             }
 
             document.addEventListener('keydown', (event) => {

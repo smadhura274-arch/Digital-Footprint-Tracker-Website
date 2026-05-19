@@ -152,24 +152,6 @@ document.querySelectorAll('.faq-question').forEach(question => {
     });
 });
 
-// ==================== MODAL HANDLERS ====================
-function openModal(id) {
-    const modal = document.getElementById(id);
-    if (modal) modal.style.display = 'block';
-}
-
-function closeModal(id) {
-    const modal = document.getElementById(id);
-    if (modal) modal.style.display = 'none';
-}
-
-// Close modals when pressing Escape key
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        document.querySelectorAll('.modal').forEach(modal => modal.style.display = 'none');
-    }
-});
-
 // ==================== SMOOTH SCROLL FOR ANCHOR LINKS ====================
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
@@ -555,9 +537,29 @@ const Storage = {
         localStorage.setItem('socialHandles', JSON.stringify(handles));
     },
 
-    clearAll: () => {
-        localStorage.removeItem('scans');
-        localStorage.removeItem('socialHandles');
+    /**
+     * Clears all scan data globally (Backend + Local Storage)
+     */
+    clearAllScansGlobally: async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (token) {
+                const response = await fetch('/api/scan/admin/clear-all', {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (!data.success) throw new Error(data.message);
+            }
+
+            // Clear local cache/demo data
+            localStorage.removeItem('scans');
+            showToast('All user scans have been cleared system-wide.');
+            if (typeof updateDashboardStats === 'function') updateDashboardStats();
+        } catch (error) {
+            console.error('Cleanup failed:', error);
+            showToast('Failed to clear global scans', 'error');
+        }
     }
 };
 
@@ -599,6 +601,12 @@ document.addEventListener('DOMContentLoaded', () => {
             link.classList.add('active');
         }
     });
+
+    // Auto-refresh Dashboard Data on load if the user is authenticated
+    const isDashboard = currentPage === 'dashboard.html' || currentPage === 'index.html';
+    if (isDashboard && Auth.isLoggedIn()) {
+        updateDashboardStats();
+    }
 
     // Animation on scroll for feature cards
     const featureCards = document.querySelectorAll('.feature-card, .testimonial-card');
@@ -647,12 +655,14 @@ async function updateDashboardStats() {
         const response = await fetch('/api/dashboard/stats', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
+        if (!response.ok) throw new Error('Failed to fetch dashboard stats');
+
         const data = await response.json();
 
         if (data.success) {
             const statsMap = {
                 'totalScans': data.stats.totalScans,
-                'privacyScore': data.stats.privacyScore,
+                'privacyScore': data.stats.privacyScore || 0,
                 'riskCount': data.stats.totalRisks,
                 'socialAccounts': data.stats.socialAccountsTracked
             };
@@ -666,12 +676,12 @@ async function updateDashboardStats() {
             });
             animateNumbers();
 
-            // Update Risk Distribution Chart
+            // Update Risk Management / Distribution Chart
             const riskChart = window.riskChartInstance || window.riskDistChart;
             if (riskChart && data.stats.riskDistribution) {
                 const dist = data.stats.riskDistribution;
-                riskChart.data.datasets[0].data = [dist.low, dist.medium, dist.high];
-                riskChart.update();
+                riskChart.data.datasets[0].data = [dist.low || 0, dist.medium || 0, dist.high || 0];
+                riskChart.update('none'); // Update without animation for immediate UI sync
             }
         }
 
@@ -683,9 +693,12 @@ async function updateDashboardStats() {
             });
             const trendData = await trendRes.json();
             if (trendData.success) {
-                trendChart.data.labels = trendData.trend.map(t => formatDate(t.date));
-                trendChart.data.datasets[0].data = trendData.trend.map(t => t.score);
-                trendChart.update();
+                // Re-connect Privacy Score Trend Chart with live data points
+                const labels = trendData.trend.map(t => formatDate(t.date));
+                const scores = trendData.trend.map(t => t.score);
+                trendChart.data.labels = labels;
+                trendChart.data.datasets[0].data = scores;
+                trendChart.update('none');
             }
         }
 
