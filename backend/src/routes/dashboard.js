@@ -32,10 +32,13 @@ router.get('/stats', protect, async (req, res) => {
 
     const avgPrivacyScore = scans.length > 0 ? Math.round(totalScore / scans.length) : 85;
 
-    // Determine overall risk level
+    // Determine overall risk level based on average score for consistent fluctuation
     let overallRiskLevel = 'low';
-    if (highRiskCount > scans.length / 3) overallRiskLevel = 'high';
-    else if (mediumRiskCount > scans.length / 3) overallRiskLevel = 'medium';
+    if (avgPrivacyScore < 55) overallRiskLevel = 'high';
+    else if (avgPrivacyScore < 78) overallRiskLevel = 'medium';
+
+    // Escalate if high risk findings are disproportionately frequent in recent history
+    if (highRiskCount > scans.length * 0.45) overallRiskLevel = 'high';
 
     // Count social accounts from latest scan
     let accountCount = 0;

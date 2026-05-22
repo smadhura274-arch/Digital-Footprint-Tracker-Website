@@ -175,6 +175,30 @@
             font-size: 0.95rem;
         }
 
+        .password-field-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-toggle-btn {
+            position: absolute;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle-btn:hover {
+            color: #6c63ff;
+        }
+
         .profile-section-group {
             margin-bottom: 2.5rem;
             border: 1px solid #eef2f7;
@@ -383,7 +407,7 @@
                         </div>
                         <div class="profile-section-body"
                             style="display: flex; justify-content: space-between; gap: 1rem;">
-                            <button type="button" class="btn-save" style="background: #3b82f6;">
+                            <button type="button" class="btn-save" style="background: #3b82f6;" onclick="openPasswordModal()">
                                 <i class="fas fa-key"></i> Change Password
                             </button>
                             <button type="button" class="btn-danger">
@@ -396,6 +420,46 @@
                         <i class="fas fa-save"></i> Update Profile
                     </button>
                 </form>
+            </div>
+
+            <!-- Change Password Modal -->
+            <div id="passwordModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-modal" onclick="closePasswordModal()">&times;</span>
+                    <h2 style="color: var(--dark-color); margin-bottom: 1.5rem;">Change Password</h2>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="currentPassword">Current Password</label>
+                            <div class="password-field-container">
+                                <input type="password" id="currentPassword" placeholder="Enter current password">
+                                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('currentPassword', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <div class="password-field-container">
+                                <input type="password" id="newPassword" placeholder="Enter new password">
+                                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('newPassword', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm New Password</label>
+                            <div class="password-field-container">
+                                <input type="password" id="confirmPassword" placeholder="Confirm new password">
+                                <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('confirmPassword', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-save" style="width: 100%; margin-top: 1rem;" onclick="changePassword()">
+                            Update Password
+                        </button>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -484,6 +548,77 @@
                 }
             });
         });
+
+        function openPasswordModal() {
+            document.getElementById('passwordModal').style.display = 'flex';
+        }
+
+        function closePasswordModal() {
+            const modal = document.getElementById('passwordModal');
+            modal.style.display = 'none';
+            
+            // Reset input types and values
+            const inputs = ['currentPassword', 'newPassword', 'confirmPassword'];
+            inputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.type = 'password';
+                    el.value = '';
+                }
+            });
+
+            // Reset all eye icons to the default "visible" icon (meaning password is hidden)
+            const icons = modal.querySelectorAll('.password-toggle-btn i');
+            icons.forEach(icon => {
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            });
+        }
+
+        async function changePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const token = localStorage.getItem('token');
+
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                alert('Please fill in all password fields.');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                alert('New passwords do not match.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/change-password', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert('Password updated successfully!');
+                    closePasswordModal();
+                } else { alert(data.message || 'Failed to update password.'); }
+            } catch (err) { alert('An error occurred. Please try again.'); }
+        }
+
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
     </script>
 </body>
 

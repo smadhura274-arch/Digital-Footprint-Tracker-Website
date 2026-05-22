@@ -203,6 +203,71 @@ router.put('/profile', protect, async (req, res) => {
   }
 });
 
+// @route   PUT /api/auth/change-password
+// @desc    Update account password
+// @access  Private
+router.put('/change-password', protect, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Current password and new password are required.'
+      });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password must be at least 8 characters long.'
+      });
+    }
+
+    const isStrongPassword =
+      /[A-Z]/.test(newPassword) &&
+      /[a-z]/.test(newPassword) &&
+      /[0-9]/.test(newPassword) &&
+      /[^A-Za-z0-9]/.test(newPassword);
+
+    if (!isStrongPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must include uppercase, lowercase, number, and special character.'
+      });
+    }
+
+    if (!(await req.user.comparePassword(currentPassword))) {
+      return res.status(401).json({
+        success: false,
+        message: 'Current password is incorrect.'
+      });
+    }
+
+    if (await req.user.comparePassword(newPassword)) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password must be different from current password.'
+      });
+    }
+
+    req.user.password = newPassword;
+    req.user.updatedAt = new Date();
+    await req.user.save();
+
+    res.json({
+      success: true,
+      message: 'Password changed successfully.'
+    });
+  } catch (error) {
+    console.error('Change password error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while changing password.'
+    });
+  }
+});
+
 // @route   POST /api/auth/create-checkout-session
 // @desc    Create Stripe Checkout Session for Premium
 // @access  Private

@@ -1,0 +1,14 @@
+Retrieving project…
+Resolving deployment "digital-footprint-tracker-website.vercel.app"
+Streaming logs for deployment dpl_9uAuFELvQYdQZKrcmUkTxZScwpJk starting from 18:26:13.22
+
+waiting for new logs...
+18:26:14.74  🚫  POST  ---  digital-footprint-tracker-website.vercel.app  ƒ  /api/auth/login
+--------------------------------------------------------------------------------------------
+Login error: TypeError: next is not a function
+    at model.<anonymous> (/var/task/backend/src/models/User.js:94:62)
+    at Kareem.execPre (/var/task/node_modules/kareem/index.js:59:39)
+
+waiting for new logs...
+WARNING! Command automatically interrupted after 5 minutes.
+

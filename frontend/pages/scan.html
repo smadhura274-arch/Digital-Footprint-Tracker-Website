@@ -357,7 +357,7 @@
                 <a href="scan.html" class="active"><i class="fas fa-search"></i> New Scan</a>
                 <a href="report.html"><i class="fas fa-chart-line"></i> Reports</a>
                 <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
-                <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
                 <a href="javascript:void(0)" onclick="Auth.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </nav>
         </aside>
@@ -484,6 +484,22 @@
             const instagram = document.getElementById('instagramHandle').value;
             const linkedin = document.getElementById('linkedinHandle').value;
             const youtube = document.getElementById('youtubeHandle').value;
+
+            const activeHandles = [facebook, twitter, instagram, linkedin, youtube].filter(handle => handle && handle.trim());
+            if (activeHandles.length === 0) {
+                const resultsDiv = document.getElementById('scanResults');
+                resultsDiv.innerHTML = `
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p style="color:#dc3545;">Invalid scan: please enter at least one social media handle before scanning.</p>
+                    </div>
+                `;
+                document.getElementById('scanBtn').disabled = false;
+                if (typeof showToast === 'function') {
+                    showToast('Invalid scan: no social information entered.', 'error');
+                }
+                return;
+            }
 
             // Save social handles
             const socialHandles = { facebook, twitter, instagram, linkedin, youtube };

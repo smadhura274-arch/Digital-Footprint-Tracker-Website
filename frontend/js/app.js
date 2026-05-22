@@ -254,14 +254,6 @@ const Auth = {
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('user', JSON.stringify(data.user)); // Assuming API returns user data
             localStorage.setItem('token', data.token); // Assuming API returns a token
-            localStorage.setItem('dft_user', data.user.email);
-            localStorage.setItem('dft_user_name', data.user.fullName || data.user.name);
-
-            if (remember) {
-                localStorage.setItem('rememberMe', 'true');
-            } else {
-                localStorage.removeItem('rememberMe');
-            }
 
             const isPagesFolder = window.location.pathname.includes('/pages/');
             window.location.href = isPagesFolder ? 'dashboard.html' : 'pages/dashboard.html';
@@ -289,8 +281,6 @@ const Auth = {
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('user', JSON.stringify(data.user));
             localStorage.setItem('token', data.token);
-            localStorage.setItem('dft_user', data.user.email);
-            localStorage.setItem('dft_user_name', data.user.fullName || data.user.name);
 
             alert('Account created successfully!');
             const isPagesFolder = window.location.pathname.includes('/pages/');
@@ -316,9 +306,9 @@ const Auth = {
                 s.removeItem('isLoggedIn');
                 s.removeItem('user');
                 s.removeItem('token');
-                s.removeItem('dft_user'); // Clear stored email
-                s.removeItem('dft_user_name'); // Clear stored name
-                s.removeItem('rememberMe'); // Clear auto-fill preference
+                s.removeItem('dft_user');
+                s.removeItem('dft_user_name');
+                s.removeItem('dft_scan_name');
                 s.removeItem('dft_active_session_owner'); // Clear workspace context
             });
             const isPagesFolder = window.location.pathname.includes('/pages/');
@@ -447,17 +437,13 @@ document.querySelectorAll('.auth-form input[required]:not([type="checkbox"])').f
     input.addEventListener('blur', () => validateAuthField(input));
 });
 
-document.querySelectorAll('[data-social-auth]').forEach(button => {
-    button.addEventListener('click', () => {
-        Auth.login('google.user@example.com', 'social-login', true);
-    });
-});
-
 // ==================== AUTH FORM SUBMISSION HANDLERS ====================
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize CAPTCHAs if containers exist
     Captcha.generate('signupCaptchaContainer', 'signupForm');
     Captcha.generate('loginCaptchaContainer', 'loginForm');
+
+    const loginForm = document.getElementById('loginForm');
 
     const signupForm = document.getElementById('signupForm');
     if (signupForm) {
@@ -484,7 +470,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -499,10 +484,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const email = document.getElementById('loginEmail')?.value;
             const password = document.getElementById('loginPassword')?.value;
-            const rememberMe = document.getElementById('rememberMe')?.checked || false;
 
             if (email && password) {
-                await Auth.login(email, password, rememberMe, captchaInput.toUpperCase());
+                await Auth.login(email, password, false, captchaInput.toUpperCase());
+                // Explicitly clear password from the DOM to remove sensitive trace
+                const passInput = document.getElementById('loginPassword');
+                if (passInput) passInput.value = '';
+                Captcha.generate('loginCaptchaContainer', 'loginForm');
             } else {
                 alert('Please enter your email and password.');
             }
@@ -521,6 +509,34 @@ if (newsletterForm) {
     });
 }
 
+/**
+ * Filters the scans table based on the search input.
+ * Connects to the dashboard search functionality.
+ */
+function filterScansTable() {
+    const query = document.getElementById('scanSearchInput')?.value.toLowerCase() || '';
+    const scans = JSON.parse(localStorage.getItem('scans') || '[]');
+    const tbody = document.getElementById('scansTableBody');
+
+    if (!tbody) return;
+
+    const filteredScans = scans.filter(s => {
+        const dateMatch = formatDate(s.createdAt || s.date).toLowerCase().includes(query);
+        const riskMatch = (s.riskLevel || '').toLowerCase().includes(query);
+        const detailMatch = getScanMatches(query, s);
+
+        return !query || dateMatch || riskMatch || detailMatch;
+    });
+
+    if (filteredScans.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem;">No matching scans found</td></tr>`;
+        return;
+    }
+
+    renderScansTable(filteredScans);
+}
+window.filterScansTable = filterScansTable;
+
 // ==================== LOCAL STORAGE UTILITIES ====================
 const Storage = {
     getScans: () => JSON.parse(localStorage.getItem('scans') || '[]'),
@@ -536,32 +552,113 @@ const Storage = {
     saveSocialHandles: (handles) => {
         localStorage.setItem('socialHandles', JSON.stringify(handles));
     },
-
-    /**
-     * Clears all scan data globally (Backend + Local Storage)
-     */
-    clearAllScansGlobally: async () => {
-        try {
-            const token = localStorage.getItem('token');
-            if (token) {
-                const response = await fetch('/api/scan/admin/clear-all', {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await response.json();
-                if (!data.success) throw new Error(data.message);
-            }
-
-            // Clear local cache/demo data
-            localStorage.removeItem('scans');
-            showToast('All user scans have been cleared system-wide.');
-            if (typeof updateDashboardStats === 'function') updateDashboardStats();
-        } catch (error) {
-            console.error('Cleanup failed:', error);
-            showToast('Failed to clear global scans', 'error');
-        }
-    }
 };
+
+function renderScansTable(scans = []) {
+    const tbody = document.getElementById('scansTableBody');
+    if (!tbody) return;
+
+    if (!Array.isArray(scans) || scans.length === 0) {
+        tbody.innerHTML = `
+            <tr><td colspan="6" style="text-align:center; padding:2rem;">No recent scans available.</td></tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = scans.slice(0, 5).map(scan => {
+        const detailItems = Array.isArray(scan.details) ? scan.details : (Array.isArray(scan.findings) ? scan.findings : []);
+        const scanPlatforms = Array.isArray(scan.platforms)
+            ? scan.platforms
+            : (detailItems.length > 0 ? [...new Set(detailItems.map(f => (f.platform || f.name || '').toString()).filter(Boolean))] : []);
+
+        const findingsCount = Number.isFinite(Number(scan.totalFindings))
+            ? scan.totalFindings
+            : (Array.isArray(detailItems) ? detailItems.length : Number(scan.findings) || 0);
+
+        const riskLevel = scan.riskLevel ? scan.riskLevel.toLowerCase() : 'low';
+        const score = Number.isFinite(Number(scan.privacyScore)) ? scan.privacyScore : 0;
+        const formattedDate = scan.createdAt ? formatDate(scan.createdAt) : formatDate(scan.date || new Date());
+
+        const scanId = scan._id || scan.id || scan.createdAt || scan.date;
+
+        return `
+            <tr onclick="window.openScanReport('${scanId}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.openScanReport('${scanId}');}" tabindex="0" role="button">
+                <td style="font-weight: 600; color: var(--dark-color);">${formattedDate}</td>
+                <td style="max-width: 200px;">
+                    ${scanPlatforms.length ? scanPlatforms.map(p => `
+                        <span style="display:inline-flex; align-items:center; gap:0.3rem; background: rgba(67, 97, 238, 0.08); color: var(--blue-color); padding:0.3rem 0.6rem; border-radius:8px; font-size:0.72rem; margin:2px; font-weight: 600; border: 1px solid rgba(67, 97, 238, 0.1);">
+                            <i class="fab fa-${getPlatformIcon(p)}" style="font-size: 0.8rem;"></i> ${p}
+                        </span>
+                    `).join('') : 'N/A'}
+                </td>
+                <td style="color: var(--gray-color); font-weight: 500;">${findingsCount} findings</td>
+                <td><span style="display:inline-flex; align-items:center; gap:0.4rem; padding:0.4rem 0.9rem; border-radius:20px; background:${getRiskColor(riskLevel)}15; color:${getRiskColor(riskLevel)}; font-weight:800; font-size: 0.75rem; letter-spacing: 0.5px; border: 1px solid ${getRiskColor(riskLevel)}30;">${riskLevel.toUpperCase()}</span></td>
+                <td style="font-weight: 800; color: var(--secondary-color);">${score}/100</td>
+                <td>
+                    <div style="display:flex; gap:0.75rem; justify-content:flex-end; align-items:center;">
+                        <button type="button" onclick="event.stopPropagation(); window.openScanReport('${scanId}')" class="btn-action btn-view" title="View Full Report" aria-label="View scan report">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button type="button" onclick="event.stopPropagation(); window.deleteScan('${scanId}')" class="btn-action btn-delete" title="Delete Scan History" aria-label="Delete scan report">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function getScanMatches(search, scan) {
+    const query = search.toLowerCase();
+    const platforms = Array.isArray(scan.platforms) ? scan.platforms : [];
+    const findings = Array.isArray(scan.findings) ? scan.findings : (Array.isArray(scan.details) ? scan.details : []);
+
+    const platformMatch = platforms.some(p => p.toLowerCase().includes(query));
+    const riskMatch = (scan.riskLevel || '').toLowerCase().includes(query);
+    const detailMatch = findings.some(f => (f.platform || '').toLowerCase().includes(query) || (f.details || '').toLowerCase().includes(query));
+
+    return platformMatch || riskMatch || detailMatch;
+}
+
+/**
+ * Clears all scan data globally (Backend + Local Storage)
+ */
+async function clearAllScansGlobally() {
+    try {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const response = await fetch('/api/scan/admin/clear-all', {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await response.json();
+            if (!data.success) throw new Error(data.message);
+        }
+
+        // Clear local cache and cached dashboard data for the active user session
+        localStorage.removeItem('scans');
+        localStorage.removeItem('dashboard_stats');
+
+        const searchInput = document.getElementById('scanSearchInput');
+        if (searchInput) searchInput.value = '';
+        if (typeof renderScansTable === 'function') {
+            renderScansTable([]);
+        } else if (typeof filterScansTable === 'function') {
+            filterScansTable();
+        }
+
+        showToast('Global scan history has been cleared system-wide.');
+
+        // Force immediate UI synchronization
+        if (typeof updateDashboardStats === 'function') updateDashboardStats();
+        if (typeof window.updateNotifications === 'function') window.updateNotifications();
+        
+    } catch (error) {
+        console.error('Cleanup failed:', error);
+        showToast('Failed to clear global scans', 'error');
+    }
+}
 
 // ==================== DEMO DATA INITIALIZATION ====================
 function initDemoData() {
@@ -574,16 +671,6 @@ function initDemoData() {
             { date: '2024-02-10', findings: 18, riskLevel: 'medium', privacyScore: 85, riskCount: 14 }
         ];
         localStorage.setItem('scans', JSON.stringify(demoscans));
-    }
-
-    if (!localStorage.getItem('socialHandles')) {
-        localStorage.setItem('socialHandles', JSON.stringify({
-            facebook: '',
-            twitter: '',
-            instagram: '',
-            linkedin: '',
-            youtube: ''
-        }));
     }
 }
 
@@ -660,6 +747,7 @@ async function updateDashboardStats() {
         const data = await response.json();
 
         if (data.success) {
+            localStorage.setItem('dashboard_stats', JSON.stringify(data.stats));
             const statsMap = {
                 'totalScans': data.stats.totalScans,
                 'privacyScore': data.stats.privacyScore || 0,
@@ -677,28 +765,63 @@ async function updateDashboardStats() {
             animateNumbers();
 
             // Update Risk Management / Distribution Chart
-            const riskChart = window.riskChartInstance || window.riskDistChart;
+            const riskChart = window.riskChartInstance;
             if (riskChart && data.stats.riskDistribution) {
                 const dist = data.stats.riskDistribution;
+                
+                // Enhanced Fluctuation: Trigger a "vibrant pulse" with glow on stats cards
+                const riskEl = document.getElementById('riskCount');
+                const riskCard = riskEl ? riskEl.closest('.stat-card') : null;
+                if (riskCard) {
+                    riskCard.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                    riskCard.style.transform = 'scale(1.1) translateY(-10px)';
+                    riskCard.style.boxShadow = '0 25px 50px rgba(157, 78, 221, 0.3), 0 0 20px rgba(255, 77, 148, 0.2)';
+                    setTimeout(() => {
+                        riskCard.style.transform = 'scale(1) translateY(0)';
+                        riskCard.style.boxShadow = '';
+                    }, 600);
+                }
+
                 riskChart.data.datasets[0].data = [dist.low || 0, dist.medium || 0, dist.high || 0];
-                riskChart.update('none'); // Update without animation for immediate UI sync
+                
+                // Include dynamic labels with percentage details
+                const total = (dist.low || 0) + (dist.medium || 0) + (dist.high || 0);
+                const getPerc = (val) => total > 0 ? Math.round((val / total) * 100) : 0;
+
+                riskChart.data.labels = [
+                    `Secure (${dist.low || 0}) • ${getPerc(dist.low)}%`,
+                    `Exposed (${dist.medium || 0}) • ${getPerc(dist.medium)}%`,
+                    `Critical (${dist.high || 0}) • ${getPerc(dist.high)}%`
+                ];
+                
+                // Elastic update animation for a bouncy, reactive feel
+                if (riskChart.options.animation) {
+                    riskChart.options.animation.animateScale = true;
+                }
+                riskChart.update({
+                    duration: 1800,
+                    easing: 'easeOutElastic'
+                });
             }
         }
 
         // Fetch and update Privacy Score Trend Chart
-        const trendChart = window.trendChartInstance || window.scoreTrendChart;
+        const trendChart = window.trendChartInstance;
         if (trendChart) {
             const trendRes = await fetch('/api/dashboard/trend', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const trendData = await trendRes.json();
-            if (trendData.success) {
+            if (trendData.success && trendData.trend.length > 0) {
                 // Re-connect Privacy Score Trend Chart with live data points
                 const labels = trendData.trend.map(t => formatDate(t.date));
                 const scores = trendData.trend.map(t => t.score);
                 trendChart.data.labels = labels;
                 trendChart.data.datasets[0].data = scores;
-                trendChart.update('none');
+                trendChart.update({
+                    duration: 1500,
+                    easing: 'easeInOutQuart'
+                });
             }
         }
 
@@ -719,40 +842,20 @@ async function updateDashboardStats() {
         const historyData = await historyRes.json();
 
         if (historyData.success && tbody) {
-            // Sync local storage so other page components are updated
             localStorage.setItem('scans', JSON.stringify(historyData.scans));
+            renderScansTable(historyData.scans);
 
-            if (typeof filterScansTable === 'function') {
-                return filterScansTable(); // Use specialized page renderer if available
+            // Re-hydrate dashboard cards/charts with fresh user-specific scans.
+            if (typeof window.loadDashboard === 'function' && !window.__dashboardServerHydrating) {
+                window.__dashboardServerHydrating = true;
+                try {
+                    window.loadDashboard();
+                } finally {
+                    window.__dashboardServerHydrating = false;
+                }
             }
-
-            if (historyData.scans.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No scans yet</td></tr>';
-            } else {
-                tbody.innerHTML = historyData.scans.map(s => {
-                    const platforms = s.findings ? [...new Set(s.findings.map(f => f.platform))].join(', ') : 'N/A';
-                    const badge = getRiskBadge(s.riskLevel);
-                    const scanId = s._id || s.createdAt;
-                    return `
-                        <tr>
-                            <td>${formatDate(s.createdAt)}</td>
-                            <td>${platforms}</td>
-                            <td>${s.totalFindings} traces</td>
-                            <td><span class="risk-badge" style="background:${badge.bg}; color:${badge.text}">${s.riskLevel.toUpperCase()}</span></td>
-                            <td>
-                                <div class="score-cell">
-                                    <span>${s.privacyScore}</span>
-                                    <div class="score-bar"><div class="score-bar-fill" style="width:${s.privacyScore}%"></div></div>
-                                </div>
-                            </td>
-                            <td>
-                                <button class="btn-secondary" onclick="viewReportDetails('${scanId}')" title="View Report"><i class="fas fa-eye"></i></button>
-                                <button class="btn-danger" onclick="deleteScan('${scanId}')" title="Delete Scan" style="padding: 0.4rem 0.8rem; border-radius: 20px; margin-left: 5px;"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            }
+        } else {
+            renderScansTable(JSON.parse(localStorage.getItem('scans') || '[]'));
         }
     } catch (error) {
         console.error('Error updating dashboard stats:', error);
@@ -764,13 +867,20 @@ let pendingDeleteId = null;
 /**
  * Opens the delete confirmation modal
  */
-function deleteScan(id) {
+window.deleteScan = function(id) {
     pendingDeleteId = id;
     const modal = document.getElementById('deleteConfirmModal');
-    if (modal) modal.style.display = 'flex';
-}
+    if (modal) {
+        modal.style.display = 'flex';
+    } else {
+        // Global access fallback: Use native confirm if custom modal is missing
+        if (confirm('Are you sure you want to delete this scan from your history? This action cannot be undone.')) {
+            window.confirmDelete();
+        }
+    }
+};
 
-async function confirmDelete() {
+window.confirmDelete = async function() {
     if (!pendingDeleteId) return;
     const id = pendingDeleteId;
     const btn = document.getElementById('confirmDeleteBtn');
@@ -784,8 +894,8 @@ async function confirmDelete() {
 
         const token = localStorage.getItem('token');
 
-        // Attempt backend deletion if it's a valid MongoDB ID
-        if (token && id.length > 20) {
+        // Attempt backend deletion for persistent data (MongoDB ObjectIDs are 24 chars)
+        if (token && id && id.length >= 24) {
             const response = await fetch(`/api/scan/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -801,11 +911,9 @@ async function confirmDelete() {
 
         showToast('Scan deleted successfully');
 
-        // Refresh UI components
-        if (typeof loadDashboard === 'function') loadDashboard();
+        // Refresh dashboard stats and table immediately for all users
         if (typeof updateDashboardStats === 'function') updateDashboardStats();
-
-        closeDeleteModal();
+        window.closeDeleteModal();
     } catch (error) {
         console.error('Delete error:', error);
         showToast(error.message || 'Error deleting scan', 'error');
@@ -817,15 +925,30 @@ async function confirmDelete() {
     }
 }
 
-function closeDeleteModal() {
+if (typeof window.downloadScanAsPDF !== 'function') {
+    window.downloadScanAsPDF = (id) => {
+        showToast('Preparing PDF download...', 'info');
+    };
+}
+
+window.openScanReport = function(id) {
+    if (typeof window.viewReportDetails === 'function') {
+        window.viewReportDetails(id);
+        return;
+    }
+    // Fallback when dashboard inline viewer is not present on the current page.
+    if (typeof window.downloadScanAsPDF === 'function') {
+        window.downloadScanAsPDF(id);
+    } else {
+        showToast('Report viewer is loading...', 'info');
+    }
+};
+
+window.closeDeleteModal = function() {
     const modal = document.getElementById('deleteConfirmModal');
     if (modal) modal.style.display = 'none';
     pendingDeleteId = null;
-}
-
-window.deleteScan = deleteScan;
-window.confirmDelete = confirmDelete;
-window.closeDeleteModal = closeDeleteModal;
+};
 
 function getRiskBadge(riskLevel) {
     const colors = {
@@ -834,6 +957,17 @@ function getRiskBadge(riskLevel) {
         high: { bg: '#f8d7da', text: '#721c24' }
     };
     return colors[riskLevel.toLowerCase()] || colors.low;
+}
+
+function getPlatformIcon(platform) {
+    const iconMap = {
+        facebook: 'facebook-f',
+        twitter: 'twitter',
+        instagram: 'instagram',
+        linkedin: 'linkedin-in',
+        youtube: 'youtube'
+    };
+    return iconMap[(platform || '').toLowerCase()] || 'globe';
 }
 
 function validateScanIdentity(value) {
@@ -884,6 +1018,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const startScanBtn = document.getElementById('startScanBtn');
     const clearAllBtn = document.getElementById('clearAllBtn');
+    const scanClearBtn = document.getElementById('scanClearBtn');
+
+    if (scanClearBtn) {
+        scanClearBtn.addEventListener('click', () => {
+            const searchInput = document.getElementById('scanSearchInput');
+            if (searchInput) {
+                searchInput.value = '';
+                filterScansTable();
+                searchInput.focus();
+                showToast('Search filter cleared.', 'success');
+            }
+        });
+    }
 
     if (startScanBtn) {
         startScanBtn.addEventListener('click', () => {
@@ -894,8 +1041,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!validation.isValid) {
                 return showToast(validation.message, 'error');
             }
-
-            localStorage.setItem('dft_scan_name', validation.normalizedValue);
 
             // Start the actual scan on the backend immediately
             const scanRequest = fetch('/api/scan', {
@@ -922,6 +1067,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const progressContainer = document.getElementById('scanProgressContainer');
             const progressBar = document.getElementById('scanProgressBar');
             const progressText = document.getElementById('scanProgressText');
+            
+            // Live Feed elements
+            const liveFeedContainer = document.getElementById('liveFeedContainer');
+            const liveFeedList = document.getElementById('liveFeedList');
+            const simulatedPlatforms = ['Facebook', 'Twitter', 'Instagram', 'LinkedIn', 'YouTube', 'Google Search', 'Global Breach Database'];
 
             if (progressContainer) progressContainer.style.display = 'block';
             if (progressBar) progressBar.style.width = '0%';
@@ -941,33 +1091,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     setTimeout(() => {
                         if (progressContainer) progressContainer.style.display = 'none';
+                        
+                        // Redesign: Final live feed message and hide after a delay
+                        if (liveFeedList) {
+                            liveFeedList.innerHTML += '<div class="live-feed-item final-message"><i class="fas fa-check-circle"></i> Scan completed!</div>';
+                            liveFeedList.scrollTop = liveFeedList.scrollHeight;
+                        }
+                        setTimeout(() => { if (liveFeedContainer) liveFeedContainer.style.display = 'none'; }, 2000); // Hide feed after 2 seconds
+
                         startScanBtn.disabled = false;
                         startScanBtn.innerHTML = originalContent;
 
                         // Refresh dashboard stats once backend processing and UI progress are both done
-                        scanRequest.then(() => {
+                        scanRequest.then(data => {
                             updateDashboardStats();
                             if (window.updateNotifications) window.updateNotifications();
                             console.log('Scan completed for:', validation.normalizedValue);
-                            showToast(typeof t === 'function' ? t('scan_success') : 'Scan completed successfully!');
+                            const scoreDetail = data.scan ? ` (Score: ${data.scan.privacyScore} - ${data.scan.riskLevel})` : '';
+                            showToast((typeof t === 'function' ? t('scan_success') : 'Scan completed successfully!') + scoreDetail);
                         }).catch(err => {
                             console.error('Backend scan failed:', err);
+                            if (liveFeedList) liveFeedList.innerHTML += `<div class="live-feed-item error-message"><i class="fas fa-exclamation-circle"></i> Scan failed.</div>`;
+                            if (liveFeedContainer) setTimeout(() => { liveFeedContainer.style.display = 'none'; }, 2000);
                             showToast(err.message || 'Scan failed. Please try again.', 'error');
                         });
                     }, 500);
                 }
+                let currentPlatformIndex = 0; // Initialize here for the loop
 
                 if (progressBar) progressBar.style.width = `${progress}%`;
                 if (progressText) progressText.textContent = `${progress}%`;
-            }, 400);
+            }, 300);
         });
     }
 
     if (clearAllBtn) {
-        clearAllBtn.addEventListener('click', () => {
-            const el = document.getElementById('socialName');
-            if (el) el.value = '';
-            localStorage.removeItem('dft_scan_name');
+        clearAllBtn.addEventListener('click', async () => {
+            if (confirm('Are you sure you want to clear all scan history? This action cannot be undone.')) {
+                await clearAllScansGlobally();
+            }
         });
     }
 });

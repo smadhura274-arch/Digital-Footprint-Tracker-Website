@@ -1948,6 +1948,197 @@ h6 {
     gap: 2rem;
 }
 
+/* ==================== RISK DISTRIBUTION REDESIGN ==================== */
+.chart-card.risk-distribution {
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 20px 40px rgba(157, 78, 221, 0.08);
+}
+
+.chart-card.risk-distribution::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--success-color), var(--secondary-color), var(--primary-color));
+    border-radius: 4px 0 0 4px;
+}
+
+.risk-summary-panel {
+    background: rgba(255,255,255,0.95);
+    border-radius: 18px;
+    padding: 1rem 1rem 0.8rem;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 16px 30px rgba(0,0,0,0.05);
+}
+
+.risk-summary-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.risk-summary-badge {
+    background: rgba(255,107,107,0.1);
+    color: var(--danger-color);
+    border-radius: 999px;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.risk-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.risk-summary-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid rgba(0,0,0,0.04);
+    padding: 1rem;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.05);
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.risk-summary-card .summary-label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    color: var(--gray-color);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.55rem;
+}
+
+.risk-summary-card .summary-value {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--dark-color);
+}
+
+.risk-summary-card .summary-note {
+    color: var(--secondary-color);
+    font-size: 0.82rem;
+    margin-top: 0.45rem;
+}
+
+.risk-summary-card.risk-low {
+    border-left: 4px solid var(--success-color);
+}
+
+.risk-summary-card.risk-medium {
+    border-left: 4px solid #d4a017;
+}
+
+.risk-summary-card.risk-high {
+    border-left: 4px solid var(--danger-color);
+}
+
+.risk-summary-footer {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.9rem 0.95rem;
+    border-radius: 14px;
+    background: rgba(248,249,250,0.9);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.risk-summary-tag {
+    font-size: 0.82rem;
+    color: var(--dark-color);
+    font-weight: 700;
+}
+
+.risk-platform-card {
+    background: white;
+    border-radius: 18px;
+    border: 1px solid rgba(0,0,0,0.05);
+    padding: 1rem;
+    box-shadow: 0 18px 32px rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.risk-platform-card.risk-low {
+    border-left: 4px solid var(--success-color);
+}
+
+.risk-platform-card.risk-medium {
+    border-left: 4px solid #d4a017;
+}
+
+.risk-platform-card.risk-high {
+    border-left: 4px solid var(--danger-color);
+}
+
+.risk-platform-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.95rem;
+    color: var(--dark-color);
+}
+
+.risk-platform-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    padding: 0.5rem 0;
+    font-size: 0.82rem;
+    color: var(--gray-color);
+}
+
+.risk-platform-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+}
+
+.risk-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.risk-dot.low {
+    background: var(--success-color);
+}
+
+.risk-dot.medium {
+    background: #d4a017;
+}
+
+.risk-dot.high {
+    background: var(--danger-color);
+}
+
+.risk-platform-details {
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    font-size: 0.82rem;
+    color: var(--gray-color);
+}
+
 .dashboard-container h1,
 .dashboard-container h2,
 .dashboard-container h3 {
@@ -1984,4 +2175,92 @@ h6 {
     .dashboard-container {
         grid-template-columns: 1fr;
     }
+}
+
+/* ==================== RECENT SCANS TABLE REDESIGN ==================== */
+.scans-table-container {
+    overflow-x: auto;
+    margin-top: 1rem;
+}
+
+.scans-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+.scans-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--gray-color);
+    letter-spacing: 0.05em;
+    border: none;
+}
+
+.scans-table tr {
+    transition: var(--transition);
+}
+
+.scans-table td {
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.5);
+    border-top: 1px solid rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.3);
+    color: var(--dark-color);
+    font-size: 0.92rem;
+}
+
+.scans-table td:first-child { border-left: 1px solid rgba(255, 255, 255, 0.8); border-radius: 12px 0 0 12px; }
+.scans-table td:last-child { border-right: 1px solid rgba(255, 255, 255, 0.8); border-radius: 0 12px 12px 0; }
+
+.scans-table tr:hover td {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    cursor: pointer;
+}
+
+.btn-action {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 1rem;
+    backdrop-filter: blur(4px);
+}
+
+.btn-view {
+    background: rgba(157, 78, 221, 0.1);
+    color: var(--secondary-color);
+    border-color: rgba(157, 78, 221, 0.2);
+}
+
+.btn-view:hover {
+    background: linear-gradient(135deg, var(--secondary-color), var(--blue-color)) !important;
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(157, 78, 221, 0.3);
+    border-color: transparent;
+}
+
+.btn-delete {
+    background: rgba(255, 107, 107, 0.1);
+    color: var(--danger-color);
+    border-color: rgba(255, 107, 107, 0.2);
+}
+
+.btn-delete:hover {
+    background: var(--danger-color) !important;
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+    border-color: transparent;
 }

@@ -792,6 +792,17 @@
         document.addEventListener('DOMContentLoaded', () => {
             updateUserUI();
             loadSettings();
+            const hashToSection = {
+                securitySection: 'security',
+                privacySection: 'privacy',
+                profileSection: 'profile',
+                dataManagementSection: 'data'
+            };
+            const targetSection = hashToSection[(window.location.hash || '').replace('#', '')];
+            if (targetSection) {
+                const navItem = document.querySelector(`.inner-nav-item[onclick*="'${targetSection}'"]`);
+                if (navItem) navItem.click();
+            }
         });
 
         function updateUserUI() {
@@ -954,7 +965,7 @@
             }
         }
 
-        function changePassword() {
+        async function changePassword() {
             const currentPassword = document.getElementById('currentPassword').value;
             const newPassword = document.getElementById('newPassword').value;
             const confirmNewPassword = document.getElementById('confirmNewPassword').value;
@@ -1000,22 +1011,36 @@
                 return;
             }
 
-            // Simulate password change
-            // In a real application, you would send these to a backend API
-            console.log('Attempting to change password...');
-            // For a frontend-only demo, we'll just simulate success.
-            // In a real app, you'd make an API call here.
-            // Example: fetch('/api/change-password', { method: 'POST', body: JSON.stringify({ currentPassword, newPassword }) })
-            // .then(response => response.json())
-            // .then(data => { if (data.success) { showToast('Password changed successfully!', 'success'); } else { showToast(data.message, 'error'); } })
-            // .catch(error => showToast('An error occurred.', 'error'));
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            if (!token) {
+                showToast('Please log in again to update your password.', 'error');
+                return;
+            }
 
-            showToast('Password changed successfully!', 'success');
+            try {
+                const response = await fetch('/api/auth/change-password', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
 
-            // Clear fields after successful change
-            document.getElementById('currentPassword').value = '';
-            document.getElementById('newPassword').value = '';
-            document.getElementById('confirmNewPassword').value = '';
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || `Failed to change password (HTTP ${response.status}).`);
+                }
+
+                showToast('Password changed successfully!', 'success');
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmNewPassword').value = '';
+                updatePasswordStrengthIndicator();
+            } catch (error) {
+                console.error('Change password failed:', error);
+                showToast(error.message || 'Unable to change password right now.', 'error');
+            }
         }
 
         function exportAllData() {

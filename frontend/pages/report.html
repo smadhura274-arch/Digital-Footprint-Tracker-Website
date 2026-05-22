@@ -190,7 +190,7 @@
                 <a href="scan.html"><i class="fas fa-search"></i> New Scan</a>
                 <a href="report.html" class="active"><i class="fas fa-chart-line"></i> Reports</a>
                 <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
-                <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
                 <a href="javascript:void(0)" onclick="Auth.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </nav>
         </aside>
@@ -473,21 +473,50 @@
             while (scores.length < 3) scores.unshift(85);
 
             // Risk Distribution Chart
-            new Chart(document.getElementById('riskDistChartReport'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Low Risk', 'Medium Risk', 'High Risk'],
-                    datasets: [{
-                        data: [lowRiskCount, mediumRiskCount, highRiskCount],
-                        backgroundColor: ['#00c9a7', '#ffd93d', '#ff6b6b'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { position: 'bottom' } }
+            (function() {
+                const rawData = [lowRiskCount, mediumRiskCount, highRiskCount];
+                const total = rawData.reduce((a, b) => a + b, 0);
+                // Prepare display data so chart always shows three colored segments
+                let displayData = rawData.slice();
+                if (total === 0) {
+                    // show equal placeholder slices when no data exists
+                    displayData = [1, 1, 1];
+                } else {
+                    const nonZero = rawData.filter(v => v > 0).length;
+                    if (nonZero === 1) {
+                        // add tiny epsilon to zero segments so they render visually
+                        displayData = rawData.map(v => v > 0 ? v : 0.0001);
+                    }
                 }
-            });
+
+                new Chart(document.getElementById('riskDistChartReport'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Low Risk', 'Medium Risk', 'High Risk'],
+                        datasets: [{
+                            data: displayData,
+                            backgroundColor: ['#00c9a7', '#ffd93d', '#ff6b6b'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(ctx) {
+                                        const idx = ctx.dataIndex;
+                                        const label = ctx.chart.data.labels[idx];
+                                        const actual = rawData[idx] || 0;
+                                        return `${label}: ${actual} Platform${actual === 1 ? '' : 's'}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            })();
 
             new Chart(document.getElementById('trendChartReport'), {
                 type: 'line',
@@ -515,7 +544,7 @@
             if (!token) return;
 
             try {
-                const res = await fetch('/api/dashboard/report/generate', {
+                const res = await fetch('/api/report/generate', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 

@@ -625,7 +625,7 @@
             <div class="auth-card">
                 <div class="account-notice" id="accountNotice"></div>
 
-                <form id="loginForm" novalidate>
+                <form id="loginForm" novalidate autocomplete="off">
                     <div class="field">
                         <label for="loginEmail">Email address</label>
                         <div class="field-wrap">
@@ -669,10 +669,7 @@
                     </div>
 
                     <div class="subtle-row">
-                        <label>
-                            <input type="checkbox" id="rememberMe">
-                            <span>Keep me signed in</span>
-                        </label>
+                        <div></div>
                         <button type="button" class="link-btn" id="forgotPassword">Forgot password?</button>
                     </div>
 
@@ -697,7 +694,6 @@
             const loginForm = document.getElementById('loginForm');
             const emailInput = document.getElementById('loginEmail');
             const passwordInput = document.getElementById('loginPassword');
-            const rememberInput = document.getElementById('rememberMe');
             const captchaInput = document.getElementById('loginCaptchaInput');
             const captchaImage = document.getElementById('captchaImage');
             const refreshCaptchaBtn = document.getElementById('refreshCaptcha');
@@ -762,15 +758,7 @@
                 storage.setItem('isLoggedIn', 'true');
                 storage.setItem('user', JSON.stringify(normalizedUser));
                 storage.setItem('token', token);
-                localStorage.setItem('dft_user', normalizedUser.email);
-                localStorage.setItem('dft_user_name', normalizedUser.fullName);
                 localStorage.setItem('dft_active_session_owner', normalizedUser.email);
-
-                if (remember) {
-                    localStorage.setItem('rememberMe', 'true');
-                } else {
-                    localStorage.removeItem('rememberMe');
-                }
             };
 
             const validateEmail = (showError) => {
@@ -862,7 +850,7 @@
                         throw new Error(getApiError(result, 'Login failed.'));
                     }
 
-                    createLoginSession(result.user, result.token, rememberInput.checked);
+                    createLoginSession(result.user, result.token);
                     sessionStorage.removeItem('dft_signup_success');
                     localStorage.removeItem('dft_recent_signup_email');
                     showAccountNotice('');
